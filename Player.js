@@ -31,10 +31,7 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
         // カーソルキー（矢印キー）の入力を受け付ける
         this.cursors = scene.input.keyboard.createCursorKeys();
         
-        /**
-         * @type {Array<string>} - プレイヤーが所持しているアイテムのリスト
-         */
-        this.inventory = [];
+        
     }
 
     /**
@@ -59,14 +56,5 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
         }
     }
 
-    /**
-     * インベントリにアイテムを追加する。
-     * @param {string} item - 追加するアイテムの名前。
-     */
-    addItem(item) {
-        this.inventory.push(item);
-        // UI更新のためにイベントを発行
-        this.scene.events.emit('updateInventory', this.inventory);
-        console.log(`${item}をインベントリに追加しました。`);
-    }
+    
 }

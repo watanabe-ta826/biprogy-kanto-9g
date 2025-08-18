@@ -50,34 +50,12 @@ export default class ForestScene extends BaseScene {
             }
         });
 
-        // プレイヤーとエンティティグループの衝突検知を設定
-        this.physics.add.overlap(this.player, this.entities, this.handleOverlap, null, this);
+        
     }
 
-    /**
-     * プレイヤーがエンティティと重なった時に呼び出されるコールバック関数。
-     * @param {Player} player - プレイヤーオブジェクト。
-     * @param {Phaser.GameObjects.Sprite} entity - 重なったエンティティ。
-     */
-    handleOverlap(player, entity) {
-        if (entity.type === 'Collectible') {
-            this.showItemGetNotification(entity.itemName); // 通知を表示
-            player.addItem(entity.itemName);
-            entity.collect();
-        }
-    }
+    
 
-    /**
-     * Eキーによるインタラクション処理。BaseSceneの同名メソッドをオーバーライド。
-     * @param {Phaser.GameObjects.Sprite} entity - インタラクションの対象。
-     */
-    interactWith(entity) {
-        // ポータルとのインタラクション
-        if (entity.type === 'Portal') {
-            this.showPortalModal(entity.targetScene);
-        }
-        // Note: アイテム収集はEキーではなく、重なるだけで自動的に行われるように変更済み。
-    }
+    
 
     
 }

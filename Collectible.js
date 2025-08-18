@@ -13,15 +13,28 @@ export default class Collectible extends Phaser.Physics.Arcade.Sprite {
      * @param {string} itemName - アイテムの名前。
      */
     constructor(scene, x, y, itemName) {
-        // アイテム用のテクスチャを動的に生成（現在は金色の円）
-        const graphics = scene.make.graphics({ x: 0, y: 0 }, false);
-        graphics.fillStyle(0xffd700, 1); // 金色
-        graphics.fillCircle(10, 10, 10); // 半径10の円を描画
-        const textureName = `collectible_texture_${x}_${y}`;
-        graphics.generateTexture(textureName, 20, 20);
-        graphics.destroy();
+        super(scene, x, y, 'collectible_texture'); // Use a generic texture
 
-        super(scene, x, y, textureName);
+        // アイテムの一意なIDを生成
+        this.itemIdentifier = `${scene.scene.key}-${itemName}-${x}-${y}`;
+
+        // グローバルな収集済みアイテムの状態をチェック
+        const collectedItems = scene.registry.get('collectedItems');
+        if (collectedItems[this.itemIdentifier]) {
+            this.destroy();
+            return;
+        }
+
+        // 動的なテクスチャ生成（初回のみ）
+        if (!scene.textures.exists('collectible_texture')) {
+            const graphics = scene.make.graphics({ x: 0, y: 0 }, false);
+            graphics.fillStyle(0xffd700, 1); // 金色
+            graphics.fillCircle(10, 10, 10); // 半径10の円を描画
+            graphics.generateTexture('collectible_texture', 20, 20);
+            graphics.destroy();
+        }
+
+        this.setTexture('collectible_texture');
 
         // アイテムをシーンの表示リストと物理エンジンに追加
         scene.add.existing(this);
@@ -40,13 +53,5 @@ export default class Collectible extends Phaser.Physics.Arcade.Sprite {
         this.body.setAllowGravity(false); // 重力の影響を受けないようにする
     }
 
-    /**
-     * アイテムが収集されたときの処理。
-     * このアイテムをシーンから削除する。
-     */
-    collect() {
-        this.destroy();
-        // プレイヤーのインベントリへの追加処理は、
-        // 衝突を検知するシーン側（例: ForestScene）で行われる。
-    }
+    
 }

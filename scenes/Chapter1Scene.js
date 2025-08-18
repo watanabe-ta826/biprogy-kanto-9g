@@ -45,45 +45,10 @@ export default class Chapter1Scene extends BaseScene {
             }
         });
 
-        // --- ▼ここから追加 --- 
-        // プレイヤーがエンティティグループと重なったときの処理を設定
-        this.physics.add.overlap(this.player, this.entities, this.handleOverlap, null, this);
-        // --- ▲ここまで追加 --- 
+         
     }
 
-    // --- ▼ここから追加 --- 
-    /**
-     * プレイヤーがエンティティと重なった時に呼び出されるコールバック関数。
-     * @param {Player} player - プレイヤーオブジェクト。
-     * @param {Phaser.GameObjects.Sprite} entity - 重なったエンティティ。
-     */
-    handleOverlap(player, entity) {
-        if (entity.type === 'Collectible') {
-            this.showItemGetNotification(entity.itemName); // 通知を表示
-            player.addItem(entity.itemName);
-            entity.collect();
-        }
-    }
-    // --- ▲ここまで追加 --- 
+     
 
-    /**
-     * エンティティとのインタラクション処理。BaseSceneの同名メソッドをオーバーライド。
-     * @param {Phaser.GameObjects.Sprite} entity - インタラクションの対象。
-     */
-    interactWith(entity) {
-        switch (entity.type) {
-            case 'NPC':
-                this.currentNPC = entity;
-                const dialog = entity.getNextDialog();
-                if (dialog.text) {
-                    this.openDialog(entity.name, dialog.text);
-                }
-                break;
-            // --- ▼ここから追加 --- 
-            case 'Portal': // ポータルとのインタラクション処理を追加
-                this.showPortalModal(entity.targetScene);
-                break;
-            // --- ▲ここまで追加 --- 
-        }
-    }
+    
 }

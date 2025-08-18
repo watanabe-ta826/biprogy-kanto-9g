@@ -34,3 +34,9 @@ const config = {
 
 // 設定を元にPhaser.Gameのインスタンスを生成
 const game = new Phaser.Game(config);
+
+// ゲームのグローバル状態を初期化
+game.events.on('ready', () => {
+    game.registry.set('inventory', []);
+    game.registry.set('collectedItems', {});
+});

@@ -50,7 +50,8 @@ export default class BaseScene extends Phaser.Scene {
         this.otomo = new Otomo(this, 50, 450, 'otomo');
         this.physics.add.collider(this.otomo, this.platforms);
 
-        this.inventoryManager = createInventory(this);
+        // グローバルインベントリを使ってインベントリUIを初期化
+        this.inventoryManager = createInventory(this, this.registry.get('inventory'));
         this.interactionText = this.add.text(0, 0, 'Eキーで操作', { fontSize: '24px', fill: '#fff' }).setOrigin(0.5).setVisible(false).setDepth(20);
 
         this.entities = this.add.group();
@@ -69,6 +70,29 @@ export default class BaseScene extends Phaser.Scene {
             fontFamily: 'Meiryo, sans-serif'
         }).setDepth(300).setAlpha(0);
         this.itemGetIndicator = { bg, txt };
+    }
+
+    /**
+     * グローバルなゲーム状態にアイテムを追加する
+     * @param {Phaser.GameObjects.GameObject} itemObject - 収集されたアイテムのゲームオブジェクト
+     */
+    collectItem(itemObject) {
+        // グローバルなインベントリを取得・更新
+        const inventory = this.registry.get('inventory');
+        inventory.push(itemObject.itemName);
+        this.registry.set('inventory', inventory);
+
+        // グローバルな収集済みアイテムの状態を取得・更新
+        const collectedItems = this.registry.get('collectedItems');
+        collectedItems[itemObject.itemIdentifier] = true;
+        this.registry.set('collectedItems', collectedItems);
+
+        // UIを更新
+        this.inventoryManager.addItem(itemObject.itemName);
+        this.showItemGetNotification(itemObject.itemName);
+
+        // アイテムをシーンから削除
+        itemObject.destroy();
     }
 
     /**
@@ -183,10 +207,13 @@ export default class BaseScene extends Phaser.Scene {
         this.interactionTarget = null;
         let closestDistance = 100;
         this.entities.getChildren().forEach(entity => {
-            const distance = Phaser.Math.Distance.Between(this.player.x, this.player.y, entity.x, entity.y);
-            if (distance < closestDistance) {
-                closestDistance = distance;
-                this.interactionTarget = entity;
+            // エンティティがアクティブな場合のみ対話を考慮
+            if (entity.active) {
+                const distance = Phaser.Math.Distance.Between(this.player.x, this.player.y, entity.x, entity.y);
+                if (distance < closestDistance) {
+                    closestDistance = distance;
+                    this.interactionTarget = entity;
+                }
             }
         });
 
@@ -268,7 +295,22 @@ export default class BaseScene extends Phaser.Scene {
         }
     }
 
-    interactWith(entity) {}
+    interactWith(entity) {
+        if (!entity) return;
+
+        switch (entity.type) {
+            case 'Collectible':
+                this.collectItem(entity);
+                break;
+            case 'Portal':
+                this.showPortalModal(entity.targetScene);
+                break;
+            case 'NPC':
+                this.currentNPC = entity;
+                this.openDialog(entity.name, entity.getNextDialog().text);
+                break;
+        }
+    }
 
     createDialogBox() {
         this.dialogBox = this.add.graphics().setScrollFactor(0);
