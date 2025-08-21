@@ -16,8 +16,20 @@ export const imagePaths = [
     { name: 'mission_board', src: 'img/mission_board.jpg' },
     { name: 'title_background', src: 'img/title_background.png' },
     { name: 'kingdom_background', src: 'img/kingdom_background.jpg' },
+    { name: 'intro_1', src: 'img/intro_1.jpg' },
+    { name: 'intro_2', src: 'img/intro_2.jpg' },
     // NPCの画像。現在はプレイヤー画像を仮で使用。
     { name: 'npc1', src: 'img/player.png' },
+];
+
+/**
+ * @type {Array<object>} - イントロシーンのシナリオデータ
+ */
+export const introScenario = [
+    { text: "賢者（私）は、故郷の村が滅びそうだとの知らせを聞いた。", image: 'intro_1' },
+    { text: "他の村がAIを活用して豊かになる中、\n私の村はAIの導入が遅れ、衰退の一途をたどっているという。", image: 'intro_1' },
+    { text: "私は村を救うために立ち上がることを決意した。", image: 'intro_2' },
+    { text: "遠く離れた地から、故郷の村へと向かうのだった……", image: 'intro_2' }
 ];
 
 /**
@@ -31,7 +43,7 @@ export const gameData = {
         /**
          * Chapter1シーンの設定
          */
-        Chapter1Scene: {
+        'Chapter1-1Scene': {
             background: 'kingdom_background', // 背景画像のキー
             entities: [ // シーンに登場するエンティティ（NPC、アイテムなど）のリスト
                 {
@@ -68,68 +80,21 @@ export const gameData = {
                     itemName: '光る石'
                 },
                 {
-                    type: 'Portal', // シーン遷移ポータル
+                    type: 'Portal',
                     x: 800,
-                    y: 530,
-                    targetScene: 'ForestScene' // 遷移先のシーンキー
+                    y: 450,
+                    targetScene: 'Chapter1-2.Scene'
                 }
             ]
         },
-        /**
-         * 拠点(Hub)シーンの設定
-         */
-        HubScene: {
-            background: 'hub_background',
+        'Chapter1-2.Scene': {
+            background: 'kingdom_background',
             entities: [
-                {
-                    type: 'NPC',
-                    imageName: 'mission_board',
-                    x: 500,
-                    y: 350,
-                    name: 'ミッションボード',
-                    dialog: ['今日のミッションはこちらです。'],
-                    isStatic: true // 静的で動かないオブジェクトか
-                },
-                {
-                    type: 'NPC',
-                    imageName: 'npc1',
-                    x: 300,
-                    y: 450,
-                    name: 'ベテランエンジニア',
-                    dialog: ['やあ、何か困っていることはあるかい？', 'バグは友達さ。怖くない、怖くない。']
-                },
-                {
-                    type: 'Portal', // シーン遷移ポータル
-                    x: 800,
-                    y: 400,
-                    targetScene: 'ForestScene' // 遷移先のシーンキー
-                }
-            ]
-        },
-        /**
-         * 森(Forest)シーンの設定
-         */
-        ForestScene: {
-            background: 'hub_background', // 仮の背景
-            worldWidth: 1200, // シーンの横幅（スクロール用）
-            entities: [
-                {
-                    type: 'Collectible', // 収集可能なアイテム
-                    x: 300,
-                    y: 450,
-                    itemName: '不思議なキノコ' // アイテム名
-                },
-                {
-                    type: 'Collectible',
-                    x: 550,
-                    y: 450,
-                    itemName: '光る石'
-                },
                 {
                     type: 'Portal',
-                    x: 50,
-                    y: 400,
-                    targetScene: 'Chapter1Scene'
+                    x: 100,
+                    y: 450,
+                    targetScene: 'Chapter1-1Scene'
                 }
             ]
         }

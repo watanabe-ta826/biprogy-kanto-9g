@@ -1,5 +1,5 @@
 import Phaser from 'phaser';
-import { imagePaths } from '../data/game-data.js';
+import { imagePaths, introScenario } from '../data/game-data.js';
 
 /**
  * @class TitleScene
@@ -76,7 +76,10 @@ export default class TitleScene extends Phaser.Scene {
             this.cameras.main.fadeOut(500, 0, 0, 0);
             // フェードアウト完了後、Chapter1Sceneに遷移する
             this.cameras.main.once(Phaser.Cameras.Scene2D.Events.FADE_OUT_COMPLETE, () => {
-                this.scene.start('Chapter1Scene');
+                this.scene.start('StoryScene', {
+                    content: introScenario,
+                    nextScene: 'ChapterSelectionScene'
+                });
             });
         });
     }

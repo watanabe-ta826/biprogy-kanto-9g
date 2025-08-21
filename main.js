@@ -2,11 +2,14 @@
  * @file ゲームのエントリーポイントです。Phaserのゲームインスタンスを初期化し、全体設定を定義します。
  */
 
-import Phaser from 'phaser';
+import BaseScene from './scenes/BaseScene.js';
+import StoryScene from './scenes/StoryScene.js';
 import TitleScene from './scenes/TitleScene.js';
-import HubScene from './scenes/HubScene.js';
-import Chapter1Scene from './scenes/Chapter1Scene.js';
-import ForestScene from './scenes/ForestScene.js';
+import Chapter1_1Scene from './scenes/Chapter1-1Scene.js';
+import ChapterSelectionScene from './scenes/ChapterSelectionScene.js';
+import Chapter2_1Scene from './scenes/Chapter2-1Scene.js';
+import Chapter3_1Scene from './scenes/Chapter3-1Scene.js';
+import Chapter1_2_Scene from './scenes/Chapter1-2.Scene.js';
 
 /**
  * @type {Phaser.Types.Core.GameConfig} - Phaserゲームの全体設定
@@ -29,7 +32,7 @@ const config = {
         }
     },
     // ゲームで使用するシーンのリスト
-    scene: [TitleScene, Chapter1Scene, HubScene, ForestScene]
+    scene: [TitleScene, StoryScene, ChapterSelectionScene, Chapter1_1Scene, Chapter1_2_Scene, Chapter2_1Scene, Chapter3_1Scene, BaseScene],
 };
 
 // 設定を元にPhaser.Gameのインスタンスを生成
