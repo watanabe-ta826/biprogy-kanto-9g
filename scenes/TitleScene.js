@@ -31,7 +31,7 @@ export default class TitleScene extends Phaser.Scene {
         this.add.image(480, 300, 'title_background').setScale(0.7);
 
         // タイトルテキスト
-        this.add.text(480, 200, 'AIクエスト', {
+        this.add.text(480, 200, '生成AIクエスト', {
             fontFamily: 'Arial, sans-serif',
             fontSize: '50px',
             fill: '#ffffff',
@@ -46,11 +46,12 @@ export default class TitleScene extends Phaser.Scene {
 
         const startButton = this.add.text(buttonX, buttonY, 'スタート', {
             fontFamily: 'Arial, sans-serif',
-            fontSize: '30px',
-            fill: '#fff',
-            backgroundColor: '#e67e22',
-            padding: { x: 30, y: 15 },
-            borderRadius: 10
+            fontSize: '32px',
+            fill: '#ffffff',
+            backgroundColor: '#3498db',
+            padding: { x: 40, y: 20 },
+            borderRadius: 8,
+            shadow: { offsetX: 0, offsetY: 5, color: '#2570a1', fill: true, blur: 5 }
         }).setOrigin(0.5);
 
         // ボタンをインタラクティブ（クリック可能）にする
@@ -58,23 +59,23 @@ export default class TitleScene extends Phaser.Scene {
 
         // マウスカーソルがボタンに乗った時のホバーエフェクト
         startButton.on('pointerover', () => {
-            this.game.canvas.style.cursor = 'pointer'; // カーソルをポインターに変更
-            startButton.setBackgroundColor('#d35400'); // 背景色を濃くする
-            this.tweens.add({ targets: startButton, scale: 1.1, duration: 100, ease: 'Power1' }); // 少し拡大する
+            this.game.canvas.style.cursor = 'pointer';
+            startButton.setBackgroundColor('#5dade2');
+            this.tweens.add({ targets: startButton, y: buttonY - 2, duration: 100, ease: 'Power1' });
         });
 
         // マウスカーソルがボタンから外れた時のエフェクト
         startButton.on('pointerout', () => {
-            this.game.canvas.style.cursor = 'default'; // カーソルを元に戻す
-            startButton.setBackgroundColor('#e67e22'); // 背景色を元に戻す
-            this.tweens.add({ targets: startButton, scale: 1, duration: 100, ease: 'Power1' }); // サイズを元に戻す
+            this.game.canvas.style.cursor = 'default';
+            startButton.setBackgroundColor('#3498db');
+            this.tweens.add({ targets: startButton, y: buttonY, duration: 100, ease: 'Power1' });
         });
 
         // ボタンがクリックされた時の処理
         startButton.on('pointerdown', () => {
             // 画面をフェードアウトさせる演出
             this.cameras.main.fadeOut(500, 0, 0, 0);
-            // フェードアウト完了後、Chapter1Sceneに遷移する
+            // フェードアウト完了後、StorySceneに遷移する
             this.cameras.main.once(Phaser.Cameras.Scene2D.Events.FADE_OUT_COMPLETE, () => {
                 this.scene.start('StoryScene', {
                     content: introScenario,

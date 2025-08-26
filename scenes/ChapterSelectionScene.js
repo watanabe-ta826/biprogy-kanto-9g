@@ -39,8 +39,8 @@ export default class ChapterSelectionScene extends Phaser.Scene {
         // 第3章ボタン
         this.createChapterButton(480, buttonYStart + buttonYStep * 2, '第3章: AIの落とし穴', 'Chapter3-1Scene');
 
-        // イントロをもう一度ボタン
-        this.createIntroButton(480, buttonYStart + buttonYStep * 3.5, 'イントロをもう一度');
+        // プロローグをもう一度ボタン
+        this.createIntroButton(480, buttonYStart + buttonYStep * 3.5, 'プロローグをもう一度');
     }
 
     createChapterButton(x, y, text, sceneKey) {
@@ -74,20 +74,23 @@ export default class ChapterSelectionScene extends Phaser.Scene {
         const button = this.add.text(x, y, text, {
             fontFamily: 'Arial, sans-serif',
             fontSize: '24px',
-            fill: '#fff',
+            fill: '#ffffff',
             backgroundColor: '#95a5a6',
             padding: { x: 20, y: 10 },
-            borderRadius: 5
+            borderRadius: 8,
+            shadow: { offsetX: 0, offsetY: 3, color: '#768687', fill: true, blur: 3 }
         }).setOrigin(0.5);
 
         button.setInteractive();
         button.on('pointerover', () => {
             this.game.canvas.style.cursor = 'pointer';
-            button.setBackgroundColor('#7f8c8d');
+            button.setBackgroundColor('#aab7b8');
+            this.tweens.add({ targets: button, y: y - 2, duration: 100, ease: 'Power1' });
         });
         button.on('pointerout', () => {
             this.game.canvas.style.cursor = 'default';
             button.setBackgroundColor('#95a5a6');
+            this.tweens.add({ targets: button, y: y, duration: 100, ease: 'Power1' });
         });
         button.on('pointerdown', () => {
             this.cameras.main.fadeOut(500, 0, 0, 0);

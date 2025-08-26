@@ -80,29 +80,24 @@ class StoryScene extends BaseScene {
         });
 
         // スキップボタンを作成
-        const skipButtonStyle = {
+        const skipButton = this.add.text(940, 20, 'スキップ >>', {
+            fontFamily: 'Arial, sans-serif',
             fontSize: '18px',
             fill: '#ffffff',
-            backgroundColor: 'rgba(0, 0, 0, 0.5)',
+            backgroundColor: '#95a5a6',
             padding: { x: 12, y: 8 },
             borderRadius: 8,
-            stroke: '#ffffff',
-            strokeThickness: 1
-        };
-
-        const skipButton = this.add.text(940, 20, 'スキップ >>', skipButtonStyle)
-            .setOrigin(1, 0)
-            .setInteractive()
-            .setDepth(102);
+            shadow: { offsetX: 0, offsetY: 3, color: '#768687', fill: true, blur: 3 }
+        }).setOrigin(1, 0).setInteractive().setDepth(102);
 
         skipButton.on('pointerover', () => {
-            skipButton.setBackgroundColor('rgba(0, 0, 0, 0.7)');
             this.game.canvas.style.cursor = 'pointer';
+            skipButton.setBackgroundColor('#aab7b8');
         });
 
         skipButton.on('pointerout', () => {
-            skipButton.setBackgroundColor('rgba(0, 0, 0, 0.5)');
             this.game.canvas.style.cursor = 'default';
+            skipButton.setBackgroundColor('#95a5a6');
         });
 
         skipButton.on('pointerdown', () => {

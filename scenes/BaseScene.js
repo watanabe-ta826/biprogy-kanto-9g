@@ -2,12 +2,8 @@ import Phaser from 'phaser';
 import Player from '../Player.js';
 import Otomo from '../Otomo.js';
 import { createInventory } from '../ui.js';
+import { gameData } from '../data/game-data.js';
 
-/**
- * @class BaseScene
- * @description すべてのゲームシーンの基盤となるクラス。
- * @extends Phaser.Scene
- */
 export default class BaseScene extends Phaser.Scene {
     constructor(key) {
         super(key);
@@ -33,34 +29,58 @@ export default class BaseScene extends Phaser.Scene {
         this.fullTextToType = '';
         this.dialogNextIndicator = null;
         this.dialogNextIndicatorTween = null;
-        this.itemGetIndicator = null; // アイテム取得通知用のテキスト
+        this.itemGetIndicator = null;
+        this.wisdomBar = null;
+        this.wisdomBarBg = null;
+        this.wisdomText = null;
+        this.entryData = null;
+    }
+
+    init(data) {
+        this.entryData = data;
     }
 
     create(sceneData) {
         this.physics.world.setBounds(0, 0, sceneData.worldWidth || this.sys.game.config.width, this.sys.game.config.height);
         this.cameras.main.setBounds(0, 0, sceneData.worldWidth || this.sys.game.config.width, this.sys.game.config.height);
-        this.add.image(480, 300, sceneData.background).setDisplaySize(this.sys.game.config.width, this.sys.game.config.height);
+        
+        const bgSettings = sceneData.backgroundSettings || {};
+        const userScale = bgSettings.scale || 1;
+        const scrollFactor = bgSettings.scrollFactor !== undefined ? bgSettings.scrollFactor : 0.5;
+        const yOffset = bgSettings.yOffset || 0;
+        const worldWidth = sceneData.worldWidth || this.sys.game.config.width;
+
+        const bg = this.add.image(0, this.sys.game.config.height / 2 + yOffset, sceneData.background);
+        
+        const minScale = worldWidth / bg.width;
+        const finalScale = Math.max(minScale, userScale);
+
+        bg.setOrigin(0, 0.5).setScrollFactor(scrollFactor).setScale(finalScale);
+
         this.platforms = this.physics.add.staticGroup();
         this.platforms.create(this.physics.world.bounds.centerX, this.sys.game.config.height - 10).setSize(this.physics.world.bounds.width, 20).setVisible(false);
 
-        this.player = new Player(this, 100, 450, 'player');
+        const startX = this.entryData && this.entryData.entryX ? this.entryData.entryX : 100;
+        this.player = new Player(this, startX, 450, 'player');
         this.physics.add.collider(this.player, this.platforms);
         this.cameras.main.startFollow(this.player, true, 0.08, 0.08);
 
-        this.otomo = new Otomo(this, 50, 450, 'otomo');
+        this.otomo = new Otomo(this, this.player.x - 50, 450, 'otomo');
         this.physics.add.collider(this.otomo, this.platforms);
 
-        // グローバルインベントリを使ってインベントリUIを初期化
         this.inventoryManager = createInventory(this, this.registry.get('inventory'));
         this.interactionText = this.add.text(0, 0, 'Eキーで操作', { fontSize: '24px', fill: '#fff' }).setOrigin(0.5).setVisible(false).setDepth(20);
 
         this.entities = this.add.group();
         this.createPortalModal();
         this.createDialogBox();
+        this.createWisdomBar();
+        this.createItemGetNotification();
 
         this.initializeInputHandlers();
+    }
 
-        // アイテム取得通知用のUIを作成
+    createItemGetNotification() {
         const bg = this.add.graphics().setScrollFactor(0).setDepth(299).setAlpha(0);
         const txt = this.add.text(0, 0, '', {
             fontSize: '18px',
@@ -72,33 +92,21 @@ export default class BaseScene extends Phaser.Scene {
         this.itemGetIndicator = { bg, txt };
     }
 
-    /**
-     * グローバルなゲーム状態にアイテムを追加する
-     * @param {Phaser.GameObjects.GameObject} itemObject - 収集されたアイテムのゲームオブジェクト
-     */
     collectItem(itemObject) {
-        // グローバルなインベントリを取得・更新
         const inventory = this.registry.get('inventory');
         inventory.push(itemObject.itemName);
         this.registry.set('inventory', inventory);
 
-        // グローバルな収集済みアイテムの状態を取得・更新
         const collectedItems = this.registry.get('collectedItems');
         collectedItems[itemObject.itemIdentifier] = true;
         this.registry.set('collectedItems', collectedItems);
 
-        // UIを更新
         this.inventoryManager.addItem(itemObject.itemName);
         this.showItemGetNotification(itemObject.itemName);
 
-        // アイテムをシーンから削除
         itemObject.destroy();
     }
 
-    /**
-     * アイテムを取得した際に通知を表示する。
-     * @param {string} itemName - 取得したアイテムの名前。
-     */
     showItemGetNotification(itemName) {
         if (this.itemGetTween) {
             this.itemGetTween.forEach(t => t.stop());
@@ -116,22 +124,20 @@ export default class BaseScene extends Phaser.Scene {
         bg.strokeRoundedRect(20, 20, textBounds.width + padding.x * 2, textBounds.height + padding.y * 2, 8);
         txt.setPosition(20 + padding.x, 20 + padding.y);
 
-        // 最初に表示状態にする
         bg.setAlpha(1);
         txt.setAlpha(1);
 
-        // 1.5秒待ってから0.5秒かけて消えるアニメーション
         const t1 = this.tweens.add({
             targets: [bg, txt],
             alpha: 0,
             duration: 500,
             ease: 'Power1',
             delay: 1500,
-            paused: true // すぐには実行しない
+            paused: true
         });
 
         this.itemGetTween = [t1];
-        t1.play(); // アニメーションを開始
+        t1.play();
     }
 
     update() {
@@ -153,10 +159,13 @@ export default class BaseScene extends Phaser.Scene {
         });
 
         this.input.keyboard.on('keyup-E', () => {
-            if (this.isAwaitingClose) return;
-
             if (this.isTyping) {
                 this.skipTyping();
+                return;
+            }
+
+            if (this.isAwaitingClose) {
+                this.closeModal();
                 return;
             }
 
@@ -177,7 +186,7 @@ export default class BaseScene extends Phaser.Scene {
                     const nextDialog = this.currentNPC.getNextDialog();
                     if (nextDialog.text) {
                         this.openDialog(this.currentNPC.name, nextDialog.text);
-                    } else if (this.currentNPC.quiz) {
+                    } else if (this.currentNPC.quiz && !this.currentNPC.isQuizCompleted()) {
                         this.startQuiz(this.currentNPC.quiz);
                     } else {
                         this.closeModal();
@@ -207,7 +216,6 @@ export default class BaseScene extends Phaser.Scene {
         this.interactionTarget = null;
         let closestDistance = 100;
         this.entities.getChildren().forEach(entity => {
-            // エンティティがアクティブな場合のみ対話を考慮
             if (entity.active) {
                 const distance = Phaser.Math.Distance.Between(this.player.x, this.player.y, entity.x, entity.y);
                 if (distance < closestDistance) {
@@ -218,6 +226,19 @@ export default class BaseScene extends Phaser.Scene {
         });
 
         if (this.interactionTarget) {
+            let interactionMessage = 'Eキーで操作'; // Default text
+            switch (this.interactionTarget.type) {
+                case 'NPC':
+                    interactionMessage = 'Eキーで会話';
+                    break;
+                case 'Portal':
+                    interactionMessage = 'Eキーで移動';
+                    break;
+                case 'Collectible':
+                    interactionMessage = 'Eキーで拾う';
+                    break;
+            }
+            this.interactionText.setText(interactionMessage);
             this.interactionText.x = this.interactionTarget.x;
             this.interactionText.y = this.interactionTarget.y - 50;
             this.interactionText.setVisible(true);
@@ -234,14 +255,12 @@ export default class BaseScene extends Phaser.Scene {
 
         this.portalModal = this.add.container(modalX, modalY).setScrollFactor(0).setDepth(200).setVisible(false);
 
-        // 背景の作成
         const background = this.add.graphics();
-        background.fillStyle(0x2c3e50, 0.95); // 深い青色
-        background.lineStyle(3, 0xf1c40f, 1); // 金色の枠線
+        background.fillStyle(0x2c3e50, 0.95);
+        background.lineStyle(3, 0xf1c40f, 1);
         background.fillRoundedRect(0, 0, modalWidth, modalHeight, 15);
         background.strokeRoundedRect(0, 0, modalWidth, modalHeight, 15);
 
-        // テキスト
         const text = this.add.text(modalWidth / 2, 60, '', { 
             fontFamily: 'Meiryo, sans-serif', 
             fontSize: '24px', 
@@ -250,48 +269,63 @@ export default class BaseScene extends Phaser.Scene {
             wordWrap: { width: modalWidth - 40 }
         }).setOrigin(0.5);
 
-        // 「はい」ボタン
-        const yesButtonBg = this.add.graphics({ x: modalWidth / 2 - 110, y: 130 });
-        yesButtonBg.fillStyle(0x27ae60, 1); // 緑色
-        yesButtonBg.fillRoundedRect(0, 0, 100, 50, 10);
-        const yesButton = this.add.text(modalWidth / 2 - 60, 155, 'はい', { 
-            fontSize: '22px', fill: '#fff' 
+        // --- ボタンのスタイル定義 ---
+        const buttonStyle = {
+            fontFamily: 'Arial, sans-serif',
+            fontSize: '22px',
+            fill: '#ffffff',
+            padding: { x: 25, y: 12 },
+            borderRadius: 8,
+        };
+
+        // --- 「はい」ボタン ---
+        const yesButton = this.add.text(modalWidth / 2 - 80, 155, 'はい', {
+            ...buttonStyle,
+            backgroundColor: '#2ecc71',
+            shadow: { offsetX: 0, offsetY: 4, color: '#25a25a', fill: true, blur: 4 }
         }).setOrigin(0.5).setInteractive();
 
-        // 「いいえ」ボタン
-        const noButtonBg = this.add.graphics({ x: modalWidth / 2 + 10, y: 130 });
-        noButtonBg.fillStyle(0xc0392b, 1); // 赤色
-        noButtonBg.fillRoundedRect(0, 0, 100, 50, 10);
-        const noButton = this.add.text(modalWidth / 2 + 60, 155, 'いいえ', { 
-            fontSize: '22px', fill: '#fff' 
+        // --- 「いいえ」ボタン ---
+        const noButton = this.add.text(modalWidth / 2 + 80, 155, 'いいえ', {
+            ...buttonStyle,
+            backgroundColor: '#e74c3c',
+            shadow: { offsetX: 0, offsetY: 4, color: '#c0392b', fill: true, blur: 4 }
         }).setOrigin(0.5).setInteractive();
 
-        this.portalModal.add([background, text, yesButtonBg, yesButton, noButtonBg, noButton]);
+        this.portalModal.add([background, text, yesButton, noButton]);
 
-        // ボタンのインタラクション
+        // --- ボタンのインタラクション ---
         yesButton.on('pointerdown', () => this.hidePortalModal(true));
         noButton.on('pointerdown', () => this.hidePortalModal(false));
 
-        [yesButton, noButton].forEach(btn => {
-            btn.on('pointerover', () => { this.game.canvas.style.cursor = 'pointer'; btn.setAlpha(0.8); });
-            btn.on('pointerout', () => { this.game.canvas.style.cursor = 'default'; btn.setAlpha(1); });
+        [yesButton, noButton].forEach(button => {
+            const originalColor = button.style.backgroundColor;
+            const hoverColor = Phaser.Display.Color.HexStringToColor(originalColor).lighten(10).rgba;
+
+            button.on('pointerover', () => {
+                this.game.canvas.style.cursor = 'pointer';
+                button.setBackgroundColor(hoverColor);
+            });
+            button.on('pointerout', () => {
+                this.game.canvas.style.cursor = 'default';
+                button.setBackgroundColor(originalColor);
+            });
         });
     }
 
-    showPortalModal(targetScene) {
+    showPortalModal(displayName, targetSceneKey) {
         this.isModalOpen = true;
         const text = this.portalModal.getAt(1);
-        text.setText(`${targetScene} へ移動しますか？`);
+        text.setText(`${displayName} へ移動しますか？`);
         this.portalModal.setVisible(true);
-        this.portalTarget = targetScene;
+        this.portalTarget = targetSceneKey;
     }
 
     hidePortalModal(confirmed) {
         this.isModalOpen = false;
         this.portalModal.setVisible(false);
         if (confirmed) {
-            // portalTargetに格納されたシーンキーに直接遷移する
-            this.scene.start(this.portalTarget, { to: this.portalTarget });
+            this.scene.start(this.portalTarget, { entryX: this.interactionTarget.entryX });
         }
     }
 
@@ -303,11 +337,20 @@ export default class BaseScene extends Phaser.Scene {
                 this.collectItem(entity);
                 break;
             case 'Portal':
-                this.showPortalModal(entity.targetScene);
+                const targetSceneData = gameData.scenes[entity.targetScene];
+                const displayName = (targetSceneData && targetSceneData.displayName) ? targetSceneData.displayName : entity.targetScene;
+                this.showPortalModal(displayName, entity.targetScene);
                 break;
             case 'NPC':
                 this.currentNPC = entity;
-                this.openDialog(entity.name, entity.getNextDialog().text);
+                const nextDialog = entity.getNextDialog();
+                if (nextDialog.text) {
+                    this.openDialog(entity.name, nextDialog.text);
+                } else if (entity.quiz && !entity.isQuizCompleted()) {
+                    this.startQuiz(entity.quiz);
+                } else {
+                    this.closeModal();
+                }
                 break;
         }
     }
@@ -326,7 +369,9 @@ export default class BaseScene extends Phaser.Scene {
             const optionY = 445 + (i * 35);
             const optionText = this.add.text(80, optionY, '', { fontFamily: 'Meiryo, sans-serif', fontSize: '20px', fill: '#f0f0f0', wordWrap: { width: 800, useAdvanced: true } }).setScrollFactor(0).setDepth(101).setVisible(false).setInteractive();
             this.quizOptionsText.push(optionText);
-            optionText.on('pointerdown', () => { this.checkAnswer(optionText.text.charAt(0)); });
+            optionText.on('pointerdown', () => { 
+                if(this.quizActive) this.checkAnswer(optionText.text.charAt(0)); 
+            });
             optionText.on('pointerover', () => optionText.setStyle({ fill: '#ffd700' }));
             optionText.on('pointerout', () => optionText.setStyle({ fill: '#f0f0f0' }));
         }
@@ -379,15 +424,30 @@ export default class BaseScene extends Phaser.Scene {
         this.quizActive = false;
         this.isAwaitingClose = true;
         const correct = this.currentQuiz.correctAnswer === selectedChar;
-        const feedback = correct ? this.currentQuiz.feedback.correct : this.currentQuiz.feedback.incorrect;
+
+        if (correct) {
+            const currentCorrect = this.registry.get('correctAnswers');
+            this.registry.set('correctAnswers', currentCorrect + 1);
+        }
+        
+        const completedQuizzes = this.registry.get('completedQuizzes');
+        if (!completedQuizzes.includes(this.currentNPC.quizId)) {
+            completedQuizzes.push(this.currentNPC.quizId);
+            this.registry.set('completedQuizzes', completedQuizzes);
+        }
+
+        this.updateWisdomBar();
+
+        const feedback = correct ? "正解！" : "残念！";
+        const explanation = `${feedback}\n\n【解説】\n${this.currentQuiz.explanation || 'ここに解説が入ります。'}`;
+
         if (this.isTyping) {
             this.typingEvent.remove();
             this.isTyping = false;
         }
         this.dialogText.setWordWrapWidth(800, true);
-        this.typewriteText(this.dialogText, feedback);
+        this.typewriteText(this.dialogText, explanation);
         this.hideQuizOptions();
-        this.time.delayedCall(5000, () => { this.closeModal(); });
     }
 
     closeModal() {
@@ -438,6 +498,50 @@ export default class BaseScene extends Phaser.Scene {
             this.dialogText.setText(this.fullTextToType);
             if (this.dialogNextIndicator) this.dialogNextIndicator.setVisible(true);
             if (this.dialogNextIndicatorTween) this.dialogNextIndicatorTween.resume();
+        }
+    }
+
+    createWisdomBar() {
+        const barWidth = 300;
+        const barHeight = 25;
+        const x = this.sys.game.config.width / 2;
+        const y = 70; // Changed from 50 to 70
+
+        this.wisdomText = this.add.text(x, y - 5, '賢者の知恵', {
+            fontSize: '18px',
+            fill: '#fff',
+        }).setOrigin(0.5, 1).setScrollFactor(0).setDepth(101);
+
+        this.wisdomBarBg = this.add.graphics().setScrollFactor(0).setDepth(100);
+        this.wisdomBarBg.fillStyle(0x000000, 0.5);
+        this.wisdomBarBg.fillRoundedRect(x - barWidth / 2, y, barWidth, barHeight, 8);
+
+        this.wisdomBar = this.add.graphics().setScrollFactor(0).setDepth(101);
+        
+        this.updateWisdomBar();
+    }
+
+    updateWisdomBar() {
+        const correctAnswers = this.registry.get('correctAnswers');
+        const totalQuizzes = this.registry.get('totalQuizzes');
+        const percentage = totalQuizzes > 0 ? (correctAnswers / totalQuizzes) : 0;
+
+        const barWidth = 300;
+        const barHeight = 25;
+        const x = this.sys.game.config.width / 2;
+        const y = 70; // Changed from 50 to 70
+        const innerPadding = 4;
+
+        this.wisdomBar.clear();
+        this.wisdomBar.fillStyle(0xf1c40f, 1); // Gold color for wisdom
+        if (percentage > 0) {
+            this.wisdomBar.fillRoundedRect(
+                x - barWidth / 2 + innerPadding, 
+                y + innerPadding,
+                (barWidth - innerPadding * 2) * percentage,
+                barHeight - innerPadding * 2,
+                6
+            );
         }
     }
 }

@@ -15,7 +15,7 @@ export default class Portal extends Phaser.GameObjects.Zone {
      * @param {number} height - ゾーンの高さ。
      * @param {string} targetScene - 遷移先のシーンのキー。
      */
-    constructor(scene, x, y, width, height, targetScene) {
+    constructor(scene, x, y, width, height, targetScene, entryX) {
         super(scene, x, y, width, height);
 
         // ゾーンをシーンの表示リストと物理エンジンに追加
@@ -28,6 +28,7 @@ export default class Portal extends Phaser.GameObjects.Zone {
          * @type {string} - 遷移先のシーンのキー名。
          */
         this.targetScene = targetScene;
+        this.entryX = entryX;
         /**
          * @type {string} - インタラクションの際に識別するためのタイプ。
          */

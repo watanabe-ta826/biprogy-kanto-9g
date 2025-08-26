@@ -34,7 +34,7 @@ export default class Chapter1_1Scene extends BaseChapterScene {
                     entity = new Collectible(this, entityData.x, entityData.y, entityData.itemName);
                     break;
                 case 'Portal':
-                    entity = new Portal(this, entityData.x, entityData.y, 50, 100, entityData.targetScene);
+                    entity = new Portal(this, entityData.x, entityData.y, 50, 100, entityData.targetScene, entityData.entryX);
                     break;
             }
             if (entity) {

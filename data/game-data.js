@@ -13,9 +13,10 @@ export const imagePaths = [
     { name: 'otomo', src: 'img/otomo.png' },
     { name: 'otomo_run', src: 'img/otomo_run.png' },
     { name: 'hub_background', src: 'img/hub_background.jpg' },
-    { name: 'mission_board', src: 'img/mission_board.jpg' },
     { name: 'title_background', src: 'img/title_background.png' },
-    { name: 'kingdom_background', src: 'img/kingdom_background.jpg' },
+    { name: 'forest', src: 'img/forest.jpg' },
+    { name: 'castleTown_lower', src: 'img/castleTown_lower.jpg' },
+    { name: 'castleTown_upper', src: 'img/castleTown_upper.jpg' },
     { name: 'intro_1', src: 'img/intro_1.jpg' },
     { name: 'intro_2', src: 'img/intro_2.jpg' },
     // NPCの画像。現在はプレイヤー画像を仮で使用。
@@ -40,62 +41,39 @@ export const gameData = {
      * @type {object} - 各シーンの設定。
      */
     scenes: {
-        /**
-         * Chapter1シーンの設定
-         */
         'Chapter1-1Scene': {
-            background: 'kingdom_background', // 背景画像のキー
-            entities: [ // シーンに登場するエンティティ（NPC、アイテムなど）のリスト
-                {
-                    type: 'NPC', // エンティティの種類
-                    imageName: 'npc1', // 使用する画像のキー
-                    x: 400, // X座標
-                    y: 450, // Y座標
-                    name: '王国民', // NPCの名前
-                    dialog: [ // NPCの会話テキスト
-                        '旅の方、お尋ねしてもよろしいでしょうか？',
-                        '最近、この国では「AI」というものが話題になっています。',
-                        'しかし、それが一体何なのか、恐ろしいものなのか、よく分からず不安に思っています。',
-                        '旅の方は、その「AI」について何かご存知ですか？'
-                    ],
-                    quiz: { // NPCが出題するクイズ
-                        question: '生成AIとは、どのようなAIのことでしょうか？',
-                        options: [
-                            '既存のデータを分析し、パターンを認識するAI',
-                            '新しいデータやコンテンツを自ら生成するAI',
-                            '特定のタスクを自動化するAI',
-                            '人間の感情を理解し、共感するAI'
-                        ],
-                        correctAnswer: 'B', // 正解の選択肢 (A, B, C, D)
-                        feedback: { // 解答後のフィードバック
-                            correct: '正解です！生成AIは、テキスト、画像、音声など、様々な新しいコンテンツを創造する能力を持っています。',
-                            incorrect: '残念、違うみたいです。生成AIは、既存のデータから学習し、それを基に新しいものを生み出すAIのことです。'
-                        }
-                    }
-                },
-                {
-                    type: 'Collectible',
-                    x: 550,
-                    y: 450,
-                    itemName: '光る石'
-                },
-                {
-                    type: 'Portal',
-                    x: 800,
-                    y: 450,
-                    targetScene: 'Chapter1-2.Scene'
-                }
+            displayName: '外れの森',
+            background: 'forest',
+            backgroundSettings: { scale: 1.0, scrollFactor: 0.5, yOffset: -100 },
+            worldWidth: 1600,
+            entities: [
+                { type: 'NPC', imageName: 'npc1', x: 400, y: 450, name: '村人A', dialog: ['...'], quiz: { question: 'これはクイズです。', options: ['A', 'B', 'C', 'D'], correctAnswer: 'A', explanation: '' } },
+                { type: 'NPC', imageName: 'npc1', x: 800, y: 450, name: '村人B', dialog: ['...'], quiz: { question: 'これはクイズです。', options: ['A', 'B', 'C', 'D'], correctAnswer: 'A', explanation: '' } },
+                { type: 'Portal', x: 1550, y: 540, targetScene: 'Chapter1-2Scene', entryX: 100 }
             ]
         },
-        'Chapter1-2.Scene': {
-            background: 'kingdom_background',
+        'Chapter1-2Scene': {
+            displayName: '城下街 下層',
+            background: 'castleTown_lower',
+            backgroundSettings: { scale: 1.0, scrollFactor: 0.5, yOffset: 0 },
+            worldWidth: 1600,
             entities: [
-                {
-                    type: 'Portal',
-                    x: 100,
-                    y: 450,
-                    targetScene: 'Chapter1-1Scene'
-                }
+                { type: 'Portal', x: 50, y: 540, targetScene: 'Chapter1-1Scene', entryX: 1500 },
+                { type: 'NPC', imageName: 'npc1', x: 400, y: 450, name: '村人C', dialog: ['...'], quiz: { question: 'これはクイズです。', options: ['A', 'B', 'C', 'D'], correctAnswer: 'A', explanation: '' } },
+                { type: 'NPC', imageName: 'npc1', x: 800, y: 450, name: '村人D', dialog: ['...'], quiz: { question: 'これはクイズです。', options: ['A', 'B', 'C', 'D'], correctAnswer: 'A', explanation: '' } },
+                { type: 'NPC', imageName: 'npc1', x: 1200, y: 450, name: '村人E', dialog: ['...'], quiz: { question: 'これはクイズです。', options: ['A', 'B', 'C', 'D'], correctAnswer: 'A', explanation: '' } },
+                { type: 'Portal', x: 1550, y: 540, targetScene: 'Chapter1-3Scene', entryX: 100 }
+            ]
+        },
+        'Chapter1-3Scene': {
+            displayName: '城下街 上層',
+            background: 'castleTown_upper',
+            backgroundSettings: { scale: 1.0, scrollFactor: 0.5, yOffset: 0 },
+            worldWidth: 1600,
+            entities: [
+                { type: 'Portal', x: 50, y: 540, targetScene: 'Chapter1-2Scene', entryX: 1500 },
+                { type: 'NPC', imageName: 'npc1', x: 400, y: 450, name: '村人F', dialog: ['...'], quiz: { question: 'これはクイズです。', options: ['A', 'B', 'C', 'D'], correctAnswer: 'A', explanation: '' } },
+                { type: 'NPC', imageName: 'npc1', x: 800, y: 450, name: '村人G', dialog: ['...'], quiz: { question: 'これはクイズです。', options: ['A', 'B', 'C', 'D'], correctAnswer: 'A', explanation: '' } }
             ]
         }
     },
