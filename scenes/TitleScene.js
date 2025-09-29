@@ -78,7 +78,7 @@ export default class TitleScene extends Phaser.Scene {
             // フェードアウト完了後、StorySceneに遷移する
             this.cameras.main.once(Phaser.Cameras.Scene2D.Events.FADE_OUT_COMPLETE, () => {
                 this.scene.start('StoryScene', {
-                    content: introScenario,
+                    scenario: introScenario,
                     nextScene: 'ChapterSelectionScene'
                 });
             });

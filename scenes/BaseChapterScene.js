@@ -1,12 +1,26 @@
 import BaseScene from './BaseScene.js';
+import { gameData } from '../data/game-data.js';
 
 export default class BaseChapterScene extends BaseScene {
     constructor(sceneKey) {
         super(sceneKey);
+        this.chapterData = null;
+        this.chapterKey = null;
+        this.isCleared = false; // クリア処理が重複しないようにするフラグ
     }
 
     create(sceneData) {
         super.create(sceneData);
+
+        // 現在のシーンが属する章のデータを取得
+        for (const key in gameData.chapters) {
+            const chapter = gameData.chapters[key];
+            if (chapter.scenes.includes(this.scene.key)) {
+                this.chapterData = chapter;
+                this.chapterKey = key;
+                break;
+            }
+        }
 
         this.cameras.main.fadeIn(1000, 0, 0, 0);
 
@@ -44,7 +58,7 @@ export default class BaseChapterScene extends BaseScene {
         });
 
         // 戻るボタン
-        const backButton = this.add.text(940, 20, '章選択に戻る', {
+        this.backButton = this.add.text(940, 20, '章選択に戻る', {
             fontFamily: 'Arial, sans-serif',
             fontSize: '18px',
             fill: '#ffffff',
@@ -54,18 +68,76 @@ export default class BaseChapterScene extends BaseScene {
             shadow: { offsetX: 0, offsetY: 3, color: '#768687', fill: true, blur: 3 }
         }).setOrigin(1, 0).setInteractive().setScrollFactor(0);
 
-        backButton.on('pointerover', () => {
+        this.backButton.on('pointerover', () => {
             this.game.canvas.style.cursor = 'pointer';
-            backButton.setBackgroundColor('#aab7b8');
+            this.backButton.setBackgroundColor('#aab7b8');
         });
 
-        backButton.on('pointerout', () => {
+        this.backButton.on('pointerout', () => {
             this.game.canvas.style.cursor = 'default';
-            backButton.setBackgroundColor('#95a5a6');
+            this.backButton.setBackgroundColor('#95a5a6');
         });
 
-        backButton.on('pointerdown', () => {
-            this.scene.start('ChapterSelectionScene');
+        this.backButton.on('pointerdown', () => {
+            this.cameras.main.fadeOut(500, 0, 0, 0);
+            this.cameras.main.once(Phaser.Cameras.Scene2D.Events.FADE_OUT_COMPLETE, () => {
+                this.scene.start('ChapterSelectionScene');
+            });
+        });
+    }
+
+    update() {
+        super.update();
+
+        if (this.backButton) {
+            this.backButton.setVisible(!this.isModalOpen);
+        }
+
+        if (this.isCleared || !this.chapterData) {
+            return;
+        }
+
+        const completedQuizzes = this.registry.get('completedQuizzes') || [];
+        let completedChapterQuizzesCount = 0;
+
+        this.chapterData.scenes.forEach(sceneKey => {
+            const sceneData = gameData.scenes[sceneKey];
+            if (sceneData && sceneData.entities) {
+                sceneData.entities.forEach(entity => {
+                    if (entity.type === 'NPC' && entity.quiz) {
+                        const quizId = `${sceneKey}_${entity.name}`;
+                        if (completedQuizzes.includes(quizId)) {
+                            completedChapterQuizzesCount++;
+                        }
+                    }
+                });
+            }
+        });
+
+        if (completedChapterQuizzesCount >= this.chapterData.totalQuizzes) {
+            this.isCleared = true;
+            this.startClearSequence();
+        }
+    }
+
+    startClearSequence() {
+        const correctAnswers = this.registry.get('correctAnswers') || 0;
+        const totalQuizzes = this.chapterData.totalQuizzes;
+        const accuracy = totalQuizzes > 0 ? (correctAnswers / totalQuizzes) : 0;
+
+        const scenarioType = accuracy >= 0.7 ? 'high' : 'low';
+        const scenario = this.chapterData.clearScenario[scenarioType];
+
+        this.cameras.main.fadeOut(1000, 0, 0, 0);
+        this.cameras.main.once(Phaser.Cameras.Scene2D.Events.FADE_OUT_COMPLETE, () => {
+            this.scene.start('StoryScene', {
+                scenario: scenario,
+                nextScene: 'ChapterSelectionScene', // ここを後で結果表示モーダルに変える
+                chapterKey: this.chapterKey,
+                accuracy: accuracy,
+                totalQuizzes: totalQuizzes,
+                correctAnswers: correctAnswers
+            });
         });
     }
 }

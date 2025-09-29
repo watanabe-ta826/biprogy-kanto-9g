@@ -38,21 +38,12 @@ export default class NPC extends Phaser.Physics.Arcade.Sprite {
 
     isQuizCompleted() {
         const completedQuizzes = this.scene.registry.get('completedQuizzes');
-        return completedQuizzes.includes(this.quizId);
+        const result = completedQuizzes.includes(this.quizId);
+        console.log(`[DEBUG] NPC.isQuizCompleted for ${this.quizId}: ${result}. Registry:`, completedQuizzes);
+        return result;
     }
 
     getNextDialog() {
-        if (this.quiz && this.isQuizCompleted()) {
-            // If quiz is completed, return the completed dialog
-            const isLast = (this.dialogIndex === this.completedDialog.length - 1);
-            if (this.dialogIndex >= this.completedDialog.length) {
-                return { text: null, isLast: true };
-            }
-            const dialog = this.completedDialog[this.dialogIndex];
-            this.dialogIndex++;
-            return { text: dialog, isLast: isLast };
-        }
-
         // Original dialog logic
         const isLast = (this.dialogIndex === this.dialog.length - 1);
         if (this.dialogIndex >= this.dialog.length) {

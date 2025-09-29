@@ -7,6 +7,7 @@
  * @param {Phaser.Scene} scene - このUIが所属するシーン。
  * @returns {{inventoryUI: Phaser.GameObjects.Container, toggleInventory: function}} インベントリUIコンテナと、その表示/非表示を切り替える関数を持つオブジェクト。
  */
+/*
 export function createInventory(scene, initialInventory = []) {
     const inventory = [...initialInventory]; // 初期インベントリをコピー
     const inventoryUI = scene.add.container(20, 20).setScrollFactor(0).setDepth(100);
@@ -59,3 +60,4 @@ export function createInventory(scene, initialInventory = []) {
 
     return { inventoryUI, toggleInventory, addItem };
 }
+*/

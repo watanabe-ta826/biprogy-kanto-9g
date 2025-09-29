@@ -9,13 +9,21 @@ class StoryScene extends BaseScene {
         this.currentIndex = 0;
         this.nextIndicator = null;
         this.isTransitioning = false;
+        this.resultData = null;
+        this.defaultTextStyle = null;
     }
 
     init(data) {
-        this.storyContent = data.content || [];
+        this.storyContent = data.scenario || [];
         this.nextScene = data.nextScene || 'TitleScene';
         this.currentIndex = 0;
         this.isTransitioning = false;
+        this.resultData = {
+            chapterKey: data.chapterKey,
+            accuracy: data.accuracy,
+            totalQuizzes: data.totalQuizzes,
+            correctAnswers: data.correctAnswers
+        };
     }
 
     preload() {
@@ -40,7 +48,7 @@ class StoryScene extends BaseScene {
 
         this.background = this.add.image(480, 300, this.storyContent[0].image).setDisplaySize(this.sys.game.config.width, this.sys.game.config.height);
 
-        const textStyle = {
+        this.defaultTextStyle = {
             fontSize: '24px',
             fill: '#ffffff',
             backgroundColor: 'rgba(0,0,0,0.7)',
@@ -48,7 +56,7 @@ class StoryScene extends BaseScene {
             wordWrap: { width: 650, useAdvanced: true },
             align: 'center'
         };
-        this.storyText = this.add.text(480, 450, '', textStyle).setOrigin(0.5);
+        this.storyText = this.add.text(480, 450, '', this.defaultTextStyle).setOrigin(0.5);
 
         this.displayNextContent();
 
@@ -84,7 +92,7 @@ class StoryScene extends BaseScene {
             fontFamily: 'Arial, sans-serif',
             fontSize: '18px',
             fill: '#ffffff',
-            backgroundColor: '#95a5a6',
+            backgroundColor: '#8c8e8fff',
             padding: { x: 12, y: 8 },
             borderRadius: 8,
             shadow: { offsetX: 0, offsetY: 3, color: '#768687', fill: true, blur: 3 }
@@ -121,17 +129,15 @@ class StoryScene extends BaseScene {
         }
         this.cameras.main.fadeOut(500, 0, 0, 0); // Faster fade for skip
         this.cameras.main.once(Phaser.Cameras.Scene2D.Events.FADE_OUT_COMPLETE, () => {
-            this.scene.start(this.nextScene);
+            this.handleScenarioEnd();
         });
     }
 
     displayNextContent() {
-        // 安全チェック#1: 既に遷移処理中なら、絶対に何もしない
         if (this.isTransitioning) {
             return;
         }
 
-        // 安全チェック#2: インデックスが配列の範囲を超えていたら、フェードアウトしてシーン遷移
         if (this.currentIndex >= this.storyContent.length) {
             this.isTransitioning = true;
             this.input.keyboard.off('keyup-E');
@@ -141,14 +147,13 @@ class StoryScene extends BaseScene {
             }
             this.cameras.main.fadeOut(1000, 0, 0, 0);
             this.cameras.main.once(Phaser.Cameras.Scene2D.Events.FADE_OUT_COMPLETE, () => {
-                this.scene.start(this.nextScene);
+                this.handleScenarioEnd();
             });
             return;
         }
 
         const content = this.storyContent[this.currentIndex];
 
-        // 安全チェック#3: 配列から取得したコンテンツが不正な場合も、強制的にシーン遷移
         if (!content) {
             console.error(`[StoryScene] Critical Error: Content is undefined at index ${this.currentIndex}. Forcing transition.`);
             this.isTransitioning = true;
@@ -157,16 +162,31 @@ class StoryScene extends BaseScene {
             if (this.nextIndicator) {
                 this.nextIndicator.destroy();
             }
-            this.scene.start(this.nextScene);
+            this.handleScenarioEnd();
             return;
         }
 
-        // 全ての安全チェックを通過した場合のみ、通常の処理を実行
         if (content.image) {
             this.background.setTexture(content.image);
         }
+        
+        // Apply custom style if it exists, otherwise revert to default
+        const style = content.style
+            ? { ...this.defaultTextStyle, ...content.style }
+            : this.defaultTextStyle;
+        this.storyText.setStyle(style);
+
         this.storyText.setText(content.text);
         this.currentIndex++;
+    }
+
+    handleScenarioEnd() {
+        if (this.resultData && this.resultData.chapterKey) {
+            // TODO: ここでResultModalを呼び出す
+            this.scene.start('ResultScene', this.resultData); // 新しいResultSceneにデータを渡す
+        } else {
+            this.scene.start(this.nextScene);
+        }
     }
 }
 

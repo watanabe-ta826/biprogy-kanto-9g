@@ -30,6 +30,8 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
         
         // カーソルキー（矢印キー）の入力を受け付ける
         this.cursors = scene.input.keyboard.createCursorKeys();
+        // WASDキーの入力を受け付ける
+        this.keys = scene.input.keyboard.addKeys('W,A,S,D');
         
         
     }
@@ -39,10 +41,10 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
      * プレイヤーの移動を処理する。
      */
     update() {
-        if (this.cursors.left.isDown) {
+        if (this.cursors.left.isDown || this.keys.A.isDown) {
             this.setVelocityX(-200); // 左に移動
             // this.anims.play('left', true); // 左向きアニメーション（現在はコメントアウト）
-        } else if (this.cursors.right.isDown) {
+        } else if (this.cursors.right.isDown || this.keys.D.isDown) {
             this.setVelocityX(200); // 右に移動
             // this.anims.play('right', true); // 右向きアニメーション（現在はコメントアウト）
         } else {
@@ -50,8 +52,8 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
             // this.anims.play('turn'); // 正面向きアニメーション（現在はコメントアウト）
         }
 
-        // 地面に接している時に上キーが押されたらジャンプ
-        if (this.cursors.up.isDown && this.body.touching.down) {
+        // 地面に接している時に上キーまたはWキーが押されたらジャンプ
+        if ((this.cursors.up.isDown || this.keys.W.isDown) && this.body.touching.down) {
             this.setVelocityY(-500);
         }
     }

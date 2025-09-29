@@ -1,8 +1,9 @@
 import Phaser from 'phaser';
 import Player from '../Player.js';
 import Otomo from '../Otomo.js';
-import { createInventory } from '../ui.js';
+// import { createInventory } from '../ui.js';
 import { gameData } from '../data/game-data.js';
+import QuizModal from '../QuizModal.js';
 
 export default class BaseScene extends Phaser.Scene {
     constructor(key) {
@@ -15,25 +16,21 @@ export default class BaseScene extends Phaser.Scene {
         this.isModalOpen = false;
         this.portalModal = null;
         this.isAwaitingClose = false;
-        this.inventoryManager = null;
+        // this.inventoryManager = null;
         this.currentNPC = null;
         this.dialogBox = null;
         this.dialogText = null;
         this.dialogNameText = null;
-        this.quizOptionsText = [];
-        this.currentQuiz = null;
-        this.quizActive = false;
-        this.selectedOptionIndex = -1;
         this.typingEvent = null;
         this.isTyping = false;
         this.fullTextToType = '';
         this.dialogNextIndicator = null;
         this.dialogNextIndicatorTween = null;
         this.itemGetIndicator = null;
-        this.wisdomBar = null;
-        this.wisdomBarBg = null;
-        this.wisdomText = null;
+        this.questUiBg = null;
+        this.questUiText = null;
         this.entryData = null;
+        this.quizModal = null;
     }
 
     init(data) {
@@ -68,13 +65,18 @@ export default class BaseScene extends Phaser.Scene {
         this.otomo = new Otomo(this, this.player.x - 50, 450, 'otomo');
         this.physics.add.collider(this.otomo, this.platforms);
 
-        this.inventoryManager = createInventory(this, this.registry.get('inventory'));
-        this.interactionText = this.add.text(0, 0, 'Eキーで操作', { fontSize: '24px', fill: '#fff' }).setOrigin(0.5).setVisible(false).setDepth(20);
+        // this.inventoryManager = createInventory(this, this.registry.get('inventory'));
+        this.interactionText = this.add.text(0, 0, 'Eキーで操作', { 
+            fontSize: '24px', 
+            fill: '#fff',
+            padding: { top: 5, bottom: 5 }
+        }).setOrigin(0.5).setVisible(false).setDepth(20);
 
         this.entities = this.add.group();
         this.createPortalModal();
         this.createDialogBox();
-        this.createWisdomBar();
+        this.quizModal = new QuizModal(this);
+        this.createQuestTracker();
         this.createItemGetNotification();
 
         this.initializeInputHandlers();
@@ -93,15 +95,15 @@ export default class BaseScene extends Phaser.Scene {
     }
 
     collectItem(itemObject) {
-        const inventory = this.registry.get('inventory');
-        inventory.push(itemObject.itemName);
-        this.registry.set('inventory', inventory);
+        // const inventory = this.registry.get('inventory');
+        // inventory.push(itemObject.itemName);
+        // this.registry.set('inventory', inventory);
 
         const collectedItems = this.registry.get('collectedItems');
         collectedItems[itemObject.itemIdentifier] = true;
         this.registry.set('collectedItems', collectedItems);
 
-        this.inventoryManager.addItem(itemObject.itemName);
+        // this.inventoryManager.addItem(itemObject.itemName);
         this.showItemGetNotification(itemObject.itemName);
 
         itemObject.destroy();
@@ -154,11 +156,20 @@ export default class BaseScene extends Phaser.Scene {
     }
 
     initializeInputHandlers() {
-        this.input.keyboard.on('keyup-I', () => {
-            this.inventoryManager.toggleInventory();
-        });
+        // this.input.keyboard.on('keyup-I', () => {
+        //     this.inventoryManager.toggleInventory();
+        // });
 
         this.input.keyboard.on('keyup-E', () => {
+            if (this.quizModal && this.quizModal.isShowingCompleted) {
+                this.quizModal.closeModal(null);
+                return;
+            }
+
+            if (this.quizModal && this.quizModal.isOpen) {
+                return;
+            }
+
             if (this.isTyping) {
                 this.skipTyping();
                 return;
@@ -176,38 +187,10 @@ export default class BaseScene extends Phaser.Scene {
                 if (this.portalModal.visible) {
                     this.hidePortalModal(true);
                 } else if (this.currentNPC) {
-                    if (this.quizActive) {
-                        if (this.selectedOptionIndex !== -1) {
-                            const selectedOptionChar = String.fromCharCode(65 + this.selectedOptionIndex);
-                            this.checkAnswer(selectedOptionChar);
-                        }
-                        return;
-                    }
-                    const nextDialog = this.currentNPC.getNextDialog();
-                    if (nextDialog.text) {
-                        this.openDialog(this.currentNPC.name, nextDialog.text);
-                    } else if (this.currentNPC.quiz && !this.currentNPC.isQuizCompleted()) {
-                        this.startQuiz(this.currentNPC.quiz);
-                    } else {
-                        this.closeModal();
-                    }
+                    this.handleNpcInteraction();
                 }
             } else if (this.interactionTarget) {
                 this.interactWith(this.interactionTarget);
-            }
-        });
-
-        this.input.keyboard.on('keyup-UP', () => {
-            if (this.quizActive) {
-                this.selectedOptionIndex = (this.selectedOptionIndex - 1 + this.currentQuiz.options.length) % this.currentQuiz.options.length;
-                this.highlightSelectedOption();
-            }
-        });
-
-        this.input.keyboard.on('keyup-DOWN', () => {
-            if (this.quizActive) {
-                this.selectedOptionIndex = (this.selectedOptionIndex + 1) % this.currentQuiz.options.length;
-                this.highlightSelectedOption();
             }
         });
     }
@@ -240,7 +223,7 @@ export default class BaseScene extends Phaser.Scene {
             }
             this.interactionText.setText(interactionMessage);
             this.interactionText.x = this.interactionTarget.x;
-            this.interactionText.y = this.interactionTarget.y - 50;
+            this.interactionText.y = this.interactionTarget.y - 80;
             this.interactionText.setVisible(true);
         } else {
             this.interactionText.setVisible(false);
@@ -343,17 +326,65 @@ export default class BaseScene extends Phaser.Scene {
                 break;
             case 'NPC':
                 this.currentNPC = entity;
-                const nextDialog = entity.getNextDialog();
-                if (nextDialog.text) {
-                    this.openDialog(entity.name, nextDialog.text);
-                } else if (entity.quiz && !entity.isQuizCompleted()) {
-                    this.startQuiz(entity.quiz);
-                } else {
-                    this.closeModal();
-                }
+                this.handleNpcInteraction();
                 break;
         }
     }
+
+    handleNpcInteraction() {
+        console.log(`[DEBUG] handleNpcInteraction called for ${this.currentNPC.name}`);
+        if (!this.currentNPC) return;
+
+        if (this.currentNPC.quiz && this.currentNPC.isQuizCompleted()) {
+            console.log('[DEBUG] Quiz is completed. Calling showCompletedQuiz.');
+            const quizData = this.currentNPC.quiz;
+            if (this.dialogBox.visible) {
+                this.closeModal();
+            }
+            this.quizModal.showCompletedQuiz(quizData);
+            return;
+        }
+
+        const nextDialog = this.currentNPC.getNextDialog();
+        if (nextDialog.text) {
+            console.log('[DEBUG] Showing next dialog text.');
+            this.openDialog(this.currentNPC.name, nextDialog.text);
+        } else if (this.currentNPC.quiz && !this.currentNPC.isQuizCompleted()) {
+            console.log('[DEBUG] Dialogue finished. Calling handleQuiz.');
+            this.handleQuiz();
+        } else {
+            console.log('[DEBUG] No more dialogue or quiz. Closing modal.');
+            this.closeModal();
+        }
+    }
+
+    async handleQuiz() {
+        console.log('[DEBUG] handleQuiz called.');
+        const quizData = this.currentNPC.quiz;
+        const quizId = this.currentNPC.quizId;
+
+        const correct = await this.quizModal.startQuiz(quizData);
+        console.log(`[DEBUG] Quiz finished. Result: ${correct}`);
+
+        // クイズモーダルが閉じた後にNPCの対話状態を閉じる
+        this.closeModal();
+
+        if (correct) {
+            console.log('[DEBUG] Answer was correct. Updating score.');
+            const currentCorrect = this.registry.get('correctAnswers');
+            this.registry.set('correctAnswers', currentCorrect + 1);
+        }
+        
+        const completedQuizzes = this.registry.get('completedQuizzes');
+        if (!completedQuizzes.includes(quizId)) {
+            console.log(`[DEBUG] Adding ${quizId} to completedQuizzes.`);
+            completedQuizzes.push(quizId);
+            this.registry.set('completedQuizzes', completedQuizzes);
+        }
+
+        this.updateQuestTracker();
+    }
+
 
     createDialogBox() {
         this.dialogBox = this.add.graphics().setScrollFactor(0);
@@ -365,23 +396,8 @@ export default class BaseScene extends Phaser.Scene {
         this.dialogText = this.add.text(80, 400, '', { fontFamily: 'Meiryo, sans-serif', fontSize: '22px', fill: '#f0f0f0', wordWrap: { width: 800, useAdvanced: true } }).setScrollFactor(0);
         this.dialogText.setDepth(101).setVisible(false);
 
-        for (let i = 0; i < 4; i++) {
-            const optionY = 445 + (i * 35);
-            const optionText = this.add.text(80, optionY, '', { fontFamily: 'Meiryo, sans-serif', fontSize: '20px', fill: '#f0f0f0', wordWrap: { width: 800, useAdvanced: true } }).setScrollFactor(0).setDepth(101).setVisible(false).setInteractive();
-            this.quizOptionsText.push(optionText);
-            optionText.on('pointerdown', () => { 
-                if(this.quizActive) this.checkAnswer(optionText.text.charAt(0)); 
-            });
-            optionText.on('pointerover', () => optionText.setStyle({ fill: '#ffd700' }));
-            optionText.on('pointerout', () => optionText.setStyle({ fill: '#f0f0f0' }));
-        }
-
         this.dialogNextIndicator = this.add.text(890, 570, 'Eキーで次へ▼', { fontSize: '16px', fill: '#fff' }).setOrigin(1, 1).setScrollFactor(0).setDepth(102).setVisible(false);
         this.dialogNextIndicatorTween = this.tweens.add({ targets: this.dialogNextIndicator, alpha: 0, ease: 'Power1', duration: 700, yoyo: true, repeat: -1 }).pause();
-    }
-
-    hideQuizOptions() {
-        this.quizOptionsText.forEach(optionText => optionText.setVisible(false));
     }
 
     openDialog(name, text) {
@@ -390,79 +406,19 @@ export default class BaseScene extends Phaser.Scene {
         this.dialogBox.setVisible(true);
         this.dialogNameText.setVisible(true);
         this.dialogText.setVisible(true);
-        this.hideQuizOptions();
         this.typewriteText(this.dialogText, text);
-    }
-
-    startQuiz(quiz) {
-        this.currentQuiz = quiz;
-        this.quizActive = true;
-        this.selectedOptionIndex = -1;
-        this.dialogText.setVisible(true);
-        this.dialogNameText.setVisible(false);
-        this.typewriteText(this.dialogText, quiz.question);
-        quiz.options.forEach((option, index) => {
-            const optionChar = String.fromCharCode(65 + index);
-            const optionText = this.quizOptionsText[index];
-            optionText.setText(`${optionChar}. ${option}`);
-            optionText.setVisible(true);
-        });
-        this.dialogBox.setVisible(true);
-    }
-
-    highlightSelectedOption() {
-        this.quizOptionsText.forEach((optionText, index) => {
-            if (index === this.selectedOptionIndex) {
-                optionText.setStyle({ fill: '#ffd700' });
-            } else {
-                optionText.setStyle({ fill: '#f0f0f0' });
-            }
-        });
-    }
-
-    checkAnswer(selectedChar) {
-        this.quizActive = false;
-        this.isAwaitingClose = true;
-        const correct = this.currentQuiz.correctAnswer === selectedChar;
-
-        if (correct) {
-            const currentCorrect = this.registry.get('correctAnswers');
-            this.registry.set('correctAnswers', currentCorrect + 1);
-        }
-        
-        const completedQuizzes = this.registry.get('completedQuizzes');
-        if (!completedQuizzes.includes(this.currentNPC.quizId)) {
-            completedQuizzes.push(this.currentNPC.quizId);
-            this.registry.set('completedQuizzes', completedQuizzes);
-        }
-
-        this.updateWisdomBar();
-
-        const feedback = correct ? "正解！" : "残念！";
-        const explanation = `${feedback}\n\n【解説】\n${this.currentQuiz.explanation || 'ここに解説が入ります。'}`;
-
-        if (this.isTyping) {
-            this.typingEvent.remove();
-            this.isTyping = false;
-        }
-        this.dialogText.setWordWrapWidth(800, true);
-        this.typewriteText(this.dialogText, explanation);
-        this.hideQuizOptions();
     }
 
     closeModal() {
         this.isModalOpen = false;
         this.isAwaitingClose = false;
-        this.quizActive = false;
         if (this.currentNPC) {
             this.currentNPC.resetDialog();
         }
         this.currentNPC = null;
-        this.currentQuiz = null;
         this.dialogBox.setVisible(false);
         this.dialogNameText.setVisible(false);
         this.dialogText.setVisible(false);
-        this.hideQuizOptions();
         if (this.dialogNextIndicator) this.dialogNextIndicator.setVisible(false);
         if (this.dialogNextIndicatorTween) this.dialogNextIndicatorTween.pause();
     }
@@ -501,47 +457,41 @@ export default class BaseScene extends Phaser.Scene {
         }
     }
 
-    createWisdomBar() {
-        const barWidth = 300;
-        const barHeight = 25;
-        const x = this.sys.game.config.width / 2;
-        const y = 70; // Changed from 50 to 70
+    createQuestTracker() {
+        const x = 20;
+        const y = 20;
 
-        this.wisdomText = this.add.text(x, y - 5, '賢者の知恵', {
+        this.questUiBg = this.add.graphics().setScrollFactor(0).setDepth(100);
+        this.questUiText = this.add.text(x + 15, y + 10, '', {
             fontSize: '18px',
             fill: '#fff',
-        }).setOrigin(0.5, 1).setScrollFactor(0).setDepth(101);
+            fontFamily: 'Meiryo, sans-serif'
+        }).setScrollFactor(0).setDepth(101);
 
-        this.wisdomBarBg = this.add.graphics().setScrollFactor(0).setDepth(100);
-        this.wisdomBarBg.fillStyle(0x000000, 0.5);
-        this.wisdomBarBg.fillRoundedRect(x - barWidth / 2, y, barWidth, barHeight, 8);
-
-        this.wisdomBar = this.add.graphics().setScrollFactor(0).setDepth(101);
-        
-        this.updateWisdomBar();
+        this.updateQuestTracker();
     }
 
-    updateWisdomBar() {
-        const correctAnswers = this.registry.get('correctAnswers');
-        const totalQuizzes = this.registry.get('totalQuizzes');
-        const percentage = totalQuizzes > 0 ? (correctAnswers / totalQuizzes) : 0;
+    updateQuestTracker() {
+        const completedQuizzes = this.registry.get('completedQuizzes') || [];
+        const completedCount = completedQuizzes.length;
+        const totalQuizzes = this.chapterData ? this.chapterData.totalQuizzes : (this.registry.get('totalQuizzes') || 6);
 
-        const barWidth = 300;
-        const barHeight = 25;
-        const x = this.sys.game.config.width / 2;
-        const y = 70; // Changed from 50 to 70
-        const innerPadding = 4;
+        const text = `村人にAIについて教えて回る (${completedCount}/${totalQuizzes})`;
+        this.questUiText.setText(text);
 
-        this.wisdomBar.clear();
-        this.wisdomBar.fillStyle(0xf1c40f, 1); // Gold color for wisdom
-        if (percentage > 0) {
-            this.wisdomBar.fillRoundedRect(
-                x - barWidth / 2 + innerPadding, 
-                y + innerPadding,
-                (barWidth - innerPadding * 2) * percentage,
-                barHeight - innerPadding * 2,
-                6
-            );
-        }
+        const textBounds = this.questUiText.getBounds();
+        const padding = { x: 15, y: 10 };
+        this.questUiBg.clear();
+        this.questUiBg.fillStyle(0x000000, 0.7);
+        this.questUiBg.fillRoundedRect(
+            textBounds.x - padding.x,
+            textBounds.y - padding.y,
+            textBounds.width + padding.x * 2,
+            textBounds.height + padding.y * 2,
+            8
+        );
+    }
+
+    shutdown() {
     }
 }

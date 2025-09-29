@@ -2,6 +2,7 @@
  * @file ゲームのエントリーポイントです。Phaserのゲームインスタンスを初期化し、全体設定を定義します。
  */
 
+import { gameData } from './data/game-data.js';
 import BaseScene from './scenes/BaseScene.js';
 import StoryScene from './scenes/StoryScene.js';
 import TitleScene from './scenes/TitleScene.js';
@@ -11,6 +12,7 @@ import Chapter2_1Scene from './scenes/Chapter2-1Scene.js';
 import Chapter3_1Scene from './scenes/Chapter3-1Scene.js';
 import Chapter1_2Scene from './scenes/Chapter1-2Scene.js';
 import Chapter1_3Scene from './scenes/Chapter1-3Scene.js';
+import ResultScene from './scenes/ResultScene.js';
 
 
 /**
@@ -34,7 +36,7 @@ const config = {
         }
     },
     // ゲームで使用するシーンのリスト
-    scene: [TitleScene, StoryScene, ChapterSelectionScene, Chapter1_1Scene, Chapter1_2Scene, Chapter1_3Scene, Chapter2_1Scene, Chapter3_1Scene, BaseScene],
+    scene: [TitleScene, StoryScene, ChapterSelectionScene, Chapter1_1Scene, Chapter1_2Scene, Chapter1_3Scene, Chapter2_1Scene, Chapter3_1Scene, ResultScene, BaseScene],
 };
 
 // 設定を元にPhaser.Gameのインスタンスを生成
@@ -42,9 +44,9 @@ const game = new Phaser.Game(config);
 
 // ゲームのグローバル状態を初期化
 game.events.on('ready', () => {
-    game.registry.set('inventory', []);
+    // game.registry.set('inventory', []);
     game.registry.set('collectedItems', {});
     game.registry.set('completedQuizzes', []);
-    game.registry.set('totalQuizzes', 7);
     game.registry.set('correctAnswers', 0);
+    game.registry.set('totalQuizzes', gameData.totalQuizzesInGame);
 });

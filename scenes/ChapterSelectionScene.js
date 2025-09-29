@@ -1,5 +1,5 @@
 import Phaser from 'phaser';
-import { introScenario } from '../data/game-data.js';
+import { introScenario, chapter1IntroScenario } from '../data/game-data.js';
 
 export default class ChapterSelectionScene extends Phaser.Scene {
     constructor() {
@@ -14,6 +14,12 @@ export default class ChapterSelectionScene extends Phaser.Scene {
     }
 
     create() {
+        this.cameras.main.fadeIn(500, 0, 0, 0);
+
+        // クイズの進捗と正解数をリセット
+        this.registry.set('completedQuizzes', []);
+        this.registry.set('correctAnswers', 0);
+
         // 背景画像を表示
         this.add.image(480, 300, 'hub_background').setScale(1);
 
@@ -31,7 +37,33 @@ export default class ChapterSelectionScene extends Phaser.Scene {
         const buttonYStep = 80;
 
         // 第1章ボタン
-        this.createChapterButton(480, buttonYStart, '第1章: AIって怖いもの？', 'Chapter1-1Scene');
+        const chapter1Button = this.add.text(480, buttonYStart, '第1章: AIって怖いもの？ ～AIとは​何かを​学ぶ～', {
+            fontFamily: 'Arial, sans-serif',
+            fontSize: '24px',
+            fill: '#fff',
+            backgroundColor: '#3498db',
+            padding: { x: 20, y: 10 },
+            borderRadius: 5
+        }).setOrigin(0.5);
+
+        chapter1Button.setInteractive();
+        chapter1Button.on('pointerover', () => {
+            this.game.canvas.style.cursor = 'pointer';
+            chapter1Button.setBackgroundColor('#2980b9');
+        });
+        chapter1Button.on('pointerout', () => {
+            this.game.canvas.style.cursor = 'default';
+            chapter1Button.setBackgroundColor('#3498db');
+        });
+        chapter1Button.on('pointerdown', () => {
+            this.cameras.main.fadeOut(500, 0, 0, 0);
+            this.cameras.main.once(Phaser.Cameras.Scene2D.Events.FADE_OUT_COMPLETE, () => {
+                this.scene.start('StoryScene', {
+                    scenario: chapter1IntroScenario,
+                    nextScene: 'Chapter1-1Scene'
+                });
+            });
+        });
 
         // 第2章ボタン
         this.createChapterButton(480, buttonYStart + buttonYStep, '第2章: 村人のお悩みをAIで解決', 'Chapter2-1Scene');
@@ -96,7 +128,7 @@ export default class ChapterSelectionScene extends Phaser.Scene {
             this.cameras.main.fadeOut(500, 0, 0, 0);
             this.cameras.main.once(Phaser.Cameras.Scene2D.Events.FADE_OUT_COMPLETE, () => {
                 this.scene.start('StoryScene', {
-                    content: introScenario,
+                    scenario: introScenario,
                     nextScene: 'ChapterSelectionScene'
                 });
             });
