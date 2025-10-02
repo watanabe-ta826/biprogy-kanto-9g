@@ -62,7 +62,7 @@ export default class BaseChapterScene extends BaseScene {
             fontFamily: 'Arial, sans-serif',
             fontSize: '18px',
             fill: '#ffffff',
-            backgroundColor: '#95a5a6',
+            backgroundColor: '#768687',
             padding: { x: 12, y: 8 },
             borderRadius: 8,
             shadow: { offsetX: 0, offsetY: 3, color: '#768687', fill: true, blur: 3 }

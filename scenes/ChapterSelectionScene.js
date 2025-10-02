@@ -1,5 +1,5 @@
 import Phaser from 'phaser';
-import { introScenario, chapter1IntroScenario } from '../data/game-data.js';
+import { introScenario, chapter1IntroScenario, chapter3IntroScenario } from '../data/game-data.js';
 
 export default class ChapterSelectionScene extends Phaser.Scene {
     constructor() {
@@ -69,7 +69,33 @@ export default class ChapterSelectionScene extends Phaser.Scene {
         this.createChapterButton(480, buttonYStart + buttonYStep, '第2章: 村人のお悩みをAIで解決', 'Chapter2-1Scene');
 
         // 第3章ボタン
-        this.createChapterButton(480, buttonYStart + buttonYStep * 2, '第3章: AIの落とし穴', 'Chapter3-1Scene');
+        const chapter3Button = this.add.text(480, buttonYStart + buttonYStep * 2, '第3章: AIの落とし穴　～AIのリスクを学ぶ～', {
+            fontFamily: 'Arial, sans-serif',
+            fontSize: '24px',
+            fill: '#fff',
+            backgroundColor: '#3498db',
+            padding: { x: 20, y: 10 },
+            borderRadius: 5
+        }).setOrigin(0.5);
+
+        chapter3Button.setInteractive();
+        chapter3Button.on('pointerover', () => {
+            this.game.canvas.style.cursor = 'pointer';
+            chapter3Button.setBackgroundColor('#2980b9');
+        });
+        chapter3Button.on('pointerout', () => {
+            this.game.canvas.style.cursor = 'default';
+            chapter3Button.setBackgroundColor('#3498db');
+        });
+        chapter3Button.on('pointerdown', () => {
+            this.cameras.main.fadeOut(500, 0, 0, 0);
+            this.cameras.main.once(Phaser.Cameras.Scene2D.Events.FADE_OUT_COMPLETE, () => {
+                this.scene.start('StoryScene', {
+                    scenario: chapter3IntroScenario,
+                    nextScene: 'Chapter3-1Scene'
+                });
+            });
+        });
 
         // プロローグをもう一度ボタン
         this.createIntroButton(480, buttonYStart + buttonYStep * 3.5, 'プロローグをもう一度');
