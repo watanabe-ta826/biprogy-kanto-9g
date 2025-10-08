@@ -1,6 +1,6 @@
 import Phaser from 'phaser';
 import Player from '../Player.js';
-import Otomo from '../Otomo.js';
+
 // import { createInventory } from '../ui.js';
 import { gameData } from '../data/game-data.js';
 import QuizModal from '../QuizModal.js';
@@ -9,7 +9,7 @@ export default class BaseScene extends Phaser.Scene {
     constructor(key) {
         super(key);
         this.player = null;
-        this.otomo = null;
+        
         this.entities = null;
         this.interactionText = null;
         this.interactionTarget = null;
@@ -27,8 +27,7 @@ export default class BaseScene extends Phaser.Scene {
         this.dialogNextIndicator = null;
         this.dialogNextIndicatorTween = null;
         this.itemGetIndicator = null;
-        this.questUiBg = null;
-        this.questUiText = null;
+        
         this.entryData = null;
         this.quizModal = null;
     }
@@ -62,8 +61,7 @@ export default class BaseScene extends Phaser.Scene {
         this.physics.add.collider(this.player, this.platforms);
         this.cameras.main.startFollow(this.player, true, 0.08, 0.08);
 
-        this.otomo = new Otomo(this, this.player.x - 50, 450, 'otomo');
-        this.physics.add.collider(this.otomo, this.platforms);
+        
 
         // this.inventoryManager = createInventory(this, this.registry.get('inventory'));
         this.interactionText = this.add.text(0, 0, 'Eキーで操作', { 
@@ -76,7 +74,6 @@ export default class BaseScene extends Phaser.Scene {
         this.createPortalModal();
         this.createDialogBox();
         this.quizModal = new QuizModal(this);
-        this.createQuestTracker();
         this.createItemGetNotification();
 
         this.initializeInputHandlers();
@@ -145,12 +142,10 @@ export default class BaseScene extends Phaser.Scene {
     update() {
         if (this.isModalOpen) {
             this.player.setVelocity(0);
-            this.otomo.setVelocity(0);
             return;
         }
 
         if (this.player) this.player.update();
-        if (this.otomo) this.otomo.update(this.player);
 
         this.findInteractionTarget();
     }
@@ -332,11 +327,9 @@ export default class BaseScene extends Phaser.Scene {
     }
 
     handleNpcInteraction() {
-        console.log(`[DEBUG] handleNpcInteraction called for ${this.currentNPC.name}`);
         if (!this.currentNPC) return;
 
         if (this.currentNPC.quiz && this.currentNPC.isQuizCompleted()) {
-            console.log('[DEBUG] Quiz is completed. Calling showCompletedQuiz.');
             const quizData = this.currentNPC.quiz;
             if (this.dialogBox.visible) {
                 this.closeModal();
@@ -347,42 +340,35 @@ export default class BaseScene extends Phaser.Scene {
 
         const nextDialog = this.currentNPC.getNextDialog();
         if (nextDialog.text) {
-            console.log('[DEBUG] Showing next dialog text.');
             this.openDialog(this.currentNPC.name, nextDialog.text);
         } else if (this.currentNPC.quiz && !this.currentNPC.isQuizCompleted()) {
-            console.log('[DEBUG] Dialogue finished. Calling handleQuiz.');
             this.handleQuiz();
         } else {
-            console.log('[DEBUG] No more dialogue or quiz. Closing modal.');
             this.closeModal();
         }
     }
 
     async handleQuiz() {
-        console.log('[DEBUG] handleQuiz called.');
         const quizData = this.currentNPC.quiz;
         const quizId = this.currentNPC.quizId;
 
         const correct = await this.quizModal.startQuiz(quizData);
-        console.log(`[DEBUG] Quiz finished. Result: ${correct}`);
 
         // クイズモーダルが閉じた後にNPCの対話状態を閉じる
         this.closeModal();
 
         if (correct) {
-            console.log('[DEBUG] Answer was correct. Updating score.');
             const currentCorrect = this.registry.get('correctAnswers');
             this.registry.set('correctAnswers', currentCorrect + 1);
         }
         
         const completedQuizzes = this.registry.get('completedQuizzes');
         if (!completedQuizzes.includes(quizId)) {
-            console.log(`[DEBUG] Adding ${quizId} to completedQuizzes.`);
             completedQuizzes.push(quizId);
             this.registry.set('completedQuizzes', completedQuizzes);
         }
 
-        this.updateQuestTracker();
+        this.events.emit('quizCompleted');
     }
 
 
@@ -455,41 +441,6 @@ export default class BaseScene extends Phaser.Scene {
             if (this.dialogNextIndicator) this.dialogNextIndicator.setVisible(true);
             if (this.dialogNextIndicatorTween) this.dialogNextIndicatorTween.resume();
         }
-    }
-
-    createQuestTracker() {
-        const x = 20;
-        const y = 20;
-
-        this.questUiBg = this.add.graphics().setScrollFactor(0).setDepth(100);
-        this.questUiText = this.add.text(x + 15, y + 10, '', {
-            fontSize: '18px',
-            fill: '#fff',
-            fontFamily: 'Meiryo, sans-serif'
-        }).setScrollFactor(0).setDepth(101);
-
-        this.updateQuestTracker();
-    }
-
-    updateQuestTracker() {
-        const completedQuizzes = this.registry.get('completedQuizzes') || [];
-        const completedCount = completedQuizzes.length;
-        const totalQuizzes = this.chapterData ? this.chapterData.totalQuizzes : (this.registry.get('totalQuizzes') || 6);
-
-        const text = `村人にAIについて教えて回る (${completedCount}/${totalQuizzes})`;
-        this.questUiText.setText(text);
-
-        const textBounds = this.questUiText.getBounds();
-        const padding = { x: 15, y: 10 };
-        this.questUiBg.clear();
-        this.questUiBg.fillStyle(0x000000, 0.7);
-        this.questUiBg.fillRoundedRect(
-            textBounds.x - padding.x,
-            textBounds.y - padding.y,
-            textBounds.width + padding.x * 2,
-            textBounds.height + padding.y * 2,
-            8
-        );
     }
 
     shutdown() {

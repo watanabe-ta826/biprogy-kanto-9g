@@ -7,9 +7,12 @@ export default class BaseChapterScene extends BaseScene {
         this.chapterData = null;
         this.chapterKey = null;
         this.isCleared = false; // クリア処理が重複しないようにするフラグ
+        this.questUiBg = null;
+        this.questUiText = null;
     }
 
     create(sceneData) {
+        this.isCleared = false;
         super.create(sceneData);
 
         // 現在のシーンが属する章のデータを取得
@@ -84,6 +87,9 @@ export default class BaseChapterScene extends BaseScene {
                 this.scene.start('ChapterSelectionScene');
             });
         });
+
+        this.createQuestTracker();
+        this.events.on('quizCompleted', this.updateQuestTracker, this);
     }
 
     update() {
@@ -96,6 +102,8 @@ export default class BaseChapterScene extends BaseScene {
         if (this.isCleared || !this.chapterData) {
             return;
         }
+
+        this.updateQuestTracker();
 
         const completedQuizzes = this.registry.get('completedQuizzes') || [];
         let completedChapterQuizzesCount = 0;
@@ -118,6 +126,58 @@ export default class BaseChapterScene extends BaseScene {
             this.isCleared = true;
             this.startClearSequence();
         }
+    }
+
+    createQuestTracker() {
+        const x = 20;
+        const y = 20;
+
+        this.questUiBg = this.add.graphics().setScrollFactor(0).setDepth(100);
+        this.questUiText = this.add.text(x + 15, y + 10, '', {
+            fontSize: '18px',
+            fill: '#fff',
+            fontFamily: 'Meiryo, sans-serif'
+        }).setScrollFactor(0).setDepth(101);
+
+        this.updateQuestTracker();
+    }
+
+    updateQuestTracker() {
+        if (!this.chapterData) return;
+
+        const completedQuizzes = this.registry.get('completedQuizzes') || [];
+        let completedChapterQuizzesCount = 0;
+
+        this.chapterData.scenes.forEach(sceneKey => {
+            const sceneData = gameData.scenes[sceneKey];
+            if (sceneData && sceneData.entities) {
+                sceneData.entities.forEach(entity => {
+                    if (entity.type === 'NPC' && entity.quiz) {
+                        const quizId = `${sceneKey}_${entity.name}`;
+                        if (completedQuizzes.includes(quizId)) {
+                            completedChapterQuizzesCount++;
+                        }
+                    }
+                });
+            }
+        });
+
+        const totalQuizzes = this.chapterData.totalQuizzes;
+        const questText = this.chapterData.questText || 'クイズを解いて回る';
+        const text = `${questText} (${completedChapterQuizzesCount}/${totalQuizzes})`;
+        this.questUiText.setText(text);
+
+        const textBounds = this.questUiText.getBounds();
+        const padding = { x: 15, y: 10 };
+        this.questUiBg.clear();
+        this.questUiBg.fillStyle(0x000000, 0.7);
+        this.questUiBg.fillRoundedRect(
+            textBounds.x - padding.x,
+            textBounds.y - padding.y,
+            textBounds.width + padding.x * 2,
+            textBounds.height + padding.y * 2,
+            8
+        );
     }
 
     startClearSequence() {
