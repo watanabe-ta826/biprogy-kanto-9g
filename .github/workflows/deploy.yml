@@ -5,7 +5,7 @@ name: Deploy to GitHub Pages
 on:
   # mainブランチにpushされたときに実行
   push:
-    branches: ["dev-watanabe"] # ご自身のメインブランチ名（mainやmasterなど）に合わせてください
+    branches: ["main"] # ご自身のメインブランチ名（mainやmasterなど）に合わせてください
 
   # 手動でも実行できるようにする
   workflow_dispatch:
