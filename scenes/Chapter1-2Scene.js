@@ -1,33 +1,51 @@
-import BaseChapterScene from './BaseChapterScene.js';
-import Portal from '../Portal.js';
-import NPC from '../NPC.js';
-import { gameData } from '../data/game-data.js';
+import BaseChapterScene from "./BaseChapterScene.js";
+import Portal from "../Portal.js";
+import NPC from "../NPC.js";
+import { gameData } from "../data/game-data.js";
 
 export default class Chapter1_2Scene extends BaseChapterScene {
-    constructor() {
-        super('Chapter1-2Scene');
-    }
+  constructor() {
+    super("Chapter1-2Scene");
+  }
 
-    create() {
-        const sceneData = gameData.scenes['Chapter1-2Scene'];
-        super.create(sceneData);
+  create() {
+    const sceneData = gameData.scenes["Chapter1-2Scene"];
+    super.create(sceneData);
 
-        if (sceneData.entities) {
-            sceneData.entities.forEach(entityData => {
-                let entity;
-                switch (entityData.type) {
-                    case 'Portal':
-                        entity = new Portal(this, entityData.x, entityData.y, 50, 100, entityData.targetScene, entityData.entryX);
-                        break;
-                    case 'NPC':
-                        entity = new NPC(this, entityData.x, entityData.y, entityData.name, entityData.dialog, entityData.isStatic, entityData.quiz, entityData.completedDialog);
-                        this.physics.add.collider(entity, this.platforms);
-                        break;
-                }
-                if (entity) {
-                    this.entities.add(entity);
-                }
-            });
+    if (sceneData.entities) {
+      sceneData.entities.forEach((entityData) => {
+        let entity;
+        switch (entityData.type) {
+          case "Portal":
+            entity = new Portal(
+              this,
+              entityData.x,
+              entityData.y,
+              50,
+              100,
+              entityData.targetScene,
+              entityData.entryX
+            );
+            break;
+          case "NPC":
+            entity = new NPC(
+              this,
+              entityData.x,
+              entityData.y,
+              entityData.name,
+              entityData.dialog,
+              entityData.isStatic,
+              entityData.quiz,
+              entityData.completedDialog,
+              entityData.imageName
+            );
+            this.physics.add.collider(entity, this.platforms);
+            break;
         }
+        if (entity) {
+          this.entities.add(entity);
+        }
+      });
     }
+  }
 }

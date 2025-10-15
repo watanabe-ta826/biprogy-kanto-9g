@@ -9,7 +9,9 @@
  * @property {string} src - 画像ファイルへのパス。
  */
 export const imagePaths = [
-  { name: "player", src: "img/player.png" },
+  { name: "player", src: "img/player.png" }, // 正面向き
+  { name: "player_left", src: "img/player_left.png" }, // 左向き
+  { name: "player_right", src: "img/player_right.png" }, // 右向き
   { name: "otomo", src: "img/otomo.png" },
   { name: "otomo_run", src: "img/otomo_run.png" },
   { name: "hub_background", src: "img/hub_background.jpg" },
@@ -19,8 +21,14 @@ export const imagePaths = [
   { name: "castleTown_upper", src: "img/castleTown_upper.jpg" },
   { name: "intro_1", src: "img/intro_1.jpg" },
   { name: "intro_2", src: "img/intro_2.jpg" },
-  { name: "npc1", src: "img/player.png" },
+  { name: "npc1", src: "img/npc1.png" },
+  { name: "npc2", src: "img/npc2.png" },
+  { name: "npc3", src: "img/npc3.png" },
+  { name: "npc4", src: "img/npc4.png" },
+  { name: "npc5", src: "img/npc5.png" },
+  { name: "npc6", src: "img/npc6.png" },
   { name: "diagram_q3", src: "img/diagram_q3.png" },
+  { name: "arrival", src: "img/arrival.png" },
 ];
 
 /**
@@ -66,7 +74,7 @@ export const introScenario = [
  * @type {Array<object>} - 第1章開始前のシナリオデータ
  */
 export const chapter1IntroScenario = [
-  { text: "賢者は村近くに到着した" },
+  { text: "賢者は村近くに到着した", image: "arrival" },
   {
     text: "村人： 賢者さま…！おかえりなさい！\n遠くの国で、人助けをしていたのですよね？\nなぜ急に帰ってこられたのですか？",
     style: { fill: "#add8e6" },
@@ -165,7 +173,7 @@ export const gameData = {
       entities: [
         {
           type: "NPC",
-          imageName: "npc1",
+          imageName: "npc1", // 村人A
           x: 400,
           y: 450,
           name: "村人A",
@@ -187,7 +195,7 @@ export const gameData = {
         },
         {
           type: "NPC",
-          imageName: "npc1",
+          imageName: "npc2", // 村人B
           x: 800,
           y: 450,
           name: "村人B",
@@ -231,7 +239,7 @@ export const gameData = {
         },
         {
           type: "NPC",
-          imageName: "npc1",
+          imageName: "npc3", // 村人C
           x: 400,
           y: 450,
           name: "村人C",
@@ -255,7 +263,7 @@ export const gameData = {
         },
         {
           type: "NPC",
-          imageName: "npc1",
+          imageName: "npc4", // 村人D
           x: 800,
           y: 450,
           name: "村人D",
@@ -300,7 +308,7 @@ export const gameData = {
         },
         {
           type: "NPC",
-          imageName: "npc1",
+          imageName: "npc5", // 村人E
           x: 400,
           y: 450,
           name: "村人E",
@@ -324,7 +332,7 @@ export const gameData = {
         },
         {
           type: "NPC",
-          imageName: "npc1",
+          imageName: "npc6", // 村人F
           x: 800,
           y: 450,
           name: "村人F",
