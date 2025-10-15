@@ -19,12 +19,12 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
     scene.add.existing(this);
     scene.physics.add.existing(this);
 
+    this.setScale(0.3); // スプライトのサイズを調整
     this.setCollideWorldBounds(true); // 画面の境界線と衝突するように設定
     this.setDepth(10); // 描画の優先順位を設定（値が大きいほど手前に表示）
 
-    this.setDisplaySize(150, 150); // スプライトの表示サイズを固定
     // 物理ボディのサイズを設定（表示サイズとは別に当たり判定のサイズを指定）
-    this.body.setSize(150, 350).setOffset(175, 150); // 正面向き(500x500)用の設定
+    this.body.setSize(300, 500);
 
     this.body.setGravityY(300); // Y軸方向の重力を設定
 

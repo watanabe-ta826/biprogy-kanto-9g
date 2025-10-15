@@ -184,17 +184,15 @@ export default class BaseScene extends Phaser.Scene {
   }
 
   update() {
-    // モーダル表示中はプレイヤーの動きを止め、以降の処理を中断
     if (this.isModalOpen) {
-      this.player.setVelocityX(0);
-      this.otomo.setVelocity(0, 0);
+      this.player.setVelocity(0);
+      this.otomo.setVelocity(0);
       return;
     }
 
-    // プレイヤーのジャンプ処理を呼び出す
-    this.player.update();
-    // お供の追従処理を呼び出す
-    this.otomo.update(this.player);
+    if (this.player) this.player.update();
+    if (this.otomo) this.otomo.update(this.player);
+
     this.findInteractionTarget();
   }
 
@@ -204,6 +202,11 @@ export default class BaseScene extends Phaser.Scene {
     // });
 
     this.input.keyboard.on("keyup-E", () => {
+      if (this.quizModal && this.quizModal.isShowingCompleted) {
+        this.quizModal.closeModal(null);
+        return;
+      }
+
       if (this.quizModal && this.quizModal.isOpen) {
         return;
       }
@@ -441,6 +444,9 @@ export default class BaseScene extends Phaser.Scene {
     const correct = await this.quizModal.startQuiz(quizData);
     console.log(`[DEBUG] Quiz finished. Result: ${correct}`);
 
+    // クイズモーダルが閉じた後にNPCの対話状態を閉じる
+    this.closeModal();
+
     if (correct) {
       console.log("[DEBUG] Answer was correct. Updating score.");
       const currentCorrect = this.registry.get("correctAnswers");
@@ -455,9 +461,6 @@ export default class BaseScene extends Phaser.Scene {
     }
 
     this.updateQuestTracker();
-
-    // クイズに関連するすべての処理が完了した後、会話モーダルを閉じる
-    this.closeModal();
   }
 
   createDialogBox() {

@@ -20,7 +20,6 @@ export default class QuizModal {
     this.resolvePromise = null;
     this.isOpen = false;
     this.isShowingCompleted = false;
-    this.isShowingExplanation = false; // 解説表示中フラグ
     this.controlsText = null;
 
     this.createModal();
@@ -122,7 +121,13 @@ export default class QuizModal {
           })
           .setInteractive();
 
-        // クリック操作を無効化
+        if (isMultiSelect) {
+          text.on("pointerdown", () =>
+            this.toggleOptionSelect(optionChar, text)
+          );
+        } else {
+          text.on("pointerdown", () => this.checkAnswer(new Set([optionChar])));
+        }
 
         text.on("pointerover", () => {
           this.selectedOptionIndex = index;
@@ -189,21 +194,21 @@ export default class QuizModal {
     this.quizActive = false;
     this.removeKeyListeners();
 
-    const correctAnswersSet = new Set(
+    const correctAnswers = new Set(
       Array.isArray(this.currentQuiz.correctAnswer)
         ? this.currentQuiz.correctAnswer
         : [this.currentQuiz.correctAnswer]
     );
 
-    const isCorrect =
-      selectedCharsSet.size === correctAnswersSet.size &&
-      [...selectedCharsSet].every((char) => correctAnswersSet.has(char));
+    let correct =
+      selectedCharsSet.size === correctAnswers.size &&
+      [...selectedCharsSet].every((char) => correctAnswers.has(char));
 
-    const feedback = isCorrect ? "正解です！" : "残念！";
-    this._displayExplanation(this.currentQuiz, feedback, isCorrect);
+    const feedback = correct ? "正解です！" : "残念！";
+    this._displayExplanation(this.currentQuiz, feedback);
   }
 
-  _displayExplanation(quiz, feedback, isCorrect) {
+  _displayExplanation(quiz, feedback) {
     let feedbackColor = "#ecf0f1"; // Default color
     if (feedback === "正解です！") {
       feedbackColor = "#2ecc71"; // Green for correct
@@ -211,8 +216,6 @@ export default class QuizModal {
       feedbackColor = "#e74c3c"; // Red for incorrect
     }
     this.resultText.setStyle({ fill: feedbackColor });
-    this.isShowingExplanation = true; // 解説表示開始
-    this.currentResult = isCorrect; // 結果を保存
 
     // --- スタイルの動的変更 ---
     const baseStyle = { fontSize: "20px", lineSpacing: 0 };
@@ -251,12 +254,14 @@ export default class QuizModal {
       }
     }
 
-    this.keyupListener = (event) => {
+    const closeListener = (event) => {
       if (event.key === "e" || event.key === "E") {
-        this.closeModal(this.currentResult);
+        this.scene.input.keyboard.off("keyup", closeListener);
+        const result = feedback ? feedback === "正解です！" : null;
+        this.closeModal(result);
       }
     };
-    this.scene.input.keyboard.on("keyup", this.keyupListener);
+    this.scene.input.keyboard.on("keyup", closeListener);
   }
 
   showExplanation(quiz) {
@@ -306,15 +311,12 @@ export default class QuizModal {
 
   closeModal(result) {
     this.isOpen = false;
-    this.isShowingExplanation = false;
     this.isShowingCompleted = false;
     this.modal.setVisible(false);
     this.resultText.setVisible(false).setStyle({ fill: "#ecf0f1" }); // Reset color
     this.explanationImage.setVisible(false);
     if (this.controlsText) this.controlsText.setVisible(false);
     this.scene.isModalOpen = false;
-    if (this.keyupListener)
-      this.scene.input.keyboard.off("keyup", this.keyupListener);
     if (this.resolvePromise) {
       this.resolvePromise(result);
       this.resolvePromise = null;

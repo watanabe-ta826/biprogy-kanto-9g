@@ -173,7 +173,7 @@ export const gameData = {
       entities: [
         {
           type: "NPC",
-          imageName: "npc1", // 村人A
+          imageName: "npc1",
           x: 400,
           y: 450,
           name: "村人A",
@@ -195,7 +195,7 @@ export const gameData = {
         },
         {
           type: "NPC",
-          imageName: "npc2", // 村人B
+          imageName: "npc2",
           x: 800,
           y: 450,
           name: "村人B",
@@ -239,7 +239,7 @@ export const gameData = {
         },
         {
           type: "NPC",
-          imageName: "npc3", // 村人C
+          imageName: "npc3",
           x: 400,
           y: 450,
           name: "村人C",
@@ -263,7 +263,7 @@ export const gameData = {
         },
         {
           type: "NPC",
-          imageName: "npc4", // 村人D
+          imageName: "npc4",
           x: 800,
           y: 450,
           name: "村人D",
@@ -308,7 +308,7 @@ export const gameData = {
         },
         {
           type: "NPC",
-          imageName: "npc5", // 村人E
+          imageName: "npc5",
           x: 400,
           y: 450,
           name: "村人E",
@@ -332,7 +332,7 @@ export const gameData = {
         },
         {
           type: "NPC",
-          imageName: "npc6", // 村人F
+          imageName: "npc6",
           x: 800,
           y: 450,
           name: "村人F",
