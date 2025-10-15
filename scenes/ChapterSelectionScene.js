@@ -4,10 +4,19 @@ import { introScenario, chapter1IntroScenario, chapter3IntroScenario } from '../
 export default class ChapterSelectionScene extends Phaser.Scene {
     constructor() {
         super({ key: 'ChapterSelectionScene' });
+        this.buttons = [];
+        this.selectedButtonIndex = 0;
+        this.buttonColors = {
+            default: '#3498db',
+            hover: '#2980b9',
+            selected: '#f1c40f',
+            introDefault: '#95a5a6',
+            introHover: '#aab7b8',
+            introSelected: '#f1c40f'
+        };
     }
 
     preload() {
-        // 背景画像を読み込む（もし読み込まれていなければ）
         if (!this.textures.exists('hub_background')) {
             this.load.image('hub_background', 'img/hub_background.jpg');
         }
@@ -15,15 +24,11 @@ export default class ChapterSelectionScene extends Phaser.Scene {
 
     create() {
         this.cameras.main.fadeIn(500, 0, 0, 0);
-
-        // クイズの進捗と正解数をリセット
         this.registry.set('completedQuizzes', []);
         this.registry.set('correctAnswers', 0);
 
-        // 背景画像を表示
         this.add.image(480, 300, 'hub_background').setScale(1);
 
-        // タイトルテキスト
         this.add.text(480, 100, '章選択', {
             fontFamily: 'Arial, sans-serif',
             fontSize: '50px',
@@ -32,132 +37,125 @@ export default class ChapterSelectionScene extends Phaser.Scene {
             strokeThickness: 6,
         }).setOrigin(0.5);
 
-        // --- ボタンを作成 ---
+        this.buttons = [];
+        this.selectedButtonIndex = 0;
+
         const buttonYStart = 200;
         const buttonYStep = 80;
 
-        // 第1章ボタン
-        const chapter1Button = this.add.text(480, buttonYStart, '第1章: AIって怖いもの？ ～AIとは​何かを​学ぶ～', {
-            fontFamily: 'Arial, sans-serif',
-            fontSize: '24px',
-            fill: '#fff',
-            backgroundColor: '#3498db',
-            padding: { x: 20, y: 10 },
-            borderRadius: 5
-        }).setOrigin(0.5);
+        // Button configurations
+        const buttonConfigs = [
+            {
+                text: '第1章: AIって怖いもの？ ～AIとは​何かを​学ぶ～',
+                y: buttonYStart,
+                isIntro: false,
+                action: () => this.scene.start('StoryScene', { scenario: chapter1IntroScenario, nextScene: 'Chapter1-1Scene' })
+            },
+            {
+                text: '＜第２章＞村人の​お悩みを​AIで​解決　～AIの​使い方を​学ぶ～',
+                y: buttonYStart + buttonYStep,
+                isIntro: false,
+                action: () => this.scene.start('Chapter2SelectionScene')
+            },
+            {
+                text: '第3章: AIの落とし穴　～AIのリスクを学ぶ～',
+                y: buttonYStart + buttonYStep * 2,
+                isIntro: false,
+                action: () => this.scene.start('StoryScene', { scenario: chapter3IntroScenario, nextScene: 'Chapter3-1Scene' })
+            },
+            {
+                text: 'プロローグをもう一度',
+                y: buttonYStart + buttonYStep * 3.5,
+                isIntro: true,
+                action: () => this.scene.start('StoryScene', { scenario: introScenario, nextScene: 'ChapterSelectionScene' })
+            }
+        ];
 
-        chapter1Button.setInteractive();
-        chapter1Button.on('pointerover', () => {
-            this.game.canvas.style.cursor = 'pointer';
-            chapter1Button.setBackgroundColor('#2980b9');
-        });
-        chapter1Button.on('pointerout', () => {
-            this.game.canvas.style.cursor = 'default';
-            chapter1Button.setBackgroundColor('#3498db');
-        });
-        chapter1Button.on('pointerdown', () => {
-            this.cameras.main.fadeOut(500, 0, 0, 0);
-            this.cameras.main.once(Phaser.Cameras.Scene2D.Events.FADE_OUT_COMPLETE, () => {
-                this.scene.start('StoryScene', {
-                    scenario: chapter1IntroScenario,
-                    nextScene: 'Chapter1-1Scene'
-                });
-            });
-        });
-
-        // 第2章ボタン
-        this.createChapterButton(480, buttonYStart + buttonYStep, '第2章: 村人のお悩みをAIで解決', 'Chapter2-1Scene');
-
-        // 第3章ボタン
-        const chapter3Button = this.add.text(480, buttonYStart + buttonYStep * 2, '第3章: AIの落とし穴　～AIのリスクを学ぶ～', {
-            fontFamily: 'Arial, sans-serif',
-            fontSize: '24px',
-            fill: '#fff',
-            backgroundColor: '#3498db',
-            padding: { x: 20, y: 10 },
-            borderRadius: 5
-        }).setOrigin(0.5);
-
-        chapter3Button.setInteractive();
-        chapter3Button.on('pointerover', () => {
-            this.game.canvas.style.cursor = 'pointer';
-            chapter3Button.setBackgroundColor('#2980b9');
-        });
-        chapter3Button.on('pointerout', () => {
-            this.game.canvas.style.cursor = 'default';
-            chapter3Button.setBackgroundColor('#3498db');
-        });
-        chapter3Button.on('pointerdown', () => {
-            this.cameras.main.fadeOut(500, 0, 0, 0);
-            this.cameras.main.once(Phaser.Cameras.Scene2D.Events.FADE_OUT_COMPLETE, () => {
-                this.scene.start('StoryScene', {
-                    scenario: chapter3IntroScenario,
-                    nextScene: 'Chapter3-1Scene'
-                });
-            });
+        buttonConfigs.forEach((config, index) => {
+            const button = this.createButton(480, config.y, config.text, config.isIntro, config.action, index);
+            this.buttons.push(button);
         });
 
-        // プロローグをもう一度ボタン
-        this.createIntroButton(480, buttonYStart + buttonYStep * 3.5, 'プロローグをもう一度');
-    }
+        this.updateButtonStyles();
+        this.addKeyListeners();
 
-    createChapterButton(x, y, text, sceneKey) {
-        const button = this.add.text(x, y, text, {
-            fontFamily: 'Arial, sans-serif',
-            fontSize: '24px',
-            fill: '#fff',
-            backgroundColor: '#3498db',
-            padding: { x: 20, y: 10 },
-            borderRadius: 5
-        }).setOrigin(0.5);
-
-        button.setInteractive();
-        button.on('pointerover', () => {
-            this.game.canvas.style.cursor = 'pointer';
-            button.setBackgroundColor('#2980b9');
-        });
-        button.on('pointerout', () => {
-            this.game.canvas.style.cursor = 'default';
-            button.setBackgroundColor('#3498db');
-        });
-        button.on('pointerdown', () => {
-            this.cameras.main.fadeOut(500, 0, 0, 0);
-            this.cameras.main.once(Phaser.Cameras.Scene2D.Events.FADE_OUT_COMPLETE, () => {
-                this.scene.start(sceneKey);
-            });
-        });
-    }
-
-    createIntroButton(x, y, text) {
-        const button = this.add.text(x, y, text, {
-            fontFamily: 'Arial, sans-serif',
-            fontSize: '24px',
+        // Add controls text
+        this.add.text(940, 580, 'W/S or ↑/↓: 選択 | E: 決定', {
+            fontFamily: 'Meiryo, sans-serif',
+            fontSize: '18px',
             fill: '#ffffff',
-            backgroundColor: '#95a5a6',
+            stroke: '#000000',
+            strokeThickness: 4
+        }).setOrigin(1, 1);
+    }
+
+    createButton(x, y, text, isIntro, action, index) {
+        const defaultColor = isIntro ? this.buttonColors.introDefault : this.buttonColors.default;
+        
+        const button = this.add.text(x, y, text, {
+            fontFamily: 'Arial, sans-serif',
+            fontSize: '24px',
+            fill: '#fff',
+            backgroundColor: defaultColor,
             padding: { x: 20, y: 10 },
-            borderRadius: 8,
-            shadow: { offsetX: 0, offsetY: 3, color: '#768687', fill: true, blur: 3 }
+            borderRadius: 5
         }).setOrigin(0.5);
 
         button.setInteractive();
+
         button.on('pointerover', () => {
             this.game.canvas.style.cursor = 'pointer';
-            button.setBackgroundColor('#aab7b8');
-            this.tweens.add({ targets: button, y: y - 2, duration: 100, ease: 'Power1' });
+            this.selectedButtonIndex = index;
+            this.updateButtonStyles();
         });
+
         button.on('pointerout', () => {
             this.game.canvas.style.cursor = 'default';
-            button.setBackgroundColor('#95a5a6');
-            this.tweens.add({ targets: button, y: y, duration: 100, ease: 'Power1' });
+            // We don't reset index on pointerout to keep selection with keyboard
         });
+
         button.on('pointerdown', () => {
             this.cameras.main.fadeOut(500, 0, 0, 0);
-            this.cameras.main.once(Phaser.Cameras.Scene2D.Events.FADE_OUT_COMPLETE, () => {
-                this.scene.start('StoryScene', {
-                    scenario: introScenario,
-                    nextScene: 'ChapterSelectionScene'
-                });
-            });
+            this.cameras.main.once(Phaser.Cameras.Scene2D.Events.FADE_OUT_COMPLETE, action);
+        });
+
+        return button;
+    }
+
+    addKeyListeners() {
+        this.input.keyboard.on('keyup', (event) => {
+            switch (event.code) {
+                case 'ArrowUp':
+                case 'KeyW':
+                    this.selectedButtonIndex = (this.selectedButtonIndex - 1 + this.buttons.length) % this.buttons.length;
+                    this.updateButtonStyles();
+                    break;
+                case 'ArrowDown':
+                case 'KeyS':
+                    this.selectedButtonIndex = (this.selectedButtonIndex + 1) % this.buttons.length;
+                    this.updateButtonStyles();
+                    break;
+                case 'KeyE':
+                case 'Enter':
+                    if (this.buttons[this.selectedButtonIndex]) {
+                        this.buttons[this.selectedButtonIndex].emit('pointerdown');
+                    }
+                    break;
+            }
+        });
+    }
+
+    updateButtonStyles() {
+        this.buttons.forEach((button, index) => {
+            const isIntro = button.text.includes('プロローグ');
+            const isSelected = index === this.selectedButtonIndex;
+
+            let color = isIntro ? this.buttonColors.introDefault : this.buttonColors.default;
+            if (isSelected) {
+                color = isIntro ? this.buttonColors.introSelected : this.buttonColors.selected;
+            }
+
+            button.setBackgroundColor(color);
         });
     }
 }

@@ -61,6 +61,43 @@ export const chapter3IntroScenario = [
 ];
 
 /**
+ * @type {Array<object>} - ヘルプモーダルのコンテンツ
+ */
+export const helpModalContent = [
+    { text: 'AIに​指示や​質問を​する​文章の​ことを​\n「プロンプト」と​いいます。​プロンプトに​より​\nあなたは​AIに​指示を​出すことができます。​\n抽象的な​プロンプトより、​具体的な​プロンプトを​使う​ことで​\nほしい​結果を​AIから​得やすくなります。​\nここでは、​AIから​明確な​答えを​もらいやすい​\nプロンプト作成の​コツを​お伝えします。' },
+    { text: '１．​人に​するように​指示する​\n人に​指示するように​具体的に​質問や​指示を​だすと​\n良い​回答が​得られます。​\n生成AIは​「優秀な​新入社員」と​言われます。​\n知識が​豊富で​優秀なのですが、​新入社員なので​\n具体的に​伝え例を​示してあげると​活躍してくれます。​\n具体的には​こんな​指示を​出すと​よいでしょう。​\n\n＜プロンプト例＞\n来週末に​予定している​会社の​イベントの​詳細を​まとめてください、​\n参加者に​配布します。​以下の​情報を​含めてください。​\n①イベントの​スケジュール\n②参加者リスト\n③必要な​物品リスト' },
+    { text: '２．​何度も​やり取りを​重ねる​\n人に​何度も​質問を​繰り返しているとうんざりされてしまうと​\n思いますが、​生成AIには​そのような​ことは​ありません。​\n何十回何百回でも​質問や​指示を​出すことができます。​\nどんどん指示を​だして​使い倒しましょう。​\n\n＜プロンプト例＞\n・ＳＮＳを​使った​マーケティング戦略の​アイデアを​１０個出して​\n→回答後に​：もっと​具体的な​アイデアを​１０個出して​' },
+    { text: '３．して​ほしい​ことを​伝える​\n​「して​ほしくない​こと」ではなく​\n「して​ほしい​こと」を​伝えると​生成AIに​とって​\nわかりやすく​かなり​効果的です。​\n\n✖​信頼性が​低い​答えは​しないでください​\n〇質問に​対して​具体的な​データや​事例を​含めて​回答してください​' },
+    { text: '４．​１プロンプト、​１質問\n一度に​多くの​質問を​投げかけると​\n生成AIが​対応できない​ことがあります。​\n質問は​一つずつ、​具体的に​行いましょう。​\n\n✖明日の​朝の​電車の​込み具合予想、​映画の​上映時間、​\n近くの​レストランを​教えて​\n〇明日の​朝の​電車の​込み具合を​教えて​' },
+    { text: '５．別の​話題に​する​ときは​新しい​チャットを​開く​\n前後の​文脈を​無視して、​関連性の​ない​質問を​すると​\n生成AIが​質問の​意図を​理解する​ことが​難しくなり、​\n誤解を​招く​可能性が​あります。​\n別の​話題に​する​ときは​新しい​チャットを​開くと​よいです。​\n\n✖質問１．​現在の​経済状況を​教えて。​\n　質問２．​最近の​映画に​ついて​どう​思う？​\n〇質問１．​現在の​経済状況を​教えて。​\n　質問２．​株価の​動向を​より​詳しく​教えて。' }
+];
+
+/**
+ * @type {object} - 第2章選択画面の情報
+ */
+export const chapter2SelectionInfo = {
+    description: 'この​ステージは​生成AIの​使い方を​村人を​助ける​ことを​通して​学ぶことができます。​\nあなたの​興味が​ある​生成AIの​使い方を​自由に​選んで、​学んで​みましょう！',
+    cases: [
+        {
+            title: 'CASE.1 役人​（エリオ）​　【議事録作成】',
+            scene: 'Chapter2-Case1Scene'
+        },
+        {
+            title: 'CASE.2 商人​（フレッド）​【表作成、​データ分析】',
+            scene: 'Chapter2-Case2Scene'
+        },
+        {
+            title: 'CASE.3 農家​（タルゴ）​　【調べもの】​',
+            scene: 'Chapter2-Case3Scene'
+        },
+        {
+            title: 'CASE.4 先生 (マエル)　 【アイデアだし】',
+            scene: 'Chapter2-Case4Scene'
+        }
+    ]
+};
+
+/**
  * @type {object} - ゲームの全データ。
  */
 export const gameData = {
@@ -80,6 +117,11 @@ export const gameData = {
                     { text: "だが、ここで諦めるわけにはいかない。\n粘り強く対話を続け、村の未来を切り開かなければ。", image: 'intro_1' }
                 ]
             }
+        },
+        'chapter2': {
+            scenes: ['Chapter2-Case1Scene', 'Chapter2-Case2Scene', 'Chapter2-Case3Scene', 'Chapter2-Case4Scene'],
+            totalQuizzes: 4, // 仮の値
+            questText: '村人の​お悩みを​AIで​解決する'
         },
         'chapter3': {
             scenes: ['Chapter3-1Scene'],
@@ -209,15 +251,35 @@ export const gameData = {
                 }
             ]
         },
+        'Chapter2-Case1Scene': {
+            displayName: '役場',
+            background: 'castleTown_upper',
+            entities: []
+        },
+        'Chapter2-Case2Scene': {
+            displayName: '商店',
+            background: 'castleTown_lower',
+            entities: []
+        },
+        'Chapter2-Case3Scene': {
+            displayName: '農地',
+            background: 'forest',
+            entities: []
+        },
+        'Chapter2-Case4Scene': {
+            displayName: '学校',
+            background: 'castleTown_upper',
+            entities: []
+        },
         'Chapter3-1Scene': {
-            displayName: '城下街',
+            displayName: '城下街(要変更)',
             background: 'castleTown_upper',
             backgroundSettings: { scale: 1.0, scrollFactor: 0.5, yOffset: 0 },
             worldWidth: 4800,
             entities: [
                 {
                     type: 'NPC', imageName: 'npc1', x: 400, y: 450, name: '村人G', dialog: [''], quiz: {
-                        question: `Ｑ１．顧客向けの提案資料作成に\n使用する「最新のITトレンド事例」を\n生成AIを使って調べました。\nその結果をどのように\n資料に記載すべきですか。`,
+                        question: `Ｑ１．顧客向けの提案資料作成に使用する「最新のITトレンド事例」を\n生成AIを使って調べました。\nその結果をどのように資料に記載すべきですか。`,
                         options: [
                             '「大手企業がやっている」として、そのまま提案資料に記載する。',
                             '実在するかどうかをニュース記事や公式サイトで確認する。',
@@ -230,7 +292,7 @@ export const gameData = {
                 },
                 {
                     type: 'NPC', imageName: 'npc1', x: 800, y: 450, name: '村人H', dialog: [''], quiz: {
-                        question: `Ｑ２．社長から「至急、送金してください」\nという指示が社員に届きました。\n添付された動画でも社長の姿と\n声が確認できましたが、\nこのような場面で取るべき行動はどれか。`,
+                        question: `Ｑ２．社長から「至急、送金してください」という指示が社員に届きました。\n添付された動画でも社長の姿と声が確認できましたが、\nこのような場面で取るべき行動はどれか。`,
                         options: [
                             '映像や声が本人に見えればそのまま指示に従う',
                             '別の手段（電話・直接確認など）で裏付けを取る',

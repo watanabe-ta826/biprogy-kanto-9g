@@ -13,6 +13,11 @@ import Chapter3_1Scene from './scenes/Chapter3-1Scene.js';
 import Chapter1_2Scene from './scenes/Chapter1-2Scene.js';
 import Chapter1_3Scene from './scenes/Chapter1-3Scene.js';
 import ResultScene from './scenes/ResultScene.js';
+import Chapter2SelectionScene from './scenes/Chapter2SelectionScene.js';
+import Chapter2_Case1Scene from './scenes/Chapter2-Case1Scene.js';
+import Chapter2_Case2Scene from './scenes/Chapter2-Case2Scene.js';
+import Chapter2_Case3Scene from './scenes/Chapter2-Case3Scene.js';
+import Chapter2_Case4Scene from './scenes/Chapter2-Case4Scene.js';
 
 
 /**
@@ -36,7 +41,7 @@ const config = {
         }
     },
     // ゲームで使用するシーンのリスト
-    scene: [TitleScene, StoryScene, ChapterSelectionScene, Chapter1_1Scene, Chapter1_2Scene, Chapter1_3Scene, Chapter2_1Scene, Chapter3_1Scene, ResultScene, BaseScene],
+    scene: [TitleScene, StoryScene, ChapterSelectionScene, Chapter1_1Scene, Chapter1_2Scene, Chapter1_3Scene, Chapter2_1Scene, Chapter3_1Scene, ResultScene, BaseScene, Chapter2SelectionScene, Chapter2_Case1Scene, Chapter2_Case2Scene, Chapter2_Case3Scene, Chapter2_Case4Scene],
 };
 
 // 設定を元にPhaser.Gameのインスタンスを生成
