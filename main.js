@@ -32,6 +32,9 @@ const config = {
     height: 600,
     // ゲームキャンバスを描画するHTML要素のID
     parent: 'game',
+    dom: {
+        createContainer: true
+    },
     // ゲームに物理演算を追加
     physics: {
         default: 'arcade', // デフォルトの物理エンジンとしてアーケード物理を選択

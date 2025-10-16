@@ -52,7 +52,7 @@ export default class ChapterSelectionScene extends Phaser.Scene {
                 action: () => this.scene.start('StoryScene', { scenario: chapter1IntroScenario, nextScene: 'Chapter1-1Scene' })
             },
             {
-                text: '＜第２章＞村人の​お悩みを​AIで​解決　～AIの​使い方を​学ぶ～',
+                text: '第2章: 村人の​お悩みを​AIで​解決　～AIの​使い方を​学ぶ～',
                 y: buttonYStart + buttonYStep,
                 isIntro: false,
                 action: () => this.scene.start('Chapter2SelectionScene')

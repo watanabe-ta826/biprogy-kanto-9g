@@ -6,16 +6,19 @@ class StoryScene extends BaseScene {
         super('StoryScene');
         this.storyContent = [];
         this.nextScene = '';
+        this.nextSceneData = {};
         this.currentIndex = 0;
         this.nextIndicator = null;
         this.isTransitioning = false;
         this.resultData = null;
         this.defaultTextStyle = null;
+        this.speakerNameText = null;
     }
 
     init(data) {
         this.storyContent = data.scenario || [];
         this.nextScene = data.nextScene || 'TitleScene';
+        this.nextSceneData = data.nextSceneData || {};
         this.currentIndex = 0;
         this.isTransitioning = false;
         this.resultData = {
@@ -42,7 +45,7 @@ class StoryScene extends BaseScene {
 
     create() {
         if (this.storyContent.length === 0) {
-            this.scene.start(this.nextScene);
+            this.scene.start(this.nextScene, this.nextSceneData);
             return;
         }
 
@@ -53,25 +56,26 @@ class StoryScene extends BaseScene {
             fill: '#ffffff',
             backgroundColor: 'rgba(0,0,0,0.7)',
             padding: { x: 20, y: 10 },
-            wordWrap: { width: 650, useAdvanced: true },
-            align: 'center'
+            wordWrap: { width: 800, useAdvanced: true },
+            align: 'left'
         };
-        this.storyText = this.add.text(480, 450, '', this.defaultTextStyle).setOrigin(0.5);
+        this.storyText = this.add.text(480, 480, '', this.defaultTextStyle).setOrigin(0.5);
+
+        this.speakerNameText = this.add.text(240, 420, '', {
+            fontSize: '26px',
+            fill: '#f1c40f',
+            fontStyle: 'bold',
+            backgroundColor: 'rgba(0,0,0,0.8)',
+            padding: { x: 20, y: 8 },
+            borderRadius: 5
+        }).setOrigin(0.5, 0.5).setVisible(false);
 
         this.displayNextContent();
 
-        // Eキーで次のコンテンツへ
-        this.input.keyboard.on('keyup-E', () => {
-            this.displayNextContent();
-        });
+        this.input.keyboard.on('keyup-E', () => this.displayNextContent());
+        this.input.on('pointerdown', () => this.displayNextContent());
 
-        // クリックで次のコンテンツへ
-        this.input.on('pointerdown', () => {
-            this.displayNextContent();
-        });
-
-        // 右下の「次へ」インジケーターを作成
-        this.nextIndicator = this.add.text(780, 580, 'Eキー or クリックで次へ▼', { 
+        this.nextIndicator = this.add.text(940, 580, 'Eキー or クリックで次へ▼', { 
             fontSize: '18px', 
             fill: '#fff',
             stroke: '#000',
@@ -87,7 +91,6 @@ class StoryScene extends BaseScene {
             repeat: -1 
         });
 
-        // スキップボタンを作成
         const skipButton = this.add.text(940, 20, 'スキップ >>', {
             fontFamily: 'Arial, sans-serif',
             fontSize: '18px',
@@ -95,74 +98,47 @@ class StoryScene extends BaseScene {
             backgroundColor: '#8c8e8fff',
             padding: { x: 12, y: 8 },
             borderRadius: 8,
-            shadow: { offsetX: 0, offsetY: 3, color: '#768687', fill: true, blur: 3 }
         }).setOrigin(1, 0).setInteractive().setDepth(102);
 
-        skipButton.on('pointerover', () => {
-            this.game.canvas.style.cursor = 'pointer';
-            skipButton.setBackgroundColor('#aab7b8');
-        });
-
-        skipButton.on('pointerout', () => {
-            this.game.canvas.style.cursor = 'default';
-            skipButton.setBackgroundColor('#95a5a6');
-        });
-
-        skipButton.on('pointerdown', () => {
-            this.skipScene();
+        skipButton.on('pointerover', () => { this.game.canvas.style.cursor = 'pointer'; skipButton.setBackgroundColor('#aab7b8'); });
+        skipButton.on('pointerout', () => { this.game.canvas.style.cursor = 'default'; skipButton.setBackgroundColor('#95a5a6'); });
+        skipButton.on('pointerdown', (pointer, localX, localY, event) => { 
+            event.stopPropagation(); 
+            this.skipScene(); 
         });
     }
 
     update() {
-        // BaseSceneのupdateロジックをこのシーンでは実行しない
+        // This scene does not need the BaseScene update logic (player, entities, etc.)
     }
 
     skipScene() {
-        if (this.isTransitioning) {
-            return;
-        }
+        if (this.isTransitioning) return;
         this.isTransitioning = true;
         this.input.keyboard.off('keyup-E');
         this.input.off('pointerdown');
         if (this.nextIndicator) {
             this.nextIndicator.destroy();
         }
-        this.cameras.main.fadeOut(500, 0, 0, 0); // Faster fade for skip
+        this.cameras.main.fadeOut(500, 0, 0, 0);
         this.cameras.main.once(Phaser.Cameras.Scene2D.Events.FADE_OUT_COMPLETE, () => {
             this.handleScenarioEnd();
         });
     }
 
     displayNextContent() {
-        if (this.isTransitioning) {
-            return;
-        }
+        if (this.isTransitioning) return;
 
         if (this.currentIndex >= this.storyContent.length) {
-            this.isTransitioning = true;
-            this.input.keyboard.off('keyup-E');
-            this.input.off('pointerdown');
-            if (this.nextIndicator) {
-                this.nextIndicator.destroy();
-            }
-            this.cameras.main.fadeOut(1000, 0, 0, 0);
-            this.cameras.main.once(Phaser.Cameras.Scene2D.Events.FADE_OUT_COMPLETE, () => {
-                this.handleScenarioEnd();
-            });
+            this.skipScene();
             return;
         }
 
         const content = this.storyContent[this.currentIndex];
 
         if (!content) {
-            console.error(`[StoryScene] Critical Error: Content is undefined at index ${this.currentIndex}. Forcing transition.`);
-            this.isTransitioning = true;
-            this.input.keyboard.off('keyup-E');
-            this.input.off('pointerdown');
-            if (this.nextIndicator) {
-                this.nextIndicator.destroy();
-            }
-            this.handleScenarioEnd();
+            console.error(`[StoryScene] Content is undefined at index ${this.currentIndex}.`);
+            this.skipScene();
             return;
         }
 
@@ -170,22 +146,26 @@ class StoryScene extends BaseScene {
             this.background.setTexture(content.image);
         }
         
-        // Apply custom style if it exists, otherwise revert to default
-        const style = content.style
-            ? { ...this.defaultTextStyle, ...content.style }
-            : this.defaultTextStyle;
+        const style = content.style ? { ...this.defaultTextStyle, ...content.style } : this.defaultTextStyle;
         this.storyText.setStyle(style);
-
         this.storyText.setText(content.text);
+
+        if (content.speaker) {
+            this.speakerNameText.setText(content.speaker).setVisible(true);
+            this.storyText.setAlign('left');
+        } else {
+            this.speakerNameText.setVisible(false);
+            this.storyText.setAlign('center');
+        }
+
         this.currentIndex++;
     }
 
     handleScenarioEnd() {
         if (this.resultData && this.resultData.chapterKey) {
-            // TODO: ここでResultModalを呼び出す
-            this.scene.start('ResultScene', this.resultData); // 新しいResultSceneにデータを渡す
+            this.scene.start('ResultScene', this.resultData);
         } else {
-            this.scene.start(this.nextScene);
+            this.scene.start(this.nextScene, this.nextSceneData);
         }
     }
 }

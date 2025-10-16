@@ -22,9 +22,20 @@ export default class Chapter2SelectionScene extends Phaser.Scene {
         this.add.image(480, 300, 'hub_background').setScale(1);
 
         // --- Title and Description ---
-        this.add.text(480, 80, '＜第２章＞村人の​お悩みを​AIで​解決', { fontSize: '40px', fill: '#fff', stroke: '#000', strokeThickness: 6 }).setOrigin(0.5);
-        this.add.text(480, 125, '～AIの​使い方を​学ぶ～', { fontSize: '28px', fill: '#fff', stroke: '#000', strokeThickness: 5 }).setOrigin(0.5);
-        this.add.text(480, 180, chapter2SelectionInfo.description, { fontSize: '18px', fill: '#f0f0f0', align: 'center', wordWrap: { width: 800 } }).setOrigin(0.5);
+        this.add.text(480, 100, '第2章: 村人の​お悩みを​AIで​解決　～AIの​使い方を​学ぶ～', { 
+            fontFamily: 'Arial, sans-serif',
+            fontSize: '32px', 
+            fill: '#fff', 
+            stroke: '#000', 
+            strokeThickness: 6 
+        }).setOrigin(0.5);
+        this.add.text(480, 150, chapter2SelectionInfo.description, { 
+            fontFamily: 'Meiryo, sans-serif',
+            fontSize: '18px', 
+            fill: '#f0f0f0', 
+            align: 'center', 
+            wordWrap: { width: 800 } 
+        }).setOrigin(0.5);
 
         // --- Initialize Buttons ---
         this.buttons = [];
@@ -35,12 +46,20 @@ export default class Chapter2SelectionScene extends Phaser.Scene {
 
         // --- Create CASE Buttons ---
         chapter2SelectionInfo.cases.forEach((caseInfo, index) => {
+            const action = () => {
+                if (caseInfo.scene === 'Chapter2-Case3Scene') {
+                    this.scene.start(caseInfo.scene, { partIndex: 0 });
+                } else {
+                    this.scene.start(caseInfo.scene);
+                }
+            };
+
             const button = this.createButton(
                 480, 
                 buttonYStart + (index * buttonYStep), 
                 caseInfo.title, 
                 false, // isBackButton
-                () => this.scene.start(caseInfo.scene), 
+                action, 
                 index
             );
             this.buttons.push(button);

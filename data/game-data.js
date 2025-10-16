@@ -121,7 +121,7 @@ export const gameData = {
         'chapter2': {
             scenes: ['Chapter2-Case1Scene', 'Chapter2-Case2Scene', 'Chapter2-Case3Scene', 'Chapter2-Case4Scene'],
             totalQuizzes: 4, // 仮の値
-            questText: '村人の​お悩みを​AIで​解決する'
+            questText: '第2章: 村人の​お悩みを​AIで​解決　～AIの​使い方を​学ぶ～'
         },
         'chapter3': {
             scenes: ['Chapter3-1Scene'],
@@ -264,7 +264,58 @@ export const gameData = {
         'Chapter2-Case3Scene': {
             displayName: '農地',
             background: 'forest',
-            entities: []
+            worldWidth: 960,
+            parts: [
+                {
+                    type: 'scenario',
+                    content: [
+                        { text: '最近村では、​異常気象に​より​村の​主力作物​「大麦」の​品質、​収穫低下に​悩まされていた。' },
+                        { text: '農民の​タルゴは​困り果て、​プレイヤー​（賢者）に​相談してきた。' },
+                        { speaker: '農民', text: '「貴重な​資金源であった​大麦の​栽培が​最近​難しくなってきているんだ。。\n代わりに​新たな​作物を​栽培したいのだが、​何が​いいと​思う？」' },
+                        { speaker: '賢者', text: '「作物の​候補は​ある？」' },
+                        { speaker: '農民', text: '「キャベツ、​稲、​ナス、​じゃが​いも、​さつまい​もの​中から​選びたい。」' },
+                        { speaker: '賢者', text: '「育てたい​作物の​条件は？」' },
+                        { speaker: '農民', text: '「比較的傷みにくく、​長期保存させやすい​作物に​したい。」' },
+                        { speaker: '農民', text: '「あと、​暖かい​時期に​育てられる​作物が​良いかな。」' },
+                        { speaker: '賢者', text: '「栽培に​あたり、​困っている​ことは​ある？」' },
+                        { speaker: '農民', text: '「気候の​変化に​より​最近は​雨が​少ないので、​干ばつに​強い​作物が​良いね。」' },
+                    ]
+                },
+                {
+                    type: 'exercise',
+                    id: 'exercise1',
+                    description: '聞いた​話を​もとに、​農民の​求める​条件に​合う​作物を​生成AIを​使って​調べてみましょう。​',
+                    referenceText: '【農民の要望】\n・候補：キャベツ、稲、ナス、じゃがいも、さつまいも\n・比較的傷みにくく、長期保存させやすい\n・暖かい時期に育てられる\n・雨が少なくても育つ（干ばつに強い）',
+                    questions: [
+                        { id: 'q1', text: '農民に​ふさわしい​作物は​…' }
+                    ],
+                    correctAnswer: { q1: 'さつまいも' },
+                    feedback: { incorrect: '残念！​選んだ​作物では、​合わない​条件が​あるようです。​もう​一度​調べてみよう。' }
+                },
+                {
+                    type: 'scenario',
+                    content: [
+                        { speaker: '農民', text: 'なる​ほど、​さつまいもか！​これなら​この​地域でも​栽培できそうだ！' },
+                        { speaker: '農民', text: '他にも​知りたいことが​あるんだ、​いく​つか​調べて​もらっても​いいかい？' },
+                    ]
+                },
+                {
+                    type: 'exercise',
+                    id: 'exercise2',
+                    description: '追加の​質問を​受けました。​生成AIで​調べて​農民に​教えてあげよう。',
+                    questions: [
+                        { id: 'q2', text: '１．​ジャガイモに​しなかった​理由はなに？' },
+                        { id: 'q3', text: '２．​シカや​イノシシが​近くに​生息しているんだけど、​有効な​対策を​教えて​' },
+                        { id: 'q4', text: '３．​サツマイモの​長期保存する​方​法を​教えて​' }
+                    ]
+                },
+                {
+                    type: 'scenario',
+                    content: [
+                        { speaker: '農民', text: 'ありがとう、​これから​何を​するべきか​整理できたよ！​君に​相談して​良かった！' }
+                    ]
+                }
+            ]
         },
         'Chapter2-Case4Scene': {
             displayName: '学校',
