@@ -9,26 +9,26 @@
  * @property {string} src - 画像ファイルへのパス。
  */
 export const imagePaths = [
-  { name: "player", src: "public/img/player.png" }, // 正面向き
-  { name: "player_left", src: "public/img/player_left.png" }, // 左向き
-  { name: "player_right", src: "public/img/player_right.png" }, // 右向き
-  { name: "otomo", src: "public/img/otomo.png" },
-  { name: "otomo_run", src: "public/img/otomo_run.png" },
-  { name: "hub_background", src: "public/img/hub_background.jpg" },
-  { name: "title_background", src: "public/img/title_background.png" },
-  { name: "forest", src: "public/img/forest.jpg" },
-  { name: "castleTown_lower", src: "public/img/castleTown_lower.jpg" },
-  { name: "castleTown_upper", src: "public/img/castleTown_upper.jpg" },
-  { name: "intro_1", src: "public/img/intro_1.jpg" },
-  { name: "intro_2", src: "public/img/intro_2.jpg" },
-  { name: "npc1", src: "public/img/npc1.png" },
-  { name: "npc2", src: "public/img/npc2.png" },
-  { name: "npc3", src: "public/img/npc3.png" },
-  { name: "npc4", src: "public/img/npc4.png" },
-  { name: "npc5", src: "public/img/npc5.png" },
-  { name: "npc6", src: "public/img/npc6.png" },
-  { name: "diagram_q3", src: "public/img/diagram_q3.png" },
-  { name: "arrival", src: "public/img/arrival.png" },
+  { name: "player", src: "img/player.png" }, // 正面向き
+  { name: "player_left", src: "img/player_left.png" }, // 左向き
+  { name: "player_right", src: "img/player_right.png" }, // 右向き
+  { name: "otomo", src: "img/otomo.png" },
+  { name: "otomo_run", src: "img/otomo_run.png" },
+  { name: "hub_background", src: "img/hub_background.jpg" },
+  { name: "title_background", src: "img/title_background.png" },
+  { name: "forest", src: "img/forest.jpg" },
+  { name: "castleTown_lower", src: "img/castleTown_lower.jpg" },
+  { name: "castleTown_upper", src: "img/castleTown_upper.jpg" },
+  { name: "intro_1", src: "img/intro_1.jpg" },
+  { name: "intro_2", src: "img/intro_2.jpg" },
+  { name: "npc1", src: "img/npc1.png" },
+  { name: "npc2", src: "img/npc2.png" },
+  { name: "npc3", src: "img/npc3.png" },
+  { name: "npc4", src: "img/npc4.png" },
+  { name: "npc5", src: "img/npc5.png" },
+  { name: "npc6", src: "img/npc6.png" },
+  { name: "diagram_q3", src: "img/diagram_q3.png" },
+  { name: "arrival", src: "img/arrival.png" },
 ];
 
 /**
