@@ -49,7 +49,8 @@ class StoryScene extends BaseScene {
             return;
         }
 
-        this.background = this.add.image(480, 300, this.storyContent[0].image).setDisplaySize(this.sys.game.config.width, this.sys.game.config.height);
+        const firstImage = this.storyContent[0].image || 'title_background';
+        this.background = this.add.image(480, 300, firstImage).setDisplaySize(this.sys.game.config.width, this.sys.game.config.height);
 
         this.defaultTextStyle = {
             fontSize: '24px',

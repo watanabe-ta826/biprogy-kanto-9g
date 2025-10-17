@@ -48,7 +48,7 @@ const config = {
         baseURL: import.meta.env.BASE_URL,
     },
     // ゲームで使用するシーンのリスト
-    scene: [TitleScene, StoryScene, ChapterSelectionScene, Chapter1_1Scene, Chapter1_2Scene, Chapter1_3Scene, Chapter2_1Scene, Chapter3_1Scene, ResultScene, BaseScene, Chapter2SelectionScene, Chapter2_Case1Scene, Chapter2_Case2Scene, Chapter2_Case3Scene, Chapter2_Case4Scene],
+    scene: [TitleScene, StoryScene, ChapterSelectionScene, Chapter1_1Scene, Chapter1_2Scene, Chapter1_3Scene, Chapter2_1Scene, Chapter3_1Scene, ResultScene, Chapter2SelectionScene, Chapter2_Case1Scene, Chapter2_Case2Scene, Chapter2_Case3Scene, Chapter2_Case4Scene],
 };
 
 // 設定を元にPhaser.Gameのインスタンスを生成

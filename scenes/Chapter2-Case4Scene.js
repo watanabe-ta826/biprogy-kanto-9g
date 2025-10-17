@@ -1,6 +1,6 @@
 import BaseChapterScene from './BaseChapterScene.js';
 import HelpModal from '../HelpModal.js';
-import { helpModalContent } from '../data/game-data.js';
+import { helpModalContent, gameData } from '../data/game-data.js';
 
 export default class Chapter2_Case4Scene extends BaseChapterScene {
     constructor() {
@@ -8,7 +8,8 @@ export default class Chapter2_Case4Scene extends BaseChapterScene {
     }
 
     create() {
-        super.create();
+        const sceneData = gameData.scenes[this.scene.key];
+        super.create(sceneData);
 
         this.createHelpIcon();
         this.helpModal = new HelpModal(this, helpModalContent);
