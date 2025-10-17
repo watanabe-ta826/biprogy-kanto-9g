@@ -1,53 +1,53 @@
-# ƒ[ƒNƒtƒ[‚Ì–¼‘O
+# ãƒ¯ãƒ¼ã‚¯ãƒ•ãƒ­ãƒ¼ã®åå‰
 name: Deploy to GitHub Pages
 
-# ƒ[ƒNƒtƒ[‚ªÀs‚³‚ê‚éƒ^ƒCƒ~ƒ“ƒO‚ğw’è
+# ãƒ¯ãƒ¼ã‚¯ãƒ•ãƒ­ãƒ¼ãŒå®Ÿè¡Œã•ã‚Œã‚‹ã‚¿ã‚¤ãƒŸãƒ³ã‚°ã‚’æŒ‡å®š
 on:
-  # mainƒuƒ‰ƒ“ƒ`‚Épush‚³‚ê‚½‚Æ‚«‚ÉÀs
+  # mainãƒ–ãƒ©ãƒ³ãƒã«pushã•ã‚ŒãŸã¨ãã«å®Ÿè¡Œ
   push:
-    branches: ["main"] # ‚²©g‚ÌƒƒCƒ“ƒuƒ‰ƒ“ƒ`–¼imain‚âmaster‚È‚Çj‚É‡‚í‚¹‚Ä‚­‚¾‚³‚¢
+    branches: ["fix-image"] # ã”è‡ªèº«ã®ãƒ¡ã‚¤ãƒ³ãƒ–ãƒ©ãƒ³ãƒåï¼ˆmainã‚„masterãªã©ï¼‰ã«åˆã‚ã›ã¦ãã ã•ã„
 
-  # è“®‚Å‚àÀs‚Å‚«‚é‚æ‚¤‚É‚·‚é
+  # æ‰‹å‹•ã§ã‚‚å®Ÿè¡Œã§ãã‚‹ã‚ˆã†ã«ã™ã‚‹
   workflow_dispatch:
 
-# ƒWƒ‡ƒu‚Ìƒp[ƒ~ƒbƒVƒ‡ƒ“İ’è
+# ã‚¸ãƒ§ãƒ–ã®ãƒ‘ãƒ¼ãƒŸãƒƒã‚·ãƒ§ãƒ³è¨­å®š
 permissions:
   contents: write
   pages: write
   id-token: write
 
-# Às‚·‚éƒWƒ‡ƒu‚ğ’è‹`
+# å®Ÿè¡Œã™ã‚‹ã‚¸ãƒ§ãƒ–ã‚’å®šç¾©
 jobs:
   build-and-deploy:
-    # ƒWƒ‡ƒu‚ğÀs‚·‚éŠÂ‹«
+    # ã‚¸ãƒ§ãƒ–ã‚’å®Ÿè¡Œã™ã‚‹ç’°å¢ƒ
     runs-on: ubuntu-latest
 
-    # ƒWƒ‡ƒu‚ÌƒXƒeƒbƒv
+    # ã‚¸ãƒ§ãƒ–ã®ã‚¹ãƒ†ãƒƒãƒ—
     steps:
-      # 1. ƒŠƒ|ƒWƒgƒŠ‚ÌƒR[ƒh‚ğƒ`ƒFƒbƒNƒAƒEƒg
+      # 1. ãƒªãƒã‚¸ãƒˆãƒªã®ã‚³ãƒ¼ãƒ‰ã‚’ãƒã‚§ãƒƒã‚¯ã‚¢ã‚¦ãƒˆ
       - name: Checkout ??
         uses: actions/checkout@v4
 
-      # 2. Node.jsŠÂ‹«‚ğƒZƒbƒgƒAƒbƒv
+      # 2. Node.jsç’°å¢ƒã‚’ã‚»ãƒƒãƒˆã‚¢ãƒƒãƒ—
       - name: Set up Node.js ??
         uses: actions/setup-node@v4
         with:
-          node-version: "20" # package.json‚ÆŒİŠ·«‚Ì‚ ‚éNode.js‚Ìƒo[ƒWƒ‡ƒ“‚ğw’è
+          node-version: "20" # package.jsonã¨äº’æ›æ€§ã®ã‚ã‚‹Node.jsã®ãƒãƒ¼ã‚¸ãƒ§ãƒ³ã‚’æŒ‡å®š
           cache: "npm"
 
-      # 3. ˆË‘¶ƒpƒbƒP[ƒW‚ğƒCƒ“ƒXƒg[ƒ‹
+      # 3. ä¾å­˜ãƒ‘ãƒƒã‚±ãƒ¼ã‚¸ã‚’ã‚¤ãƒ³ã‚¹ãƒˆãƒ¼ãƒ«
       - name: Install dependencies ?
         run: npm install
 
-      # 4. ƒvƒƒWƒFƒNƒg‚ğƒrƒ‹ƒh
+      # 4. ãƒ—ãƒ­ã‚¸ã‚§ã‚¯ãƒˆã‚’ãƒ“ãƒ«ãƒ‰
       - name: Build project ??
-        run: npm run build # vite build‚ªÀs‚³‚êAdistƒtƒHƒ‹ƒ_‚ª¶¬‚³‚ê‚é
+        run: npm run build # vite buildãŒå®Ÿè¡Œã•ã‚Œã€distãƒ•ã‚©ãƒ«ãƒ€ãŒç”Ÿæˆã•ã‚Œã‚‹
 
-      # 5. GitHub Pages‚ÉƒfƒvƒƒC
+      # 5. GitHub Pagesã«ãƒ‡ãƒ—ãƒ­ã‚¤
       - name: Deploy to GitHub Pages ?
         uses: peaceiris/actions-gh-pages@v4
         with:
-          # ƒfƒvƒƒC‚É•K—v‚Èƒg[ƒNƒ“
+          # ãƒ‡ãƒ—ãƒ­ã‚¤ã«å¿…è¦ãªãƒˆãƒ¼ã‚¯ãƒ³
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          # ƒfƒvƒƒC‚·‚éƒtƒHƒ‹ƒ_‚ğw’è
+          # ãƒ‡ãƒ—ãƒ­ã‚¤ã™ã‚‹ãƒ•ã‚©ãƒ«ãƒ€ã‚’æŒ‡å®š
           publish_dir: ./dist
