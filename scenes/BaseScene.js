@@ -1,6 +1,5 @@
 import Phaser from "phaser";
 import Player from "../Player.js";
-import Otomo from "../Otomo.js";
 // import { createInventory } from '../ui.js';
 import { gameData } from "../data/game-data.js";
 import QuizModal from "../QuizModal.js";
@@ -9,7 +8,6 @@ export default class BaseScene extends Phaser.Scene {
   constructor(key) {
     super(key);
     this.player = null;
-    this.otomo = null;
     this.entities = null;
     this.interactionText = null;
     this.interactionTarget = null;
@@ -26,7 +24,6 @@ export default class BaseScene extends Phaser.Scene {
     this.fullTextToType = "";
     this.dialogNextIndicator = null;
     this.dialogNextIndicatorTween = null;
-    this.itemGetIndicator = null;
     this.questUiBg = null;
     this.questUiText = null;
     this.entryData = null;
@@ -84,9 +81,6 @@ export default class BaseScene extends Phaser.Scene {
     this.physics.add.collider(this.player, this.platforms);
     this.cameras.main.startFollow(this.player, true, 0.08, 0.08);
 
-    this.otomo = new Otomo(this, this.player.x - 50, 450, "otomo");
-    this.physics.add.collider(this.otomo, this.platforms);
-
     // this.inventoryManager = createInventory(this, this.registry.get('inventory'));
     this.interactionText = this.add
       .text(0, 0, "Eキーで操作", {
@@ -103,95 +97,17 @@ export default class BaseScene extends Phaser.Scene {
     this.createDialogBox();
     this.quizModal = new QuizModal(this);
     this.createQuestTracker();
-    this.createItemGetNotification();
 
     this.initializeInputHandlers();
-  }
-
-  createItemGetNotification() {
-    const bg = this.add.graphics().setScrollFactor(0).setDepth(299).setAlpha(0);
-    const txt = this.add
-      .text(0, 0, "", {
-        fontSize: "18px",
-        fill: "#f1c40f",
-        stroke: "#a67c00",
-        strokeThickness: 2,
-        fontFamily: "Meiryo, sans-serif",
-      })
-      .setDepth(300)
-      .setAlpha(0);
-    this.itemGetIndicator = { bg, txt };
-  }
-
-  collectItem(itemObject) {
-    // const inventory = this.registry.get('inventory');
-    // inventory.push(itemObject.itemName);
-    // this.registry.set('inventory', inventory);
-
-    const collectedItems = this.registry.get("collectedItems");
-    collectedItems[itemObject.itemIdentifier] = true;
-    this.registry.set("collectedItems", collectedItems);
-
-    // this.inventoryManager.addItem(itemObject.itemName);
-    this.showItemGetNotification(itemObject.itemName);
-
-    itemObject.destroy();
-  }
-
-  showItemGetNotification(itemName) {
-    if (this.itemGetTween) {
-      this.itemGetTween.forEach((t) => t.stop());
-    }
-
-    const { bg, txt } = this.itemGetIndicator;
-
-    txt.setText(`◆ ${itemName} を手に入れた`);
-    const textBounds = txt.getBounds();
-    const padding = { x: 20, y: 10 };
-    bg.clear();
-    bg.fillStyle(0x2c3e50, 0.9);
-    bg.lineStyle(2, 0xf1c40f, 1);
-    bg.fillRoundedRect(
-      20,
-      20,
-      textBounds.width + padding.x * 2,
-      textBounds.height + padding.y * 2,
-      8
-    );
-    bg.strokeRoundedRect(
-      20,
-      20,
-      textBounds.width + padding.x * 2,
-      textBounds.height + padding.y * 2,
-      8
-    );
-    txt.setPosition(20 + padding.x, 20 + padding.y);
-
-    bg.setAlpha(1);
-    txt.setAlpha(1);
-
-    const t1 = this.tweens.add({
-      targets: [bg, txt],
-      alpha: 0,
-      duration: 500,
-      ease: "Power1",
-      delay: 1500,
-      paused: true,
-    });
-
-    this.itemGetTween = [t1];
-    t1.play();
   }
 
   update() {
     if (this.isModalOpen) {
       this.player.setVelocity(0);
-      this.otomo.setVelocity(0);
       return;
     }
 
     if (this.player) this.player.update();
-    if (this.otomo) this.otomo.update(this.player);
 
     this.findInteractionTarget();
   }
@@ -262,9 +178,6 @@ export default class BaseScene extends Phaser.Scene {
           break;
         case "Portal":
           interactionMessage = "Eキーで移動";
-          break;
-        case "Collectible":
-          interactionMessage = "Eキーで拾う";
           break;
       }
       this.interactionText.setText(interactionMessage);
@@ -389,9 +302,6 @@ export default class BaseScene extends Phaser.Scene {
     if (!entity) return;
 
     switch (entity.type) {
-      case "Collectible":
-        this.collectItem(entity);
-        break;
       case "Portal":
         const targetSceneData = gameData.scenes[entity.targetScene];
         const displayName =

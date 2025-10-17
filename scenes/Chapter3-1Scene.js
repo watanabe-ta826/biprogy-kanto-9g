@@ -1,4 +1,7 @@
 import BaseChapterScene from './BaseChapterScene.js';
+import NPC from '../NPC.js';
+import Portal from '../Portal.js';
+import { gameData } from '../data/game-data.js';
 
 export default class Chapter3_1Scene extends BaseChapterScene {
     constructor() {
@@ -6,7 +9,23 @@ export default class Chapter3_1Scene extends BaseChapterScene {
     }
 
     create() {
-        super.create();
-        this.add.text(480, 300, '第3章: AIの落とし穴', { fontSize: '32px', fill: '#fff' }).setOrigin(0.5);
+        const sceneData = gameData.scenes['Chapter3-1Scene'];
+        super.create(sceneData);
+
+        sceneData.entities.forEach(entityData => {
+            let entity;
+            switch (entityData.type) {
+                case 'NPC':
+                    entity = new NPC(this, entityData.x, entityData.y, entityData.name, entityData.dialog, entityData.isStatic, entityData.quiz);
+                    this.physics.add.collider(entity, this.platforms);
+                    break;
+                case 'Portal':
+                    entity = new Portal(this, entityData.x, entityData.y, 50, 100, entityData.targetScene, entityData.entryX);
+                    break;
+            }
+            if (entity) {
+                this.entities.add(entity);
+            }
+        });
     }
 }

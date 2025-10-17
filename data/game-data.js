@@ -9,26 +9,26 @@
  * @property {string} src - 画像ファイルへのパス。
  */
 export const imagePaths = [
-  { name: "player", src: "img/player.png" }, // 正面向き
-  { name: "player_left", src: "img/player_left.png" }, // 左向き
-  { name: "player_right", src: "img/player_right.png" }, // 右向き
-  { name: "otomo", src: "img/otomo.png" },
-  { name: "otomo_run", src: "img/otomo_run.png" },
-  { name: "hub_background", src: "img/hub_background.jpg" },
-  { name: "title_background", src: "img/title_background.png" },
-  { name: "forest", src: "img/forest.jpg" },
-  { name: "castleTown_lower", src: "img/castleTown_lower.jpg" },
-  { name: "castleTown_upper", src: "img/castleTown_upper.jpg" },
-  { name: "intro_1", src: "img/intro_1.jpg" },
-  { name: "intro_2", src: "img/intro_2.jpg" },
-  { name: "npc1", src: "img/npc1.png" },
-  { name: "npc2", src: "img/npc2.png" },
-  { name: "npc3", src: "img/npc3.png" },
-  { name: "npc4", src: "img/npc4.png" },
-  { name: "npc5", src: "img/npc5.png" },
-  { name: "npc6", src: "img/npc6.png" },
-  { name: "diagram_q3", src: "img/diagram_q3.png" },
-  { name: "arrival", src: "img/arrival.png" },
+  { name: "player", src: "public/img/player.png" }, // 正面向き
+  { name: "player_left", src: "public/img/player_left.png" }, // 左向き
+  { name: "player_right", src: "public/img/player_right.png" }, // 右向き
+  { name: "otomo", src: "public/img/otomo.png" },
+  { name: "otomo_run", src: "public/img/otomo_run.png" },
+  { name: "hub_background", src: "public/img/hub_background.jpg" },
+  { name: "title_background", src: "public/img/title_background.png" },
+  { name: "forest", src: "public/img/forest.jpg" },
+  { name: "castleTown_lower", src: "public/img/castleTown_lower.jpg" },
+  { name: "castleTown_upper", src: "public/img/castleTown_upper.jpg" },
+  { name: "intro_1", src: "public/img/intro_1.jpg" },
+  { name: "intro_2", src: "public/img/intro_2.jpg" },
+  { name: "npc1", src: "public/img/npc1.png" },
+  { name: "npc2", src: "public/img/npc2.png" },
+  { name: "npc3", src: "public/img/npc3.png" },
+  { name: "npc4", src: "public/img/npc4.png" },
+  { name: "npc5", src: "public/img/npc5.png" },
+  { name: "npc6", src: "public/img/npc6.png" },
+  { name: "diagram_q3", src: "public/img/diagram_q3.png" },
+  { name: "arrival", src: "public/img/arrival.png" },
 ];
 
 /**
@@ -132,234 +132,527 @@ export const chapter3IntroScenario = [
 ];
 
 /**
+ * @type {Array<object>} - ヘルプモーダルのコンテンツ
+ */
+export const helpModalContent = [
+    { text: 'AIに​指示や​質問を​する​文章の​ことを​\n「プロンプト」と​いいます。​プロンプトに​より​\nあなたは​AIに​指示を​出すことができます。​\n抽象的な​プロンプトより、​具体的な​プロンプトを​使う​ことで​\nほしい​結果を​AIから​得やすくなります。​\nここでは、​AIから​明確な​答えを​もらいやすい​\nプロンプト作成の​コツを​お伝えします。' },
+    { text: '１．​人に​するように​指示する​\n人に​指示するように​具体的に​質問や​指示を​だすと​\n良い​回答が​得られます。​\n生成AIは​「優秀な​新入社員」と​言われます。​\n知識が​豊富で​優秀なのですが、​新入社員なので​\n具体的に​伝え例を​示してあげると​活躍してくれます。​\n具体的には​こんな​指示を​出すと​よいでしょう。​\n\n＜プロンプト例＞\n来週末に​予定している​会社の​イベントの​詳細を​まとめてください、​\n参加者に​配布します。​以下の​情報を​含めてください。​\n①イベントの​スケジュール\n②参加者リスト\n③必要な​物品リスト' },
+    { text: '２．​何度も​やり取りを​重ねる​\n人に​何度も​質問を​繰り返しているとうんざりされてしまうと​\n思いますが、​生成AIには​そのような​ことは​ありません。​\n何十回何百回でも​質問や​指示を​出すことができます。​\nどんどん指示を​だして​使い倒しましょう。​\n\n＜プロンプト例＞\n・ＳＮＳを​使った​マーケティング戦略の​アイデアを​１０個出して​\n→回答後に​：もっと​具体的な​アイデアを​１０個出して​' },
+    { text: '３．して​ほしい​ことを​伝える​\n​「して​ほしくない​こと」ではなく​\n「して​ほしい​こと」を​伝えると​生成AIに​とって​\nわかりやすく​かなり​効果的です。​\n\n✖​信頼性が​低い​答えは​しないでください​\n〇質問に​対して​具体的な​データや​事例を​含めて​回答してください​' },
+    { text: '４．​１プロンプト、​１質問\n一度に​多くの​質問を​投げかけると​\n生成AIが​対応できない​ことがあります。​\n質問は​一つずつ、​具体的に​行いましょう。​\n\n✖明日の​朝の​電車の​込み具合予想、​映画の​上映時間、​\n近くの​レストランを​教えて​\n〇明日の​朝の​電車の​込み具合を​教えて​' },
+    { text: '５．別の​話題に​する​ときは​新しい​チャットを​開く​\n前後の​文脈を​無視して、​関連性の​ない​質問を​すると​\n生成AIが​質問の​意図を​理解する​ことが​難しくなり、​\n誤解を​招く​可能性が​あります。​\n別の​話題に​する​ときは​新しい​チャットを​開くと​よいです。​\n\n✖質問１．​現在の​経済状況を​教えて。​\n　質問２．​最近の​映画に​ついて​どう​思う？​\n〇質問１．​現在の​経済状況を​教えて。​\n　質問２．​株価の​動向を​より​詳しく​教えて。' }
+];
+
+/**
+ * @type {object} - 第2章選択画面の情報
+ */
+export const chapter2SelectionInfo = {
+    description: 'この​ステージは​生成AIの​使い方を​村人を​助ける​ことを​通して​学ぶことができます。​\nあなたの​興味が​ある​生成AIの​使い方を​自由に​選んで、​学んで​みましょう！',
+    cases: [
+        {
+            title: 'CASE.1 役人​（エリオ）​　【議事録作成】',
+            scene: 'Chapter2-Case1Scene'
+        },
+        {
+            title: 'CASE.2 商人​（フレッド）​【表作成、​データ分析】',
+            scene: 'Chapter2-Case2Scene'
+        },
+        {
+            title: 'CASE.3 農家​（タルゴ）​　【調べもの】​',
+            scene: 'Chapter2-Case3Scene'
+        },
+        {
+            title: 'CASE.4 先生 (マエル)　 【アイデアだし】',
+            scene: 'Chapter2-Case4Scene'
+        }
+    ]
+};
+
+/**
  * @type {object} - ゲームの全データ。
  */
 export const gameData = {
-  totalQuizzesInGame: 6, // クイズの総数を6に更新
-  chapters: {
-    chapter1: {
-      scenes: ["Chapter1-1Scene", "Chapter1-2Scene", "Chapter1-3Scene"],
-      totalQuizzes: 6,
-      clearScenario: {
-        high: [
-          {
-            text: "村人たちとの対話を通して、私は村が抱える問題の根深さを改めて知った。\nAIへの無知と、それ故の恐怖心が、村の発展を妨げているのだ。",
-            image: "intro_2",
-          },
-          {
-            text: "しかし、彼らの知恵と経験もまた、村の大きな財産だ。\nAIと人の知恵を融合させれば、きっと道は開けるはずだ。",
-            image: "intro_1",
-          },
-        ],
-        low: [
-          {
-            text: "村人たちとの対話は、私の心を重くした。\nAIに対する誤解は根深く、一筋縄ではいかないだろう。",
-            image: "intro_2",
-          },
-          {
-            text: "だが、ここで諦めるわけにはいかない。\n粘り強く対話を続け、村の未来を切り開かなければ。",
-            image: "intro_1",
-          },
-        ],
-      },
+    totalQuizzesInGame: 16, // クイズの総数を16に更新
+    chapters: {
+        'chapter1': {
+            scenes: ['Chapter1-1Scene', 'Chapter1-2Scene', 'Chapter1-3Scene'],
+            totalQuizzes: 6,
+            questText: '村人にAIについて教えて回る',
+            clearScenario: {
+                high: [
+                    { text: "村人たちとの対話を通して、私は村が抱える問題の根深さを改めて知った。\nAIへの無知と、それ故の恐怖心が、村の発展を妨げているのだ。", image: 'intro_2' },
+                    { text: "しかし、彼らの知恵と経験もまた、村の大きな財産だ。\nAIと人の知恵を融合させれば、きっと道は開けるはずだ。", image: 'intro_1' }
+                ],
+                low: [
+                    { text: "村人たちとの対話は、私の心を重くした。\nAIに対する誤解は根深く、一筋縄ではいかないだろう。", image: 'intro_2' },
+                    { text: "だが、ここで諦めるわけにはいかない。\n粘り強く対話を続け、村の未来を切り開かなければ。", image: 'intro_1' }
+                ]
+            }
+        },
+        'chapter2': {
+            scenes: ['Chapter2-Case1Scene', 'Chapter2-Case2Scene', 'Chapter2-Case3Scene', 'Chapter2-Case4Scene'],
+            totalQuizzes: 4, // 仮の値
+            questText: '第2章: 村人の​お悩みを​AIで​解決　～AIの​使い方を​学ぶ～'
+        },
+        'chapter3': {
+            scenes: ['Chapter3-1Scene'],
+            totalQuizzes: 10,
+            questText: '村人に生成AIの​リスクを​学んで​もらう',
+            clearScenario: {
+                high: [
+                    { text: '賢者：…このように、AIは「選択肢を広げる存在」であり、「選ぶ主体」ではないんだ。
+			今まで僕たちがやっていた仕事を代わりにやってくれたり、案を出すのを手伝ってくれたり、話し相手になってくれたり、うまく使えば頼れる相棒なんだが
+			僕たちが使い方を間違えれば、大切なものを失うことにつながるかもしれない。
+			生成AIのいいところもリスクも知ったうえで、これからは九関村が生成AIと共生できるような村になったらいいなと思っている。
+			そのために、みんな協力してくれるかな？' },
+                    { text: '村人たち：もちろんです！' },
+                    { text: 'この後、村人たちはリスクを学んだことで生成AIとうまく付き合うことができるようになり、
+村の生産性は向上。次第に繁栄していった。
+賢者は九関村の生成AI最高顧問となり、村の頼れる相談役として村人と生成AIとともに今日も働いている。' }
+                ],
+                low: [
+                    { text: '賢者：…このように、AIは「選択肢を広げる存在」であり、「選ぶ主体」ではないんだ。
+			今まで僕たちがやっていた仕事を代わりにやってくれたり、案を出すのを手伝ってくれたり、話し相手になってくれたり、うまく使えば頼れる相棒なんだが
+			僕たちが使い方を間違えれば、大切なものを失うことにつながるかもしれない。
+			生成AIのいいところもリスクも知ったうえで、これからは九関村が生成AIと共生できるような村になったらいいなと思っている。
+			そのために、みんな協力してくれるかな？' },
+                    { text: '村人たち：もちろんです！' },
+                    { text: 'この後、村人たちはリスクを学んだことで生成AIとうまく付き合うことができるようになり、
+村の生産性は向上。次第に繁栄していった。
+賢者は九関村の生成AI最高顧問となり、村の頼れる相談役として村人と生成AIとともに今日も働いている。' }
+                ]
+            }
+        }
     },
-  },
-  scenes: {
-    "Chapter1-1Scene": {
-      displayName: "村外れの森",
-      background: "forest",
-      backgroundSettings: { scale: 1.0, scrollFactor: 0.5, yOffset: -100 },
-      worldWidth: 1600,
-      entities: [
-        {
-          type: "NPC",
-          imageName: "npc1",
-          x: 400,
-          y: 450,
-          name: "村人A",
-          dialog: [
-            "賢者様、AI、AIって最近よく聞きますが、一体何なんですかい？",
-          ],
-          quiz: {
-            question: "Q1. 生成AIとは何をする技術？",
-            options: [
-              "人間の脳を模倣する技術",
-              "新しいコンテンツ（文章、画像など）を作り出す技術",
-              "インターネットの情報を検索する技術",
-              "データの分析や分類を行う技術",
-            ],
-            correctAnswer: "B",
-            explanation:
-              "生成AIは、既存のデータをもとにして\n新しい文章、画像、音声、動画などを自動で作り出す技術です。\nChatGPTのようなツールは、自然な文章を生成する代表例です。\n\nDの「データの分析や分類」は、「識別AI（判別AI）」の領域のため、\n生成AIの目的とは異なります。",
-          },
+    scenes: {
+        "Chapter1-1Scene": {
+            displayName: "村外れの森",
+            background: "forest",
+            backgroundSettings: { scale: 1.0, scrollFactor: 0.5, yOffset: -100 },
+            worldWidth: 1600,
+            entities: [
+                {
+                    type: "NPC",
+                    imageName: "npc1",
+                    x: 400,
+                    y: 450,
+                    name: "村人A",
+                    dialog: ["賢者様、AI、AIって最近よく聞きますが、一体何なんですかい？"],
+                    quiz: {
+                        question: "Q1. 生成AIとは何をする技術？",
+                        options: ["人間の脳を模倣する技術", "新しいコンテンツ（文章、画像など）を作り出す技術", "インターネットの情報を検索する技術", "データの分析や分類を行う技術"],
+                        correctAnswer: "B",
+                        explanation: "生成AIは、既存のデータをもとにして\n新しい文章、画像、音声、動画などを自動で作り出す技術です。\nChatGPTのようなツールは、自然な文章を生成する代表例です。\n\nDの「データの分析や分類」は、「識別AI（判別AI）」の領域のため、\n生成AIの目的とは異なります。"
+                    }
+                },
+                {
+                    type: "NPC",
+                    imageName: "npc2",
+                    x: 800,
+                    y: 450,
+                    name: "村人B",
+                    dialog: ["AIはどうやって物事を覚えるんでしょうかね？\n人間みたいに学校にでも行くのかしら？"],
+                    quiz: {
+                        question: "Q2. 生成AIが「学習」するために必要なものは何？",
+                        options: ["電源とインターネット", "大量のデータ", "人間の指示", "検索履歴"],
+                        correctAnswer: "B",
+                        explanation: "生成AIは、膨大なテキストや画像などのデータを使って学習します。\nGPT-3（2020年）の時点で、書籍にすれば\n約500万冊に相当する量の文章を学習しています。\n最新のAI（GPT-4オムニ）の学習量は公開されていませんが、\nこれ以上のデータが学習されていることは間違いないでしょう。\nこれにより、文脈を理解したり、自然な文章を作ったりできるようになります。"
+                    }
+                },
+                {
+                    type: "Portal",
+                    x: 1550,
+                    y: 540,
+                    targetScene: "Chapter1-2Scene",
+                    entryX: 100
+                }
+            ]
         },
-        {
-          type: "NPC",
-          imageName: "npc2",
-          x: 800,
-          y: 450,
-          name: "村人B",
-          dialog: [
-            "AIはどうやって物事を覚えるんでしょうかね？\n人間みたいに学校にでも行くのかしら？",
-          ],
-          quiz: {
-            question: "Q2. 生成AIが「学習」するために必要なものは何？",
-            options: [
-              "電源とインターネット",
-              "大量のデータ",
-              "人間の指示",
-              "検索履歴",
-            ],
-            correctAnswer: "B",
-            explanation:
-              "生成AIは、膨大なテキストや画像などのデータを使って学習します。\nGPT-3（2020年）の時点で、書籍にすれば\n約500万冊に相当する量の文章を学習しています。\n最新のAI（GPT-4オムニ）の学習量は公開されていませんが、\nこれ以上のデータが学習されていることは間違いないでしょう。\nこれにより、文脈を理解したり、自然な文章を作ったりできるようになります。",
-          },
+        "Chapter1-2Scene": {
+            displayName: "城下街 下層",
+            background: "castleTown_lower",
+            backgroundSettings: { scale: 1.0, scrollFactor: 0.5, yOffset: 0 },
+            worldWidth: 1600,
+            entities: [
+                {
+                    type: "Portal",
+                    x: 50,
+                    y: 540,
+                    targetScene: "Chapter1-1Scene",
+                    entryX: 1500
+                },
+                {
+                    type: "NPC",
+                    imageName: "npc3",
+                    x: 400,
+                    y: 450,
+                    name: "村人C",
+                    dialog: ["最近噂のChatGPTとかいうのは、どんな仕組みで動いてるんでしょう？\n魔法か何かですか？"],
+                    quiz: {
+                        question: "Q3. ChatGPTのような生成AIは、主にどの技術を使って動いている？",
+                        options: ["ブロックチェーン", "データベース管理", "機械学習（特に深層学習）", "仮想現実"],
+                        correctAnswer: "C",
+                        explanation: "生成AIは、大量のデータを学習してパターンを理解し、\nそこから新しい情報を生成する機械学習の一種です。\n技術的には主に深層学習（ディープラーニング）の\n一分野として位置づけられています。",
+                        explanationImage: "diagram_q3"
+                    }
+                },
+                {
+                    type: "NPC",
+                    imageName: "npc4",
+                    x: 800,
+                    y: 450,
+                    name: "村人D",
+                    dialog: ["AIってのは何でもできる万能の道具なんでしょうか？\nできないこともあるんですか？"],
+                    quiz: {
+                        question: "Q4. 次のうち、生成AIの代表的な活用例ではないものはどれ？",
+                        options: ["小説や詩の作成", "犯罪目的での助言", "プログラムコードの自動生成", "画像から絵を描く"],
+                        correctAnswer: "B",
+                        explanation: "生成AIは新たなアイデアやコンテンツ（文章・画像・音声等）を\n作り出す能力があります。\nAIは悪用されないように学習されているため、\n犯罪行為に関わる質問には答えられません。"
+                    }
+                },
+                {
+                    type: "Portal",
+                    x: 1550,
+                    y: 540,
+                    targetScene: "Chapter1-3Scene",
+                    entryX: 100
+                }
+            ]
         },
-        {
-          type: "Portal",
-          x: 1550,
-          y: 540,
-          targetScene: "Chapter1-2Scene",
-          entryX: 100,
+        'Chapter1-3Scene': {
+            displayName: '城下街 上層',
+            background: 'castleTown_upper',
+            backgroundSettings: { scale: 1.0, scrollFactor: 0.5, yOffset: 0 },
+            worldWidth: 1600,
+            entities: [
+                { type: 'Portal', x: 50, y: 540, targetScene: 'Chapter1-2Scene', entryX: 1500 },
+                {
+                    type: 'NPC', imageName: 'npc5', x: 400, y: 450, name: '村人E', dialog: ['AIに答えられない質問なんて、本当にあるのかね？いくつか試してみたいもんだ。'], quiz: {
+                        question: 'Q5. 生成AIが回答しづらい質問を（すべて）選べ',
+                        options: ['地球の大きさを教えて', '私の人生を良いものにするにはどうすればよいか教えて', '東京スカイツリーの高さを教えて', '全く新しいスポーツを考えて', '京都で人気の抹茶スイーツのお店を教えて'],
+                        correctAnswer: ['B', 'D', 'E'],
+                        multiSelect: true,
+                        explanation: 'A, C\n→ 回答しやすい質問です。これは明確な事実に基づく質問であり、生成AIは学習済みのデータから正確な情報を提供できます。\nB\n→ 回答しづらい質問です。価値観や個人の状況に大きく依存するあいまいなものの​ため、生成AIが一般的なアドバイスはできても、正解を出すことは困難です。
+D\n→ やや回答しづらい質問です。生成AIはすでに世の中にある情報をもとに、それらを組み合わせた回答をするため「全く新しい」物を生み出すことは難しいとされています。\nE\n→ 回答しづらい質問です。生成AIはリアルタイムの人気情報や最新の店舗情報には弱いため、正確な回答が難しいです。
+このように、生成AIは事実ベースの質問には強い一方で、価値観・創造性・最新情報・曖昧な問いには弱い傾向があります。業務や教育で使う際には、質問の設計（プロンプト）が非常に重要になります。'
+                    }
+                },
+                {
+                    type: 'NPC', imageName: 'npc6', x: 800, y: 450, name: '村人F', dialog: ['この前、AIは「ハルシネーション」？とかいうのを起こすって聞いたんですが、一体どういう意味なんでしょう？'], quiz: {
+                        question: 'Q6. 生成AIが「ハルシネーション」を起こすとはどういう意味？',
+                        options: ['AIが画像を生成する際に色彩が不自然になること', 'AIが存在しない情報や事実をもっともらしく生成すること', 'AIが処理中にクラッシュすること', 'AIが人間の感情を模倣すること'],
+                        correctAnswer: 'B',
+                        explanation: '生成AIは、学習した情報をもとに推論して出力しますが、\n時には事実と異なる内容を自信満々に生成することがあります。\nこれを「ハルシネーション」と呼び、\n特に業務利用時には注意が必要です。'
+                    }
+                }
+            ]
         },
-      ],
+        'Chapter2-Case1Scene': {
+            displayName: '役場',
+            background: 'castleTown_upper',
+            entities: []
+        },
+        'Chapter2-Case2Scene': {
+            displayName: '商店',
+            background: 'castleTown_lower',
+            entities: []
+        },
+        'Chapter2-Case3Scene': {
+            displayName: '農地',
+            background: 'forest',
+            worldWidth: 960,
+            parts: [
+                {
+                    type: 'scenario',
+                    content: [
+                        { text: '最近村では、​異常気象に​より​村の​主力作物​「大麦」の​品質、​収穫低下に​悩まされていた。' },
+                        { text: '農民の​タルゴは​困り果て、​プレイヤー​（賢者）に​相談してきた。' },
+                        { speaker: '農民', text: '「貴重な​資金源であった​大麦の​栽培が​最近​難しくなってきているんだ。。
+代わりに​新たな​作物を​栽培したいのだが、​何が​いいと​思う？」' },
+                        { speaker: '賢者', text: '「作物の​候補は​ある？」' },
+                        { speaker: '農民', text: '「キャベツ、​稲、​ナス、​じゃが​いも、​さつまい​もの​中から​選びたい。」' },
+                        { speaker: '賢者', text: '「育てたい​作物の​条件は？」' },
+                        { speaker: '農民', text: '「比較的傷みにくく、​長期保存させやすい​作物に​したい。」' },
+                        { speaker: '農民', text: '「あと、​暖かい​時期に​育てられる​作物が​良いかな。」' },
+                        { speaker: '賢者', text: '「栽培に​あたり、​困っている​ことは​ある？」' },
+                        { speaker: '農民', text: '「気候の​変化に​より​最近は​雨が​少ないので、​干ばつに​強い​作物が​良いね。」' },
+                    ]
+                },
+                {
+                    type: 'exercise',
+                    id: 'exercise1',
+                    description: '聞いた​話を​もとに、​農民の​求める​条件に​合う​作物を​生成AIを​使って​調べてみましょう。​',
+                    referenceText: '【農民の要望】
+・候補：キャベツ、稲、ナス、じゃがいも、さつまいも
+・比較的傷みにくく、長期保存させやすい
+・暖かい時期に育てられる
+・雨が少なくても育つ（干ばつに強い）',
+                    questions: [
+                        { id: 'q1', text: '農民に​ふさわしい​作物は​…' }
+                    ],
+                    correctAnswer: { q1: 'さつまいも' },
+                    feedback: { incorrect: '残念！​選んだ​作物では、​合わない​条件が​あるようです。​もう​一度​調べてみよう。' }
+                },
+                {
+                    type: 'scenario',
+                    content: [
+                        { speaker: '農民', text: 'なる​ほど、​さつまいもか！​これなら​この​地域でも​栽培できそうだ！' },
+                        { speaker: '農民', text: '他にも​知りたいことが​あるんだ、​いく​つか​調べて​もらっても​いいかい？' },
+                    ]
+                },
+                {
+                    type: 'exercise',
+                    id: 'exercise2',
+                    description: '追加の​質問を​受けました。​生成AIで​調べて​農民に​教えてあげよう。',
+                    questions: [
+                        { id: 'q2', text: '１．​ジャガイモに​しなかった​理由はなに？' },
+                        { id: 'q3', text: '２．​シカや​イノシシが​近くに​生息しているんだけど、​有効な​対策を​教えて​' },
+                        { id: 'q4', text: '３．​サツマイモの​長期保存する​方​法を​教えて​' }
+                    ]
+                },
+                {
+                    type: 'scenario',
+                    content: [
+                        { speaker: '農民', text: 'ありがとう、​これから​何を​するべきか​整理できたよ！​君に​相談して​良かった！' }
+                    ]
+                }
+            ]
+        },
+        'Chapter2-Case4Scene': {
+            displayName: '学校',
+            background: 'castleTown_upper',
+            entities: []
+        },
+        'Chapter3-1Scene': {
+            displayName: '城下街(要変更)',
+            background: 'castleTown_upper',
+            backgroundSettings: { scale: 1.0, scrollFactor: 0.5, yOffset: 0 },
+            worldWidth: 4800,
+            entities: [
+                {
+                    type: 'NPC', imageName: 'npc1', x: 400, y: 450, name: '村人G', dialog: [''], quiz: {
+                        question: `Ｑ１．顧客向けの提案資料作成に使用する「最新のITトレンド事例」を
+生成AIを使って調べました。
+その結果をどのように資料に記載すべきですか。`,
+                        options: ['「大手企業がやっている」として、そのまま提案資料に記載する。', '実在するかどうかをニュース記事や公式サイトで確認する。', 'AIに「本当に存在しますか？」と聞いてOKと言えば信用する。', '顧客には「AIが考えたアイデア」として斬新さをアピールする。'],
+                        correctAnswer: 'B',
+                        explanation: `ハルシネーションにより、
+実際には存在しないサービスを
+生成している可能性があります。
+情報の正確性が求められるケースでは、
+サービスが実在するかしないかにかかわらず、
+ファクトチェックをしましょう。`
+                    }
+                },
+                {
+                    type: 'NPC', imageName: 'npc1', x: 800, y: 450, name: '村人H', dialog: [''], quiz: {
+                        question: `Ｑ２．社長から「至急、送金してください」という指示が社員に届きました。
+添付された動画でも社長の姿と声が確認できましたが、
+このような場面で取るべき行動はどれか。`,
+                        options: ['映像や声が本人に見えればそのまま指示に従う', '別の手段（電話・直接確認など）で裏付けを取る', '指示が届いたらすぐに処理してスピードを優先する', '社内チャットに投稿し、みんなの意見を募る'],
+                        correctAnswer: 'B',
+                        explanation: `ディープフェイク（人工知能 (AI) を
+用いて生成された偽の映像、音声）の
+可能性があります。
+動画の内容だけで判断せず、
+情報源の確認や公式発表と
+照らし合わせることで、
+ディープフェイクにだまされる
+リスクを減らすことができます。`
+                    }
+                },
+                {
+                    type: 'NPC', imageName: 'npc1', x: 1200, y: 450, name: '村人I', dialog: [''], quiz: {
+                        question: `Ｑ３．生成AIを用いた
+顧客対応チャットボットが、
+過去の問い合わせデータを学習して
+顧客対応を自動化しています。
+しかし、過去のデータには
+特定地域や特定層の顧客の意見が
+多く含まれていました。
+この場合に起こり得るリスクはどれか。`,
+                        options: ['全ての顧客に同じ回答を返す', '特定地域や特定層の顧客に偏った対応をしてしまう', 'AIが問い合わせを無視する', 'AIが問い合わせ内容を削除してしまう'],
+                        correctAnswer: 'B',
+                        explanation: `生成AIは与えられたデータに
+基づいて学習する為、
+学習データに偏りがある場合、
+AIの応答が特定の属性に
+偏る可能性があります。
+結果として、特定の顧客層への
+不公平な対応や満足度低下が
+起こるリスクがあります。`
+                    }
+                },
+                {
+                    type: 'NPC', imageName: 'npc1', x: 1600, y: 450, name: '村人J', dialog: [''], quiz: {
+                        question: `Ｑ４．生成AIがユーザーの個人情報を
+学習に利用した場合、
+最も正しいものはどれか？`,
+                        options: ['入力された情報は匿名化されるため、安心して利用できる', 'ユーザーの同意なしに個人情報が利用されることもある', 'AIが個人情報を自動的に削除するため心配無用', '個人情報は学習に使われないためリスクはない'],
+                        correctAnswer: 'B',
+                        explanation: `氏名や住所などの個人情報は
+非常に重要な情報で、
+本人の同意なしに利用されると
+プライバシー侵害になります。
+EUのGDPR（一般データ保護規則）では、
+個人情報の収集・利用に厳しいルールが
+定められており、同意や適切な管理が
+義務付けられています。
+生成AIの利用時も、こうした規則を守り、
+個人情報の取り扱いに注意が必要です。`
+                    }
+                },
+                {
+                    type: 'NPC', imageName: 'npc1', x: 2000, y: 450, name: '村人K', dialog: [''], quiz: {
+                        question: `Ｑ５．生成AIを使って
+プレゼン資料に入れる画像を作成したところ、
+その画像が既存の人気キャラクターに
+酷似していると指摘された。
+この場合に最も正しいのはどれか？`,
+                        options: ['AIが自動で作ったため、責任はAIにある', '生成AIを提供したサービス会社が責任を負う', '利用者である自分が著作権侵害を問われる可能性がある', '社内だけで使うなら著作権は問題にならない'],
+                        correctAnswer: 'C',
+                        explanation: `生成AIが作った作品でも、
+既存の著作物に似ていれば
+著作権侵害とされる可能性があります。
+その場合、責任を負うのは
+AIではなく利用者本人です。
+「社内で使うだけなら大丈夫」
+というのは誤解で、
+資料が社外に共有されたり
+拡散されたりするリスクは常にあります。`
+                    }
+                },
+                {
+                    type: 'NPC', imageName: 'npc1', x: 2400, y: 450, name: '村人L', dialog: [''], quiz: {
+                        question: `Ｑ６．仕事で生成AIを使う際、
+機密情報漏洩のリスクを避けるために
+最も適切な対応はどれか？`,
+                        options: ['AIに社内文書をすべて入力して、要約させる', '機密情報を含む内容はAIに入力しないようにする', 'AIに社外秘の情報を入力した場合、サービス提供元に情報の削除を依頼する', 'AIに入力する前に、情報を暗号化する'],
+                        correctAnswer: 'B',
+                        explanation: `生成AIは便利な反面、
+入力した情報が外部のサーバーに送信され、
+サービスの改善や学習に
+使われる可能性があります。
+そのため、機密情報や社外秘の情報を
+入力することは、情報漏洩の
+大きなリスクになります。
+実際に2023年、サムスン電子で
+社員がソースコードや会議記録を
+ChatGPTに入力し、それが外部に
+漏れる危険性があるとして
+問題となりました。`
+                    }
+                },
+                {
+                    type: 'NPC', imageName: 'npc1', x: 2800, y: 450, name: '村人M', dialog: [''], quiz: {
+                        question: `Ｑ７．病院が導入した
+AI診断支援ツールを用いた結果、
+医者がAさんの病状を
+誤って診断してしまった。
+この時の責任は誰にあると考えられるか。`,
+                        options: ['原則として、AIを用いて判断をした医者に責任がある', '診断を信じてしまったので、Aさんに責任がある。', '診断支援ツールに病気のデータを提供した人に責任がある。', '誰にも責任はない。'],
+                        correctAnswer: 'A',
+                        explanation: `AIの出力による損害が発生した場合は
+原則として、そのAIを利用した人が
+責任を負います。
+ただし、そのAIが意図的に
+誤った出力を出すように
+設計されていた場合などはその限りではなく、
+AIを作った人に責任が
+発生することがあります。
+日本ではAI活用推進法の整備によって、
+近年のAI分野のルール整備が
+行われています。AIが発展するにつれて、
+AIが重要な判断の材料を
+提供するようになった際も、
+最終的には利用する人間が
+責任を負うことを忘れずに、
+出力結果を確認するようにしましょう。`
+                    }
+                },
+                {
+                    type: 'NPC', imageName: 'npc1', x: 3200, y: 450, name: '村人N', dialog: [''], quiz: {
+                        question: `Ｑ８．AIがCさんの好みを学習し、
+Cさんが最も関心を引くような
+出力を繰り返すことで、
+どんなリスクが生じると考えられるか。
+次の選択肢から１つ選びなさい。`,
+                        options: ['中立的な情報が出力されにくくなり、極端な思考が一般的だとCさんが捉えてしまうこと。', '出力が専門的になりすぎてCさんが理解できなくなってしまうこと。', 'Cさんが大量の情報を処理できなくなること。', 'AIが人間からの入力を受け付けなくなってしまうということ。'],
+                        correctAnswer: 'A',
+                        explanation: `AIはこれまでの会話履歴などの
+情報を最適化することで、
+似たような出力をするように
+なる性質があります。
+これらの性質の結果として、
+フィルターバブルや
+エコチェンバー現象として知られています。
+これらへの対策としては、
+なるべく多くの情報源に触れることや
+AIの入力の工夫で対策できます。
+例えば、「中立的に/様々な観点で
+述べてください」や
+「それぞれのメリット・デメリットを
+あげてください。」というような
+プロンプトの工夫が効果的です。`
+                    }
+                },
+                {
+                    type: 'NPC', imageName: 'npc1', x: 3600, y: 450, name: '村人O', dialog: [''], quiz: {
+                        question: `Ｑ９．Bさんは生成AIを日常的に用い、
+ほとんどの意思決定をAIにゆだねています。
+この結果として考えられるリスクとして
+考えられるもの
+次の選択肢から１つ選びなさい。`,
+                        options: ['自分で選択する力が弱まり、AIの提案を無批判に受け入れるようになること。', 'AIの学習データがBさんのデータで埋め尽くされること', 'AIによって、Bさんの論理的思考力が増強されること', 'BさんがAIを過度に
+使用することにより
+AIの応答が遅延するようになること'],
+                        correctAnswer: 'A',
+                        explanation: `AIは情報の収集や整理を通して
+我々の意思決定を
+サポートしてくれるツールです。
+これを便利に使うことは
+意思決定の質をあげることが
+できる可能性があります。
+しかし、AIの出力を鵜呑みにして、
+それだけを根拠に自らの行動を
+決定することは思考力が
+低下する可能性があります。
+AIの情報を参考にして
+主体的に行動を決定することが
+望ましいとされています。`
+                    }
+                },
+                {
+                    type: 'NPC', imageName: 'npc1', x: 4000, y: 450, name: '村人P', dialog: [''], quiz: {
+                        question: `Ｑ１０.AIの使用方法として、
+適切でないものを
+以下の選択肢から１つ選びなさい。`,
+                        options: ['画像生成AIで自身のSNS用のアイコンを作成した。', 'SNSで炎上した投稿の分析にAIを用いた。', '著名な作品をAIを用いて再構成し、オリジナル作品として販売した。', 'オンライン会議の録画データから会議の議事録をAIで出力した。'],
+                        correctAnswer: 'C',
+                        explanation: `1の画像生成は問題ないです。
+しかし、画像が著作権に違反しないか
+どうかはチェックが必要です。
+2の分析は問題ないです。
+しかし、炎上を分析した結果を
+用いて誰かを攻撃するような
+生成を行わないようにしましょう
+4の議事録作成は問題ないです。
+出力結果をたたきにして
+出来の良い議事録を
+作成できるようになりましょう。
+3は適切ではありません。
+他人の著作物をもとにした
+生成結果を商用利用することは
+認められていません。`
+                    }
+                }
+            ]
+        }
     },
-    "Chapter1-2Scene": {
-      displayName: "城下街 下層",
-      background: "castleTown_lower",
-      backgroundSettings: { scale: 1.0, scrollFactor: 0.5, yOffset: 0 },
-      worldWidth: 1600,
-      entities: [
-        {
-          type: "Portal",
-          x: 50,
-          y: 540,
-          targetScene: "Chapter1-1Scene",
-          entryX: 1500,
-        },
-        {
-          type: "NPC",
-          imageName: "npc3",
-          x: 400,
-          y: 450,
-          name: "村人C",
-          dialog: [
-            "最近噂のChatGPTとかいうのは、どんな仕組みで動いてるんでしょう？\n魔法か何かですか？",
-          ],
-          quiz: {
-            question:
-              "Q3. ChatGPTのような生成AIは、主にどの技術を使って動いている？",
-            options: [
-              "ブロックチェーン",
-              "データベース管理",
-              "機械学習（特に深層学習）",
-              "仮想現実",
-            ],
-            correctAnswer: "C",
-            explanation:
-              "生成AIは、大量のデータを学習してパターンを理解し、\nそこから新しい情報を生成する機械学習の一種です。\n技術的には主に深層学習（ディープラーニング）の\n一分野として位置づけられています。",
-            explanationImage: "diagram_q3",
-          },
-        },
-        {
-          type: "NPC",
-          imageName: "npc4",
-          x: 800,
-          y: 450,
-          name: "村人D",
-          dialog: [
-            "AIってのは何でもできる万能の道具なんでしょうか？\nできないこともあるんですか？",
-          ],
-          quiz: {
-            question:
-              "Q4. 次のうち、生成AIの代表的な活用例ではないものはどれ？",
-            options: [
-              "小説や詩の作成",
-              "犯罪目的での助言",
-              "プログラムコードの自動生成",
-              "画像から絵を描く",
-            ],
-            correctAnswer: "B",
-            explanation:
-              "生成AIは新たなアイデアやコンテンツ（文章・画像・音声等）を\n作り出す能力があります。\nAIは悪用されないように学習されているため、\n犯罪行為に関わる質問には答えられません。",
-          },
-        },
-        {
-          type: "Portal",
-          x: 1550,
-          y: 540,
-          targetScene: "Chapter1-3Scene",
-          entryX: 100,
-        },
-      ],
+    /**
+     * @type {object} - ミッションの定義（現在は未使用）
+     */
+    missions: {
+        // 今後ミッション機能を追加する際に使用
     },
-    "Chapter1-3Scene": {
-      displayName: "城下街 上層",
-      background: "castleTown_upper",
-      backgroundSettings: { scale: 1.0, scrollFactor: 0.5, yOffset: 0 },
-      worldWidth: 1600,
-      entities: [
-        {
-          type: "Portal",
-          x: 50,
-          y: 540,
-          targetScene: "Chapter1-2Scene",
-          entryX: 1500,
-        },
-        {
-          type: "NPC",
-          imageName: "npc5",
-          x: 400,
-          y: 450,
-          name: "村人E",
-          dialog: [
-            "AIに答えられない質問なんて、本当にあるのかね？いくつか試してみたいもんだ。",
-          ],
-          quiz: {
-            question: "Q5. 生成AIが回答しづらい質問を（すべて）選べ",
-            options: [
-              "地球の大きさを教えて",
-              "私の人生を良いものにするにはどうすればよいか教えて",
-              "東京スカイツリーの高さを教えて",
-              "全く新しいスポーツを考えて",
-              "京都で人気の抹茶スイーツのお店を教えて",
-            ],
-            correctAnswer: ["B", "D", "E"],
-            multiSelect: true,
-            explanation:
-              "A, C：回答しやすい質問です。\n明確な事実に基づくため、学習データから正確な情報を提供できます。\n\nB：回答しづらい質問です。\n価値観や個人の状況に依存するため、正解を出すことは困難です。\n\nD：やや回答しづらい質問です。\n既存の情報を組み合わせるため、「全く新しい」創造は苦手です。\n\nE：回答しづらい質問です。\nリアルタイムの人気情報や最新の店舗情報には弱いです。\n\nこのように、生成AIは事実ベースの質問には強い一方、\n価値観・創造性・最新情報が絡む問いには弱い傾向があります。",
-          },
-        },
-        {
-          type: "NPC",
-          imageName: "npc6",
-          x: 800,
-          y: 450,
-          name: "村人F",
-          dialog: [
-            "この前、AIは「ハルシネーション」？とかいうのを起こすって聞いたんですが、\n一体どういう意味なんでしょう？",
-          ],
-          quiz: {
-            question:
-              "Q6. 生成AIが「ハルシネーション」を起こすとはどういう意味？",
-            options: [
-              "AIが画像を生成する際に色彩が不自然になること",
-              "AIが存在しない情報や事実をもっともらしく生成すること",
-              "AIが処理中にクラッシュすること",
-              "AIが人間の感情を模倣すること",
-            ],
-            correctAnswer: "B",
-            explanation:
-              "生成AIは、学習した情報をもとに推論して出力しますが、\n時には事実と異なる内容を自信満々に生成することがあります。\nこれを「ハルシネーション」と呼び、\n特に業務利用時には注意が必要です。",
-          },
-        },
-      ],
-    },
-  },
-  /**
-   * @type {object} - ミッションの定義（現在は未使用）
-   */
-  missions: {
-    // 今後ミッション機能を追加する際に使用
-  },
 };

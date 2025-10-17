@@ -43,6 +43,7 @@ export default class NPC extends Phaser.Physics.Arcade.Sprite {
     // プレイヤーのサイズ感に合わせるためにスケールを調整
     if (imageName) {
       this.setScale(0.12); // この数値を変更して大きさを調整してください (例: 0.5 = 50%の大きさ)
+
     }
 
     this.body
