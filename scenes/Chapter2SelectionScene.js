@@ -47,7 +47,7 @@ export default class Chapter2SelectionScene extends Phaser.Scene {
         // --- Create CASE Buttons ---
         chapter2SelectionInfo.cases.forEach((caseInfo, index) => {
             const action = () => {
-                if (caseInfo.scene === 'Chapter2-Case3Scene') {
+                if (caseInfo.scene === 'Chapter2-Case3Scene' || caseInfo.scene === 'Chapter2-Case4Scene') {
                     this.scene.start(caseInfo.scene, { partIndex: 0 });
                 } else {
                     this.scene.start(caseInfo.scene);
