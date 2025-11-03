@@ -1,5 +1,6 @@
 import Phaser from 'phaser';
-import { gameData } from '../data/game-data.js';
+import { gameData, helpModalContent } from '../data/game-data.js';
+import HelpModal from '../HelpModal.js';
 
 export default class Chapter2_Case3Scene extends Phaser.Scene {
     constructor() {
@@ -7,6 +8,7 @@ export default class Chapter2_Case3Scene extends Phaser.Scene {
         this.currentPartIndex = 0;
         this.sceneData = null;
         this.uiElements = [];
+        this.helpModal = null;
     }
 
     create(data) {
@@ -48,6 +50,46 @@ export default class Chapter2_Case3Scene extends Phaser.Scene {
         const description = this.add.text(formX + formWidth / 2, formY + 30, exercise.description, { fontSize: '20px', fill: '#fff', align: 'center', wordWrap: { width: formWidth - 40 } }).setOrigin(0.5, 0);
         this.uiElements.push(description);
 
+        // Help button (matching Chapter2SelectionScene.js design)
+        const helpIcon = this.add.text(920, 40, '？', {
+            fontFamily: 'Arial, sans-serif',
+            fontSize: '32px',
+            fill: '#fff',
+            backgroundColor: '#17a2b8',
+            padding: { x: 12, y: 4 },
+            borderRadius: 100
+        }).setOrigin(0.5).setInteractive().setScrollFactor(0).setDepth(100);
+        this.uiElements.push(helpIcon);
+
+        const tooltip = this.add.text(0, 0, 'プロンプト作成のコツ', {
+            fontFamily: 'Meiryo, sans-serif',
+            fontSize: '14px',
+            fill: '#000',
+            backgroundColor: '#f8f9fa',
+            padding: { x: 8, y: 4 },
+            borderRadius: 3
+        }).setOrigin(1.1, 0.5).setVisible(false).setDepth(300);
+        this.uiElements.push(tooltip);
+
+        helpIcon.on('pointerover', () => {
+            this.game.canvas.style.cursor = 'pointer';
+            helpIcon.setBackgroundColor('#138496');
+            tooltip.setPosition(helpIcon.x, helpIcon.y);
+            tooltip.setVisible(true);
+        });
+        helpIcon.on('pointerout', () => {
+            this.game.canvas.style.cursor = 'default';
+            helpIcon.setBackgroundColor('#17a2b8');
+            tooltip.setVisible(false);
+        });
+        helpIcon.on('pointerdown', () => {
+            tooltip.setVisible(false);
+            if (!this.helpModal) {
+                this.helpModal = new HelpModal(this, helpModalContent);
+            }
+            this.helpModal.show();
+        });
+
         if (exercise.referenceText) {
             const refText = this.add.text(formX + 40, formY + 80, exercise.referenceText, { fontSize: '16px', fill: '#ddd', align: 'left', wordWrap: { width: formWidth - 80 }, lineSpacing: 6 }).setOrigin(0, 0);
             this.uiElements.push(refText);
@@ -78,6 +120,12 @@ export default class Chapter2_Case3Scene extends Phaser.Scene {
                 this.scene.start('Chapter2-Case3Scene', { partIndex: this.currentPartIndex + 1 });
             }
         });
+    }
+
+    update() {
+        if (this.helpModal) {
+            this.helpModal.update();
+        }
     }
 
     shutdown() {

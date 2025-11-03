@@ -3,7 +3,7 @@ import Phaser from 'phaser';
 export default class HelpModal {
     constructor(scene, content) {
         this.scene = scene;
-        this.content = content; // Array of {text, image} objects
+        this.content = Array.isArray(content) ? content : []; // Ensure content is always an array
         this.modal = null;
         this.contentText = null;
         this.contentImage = null;
@@ -87,6 +87,14 @@ export default class HelpModal {
         this.scene.children.bringToTop(this.modal);
         this.scene.isModalOpen = true; // To prevent other inputs
 
+        // Move DOM elements off-screen
+        this.scene.children.list.forEach(child => {
+            if (child.type === 'DOMElement') {
+                child.node.style.position = 'relative'; // or 'absolute'
+                child.node.style.left = '-9999px';
+            }
+        });
+
         this.keyA = this.scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.A);
         this.keyD = this.scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.D);
         this.keyLeft = this.scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.LEFT);
@@ -98,6 +106,14 @@ export default class HelpModal {
         this.modal.setVisible(false);
         this.scene.isModalOpen = false;
 
+        // Restore DOM elements
+        this.scene.children.list.forEach(child => {
+            if (child.type === 'DOMElement') {
+                child.node.style.position = '';
+                child.node.style.left = '';
+            }
+        });
+
         this.scene.input.keyboard.removeKey(Phaser.Input.Keyboard.KeyCodes.A);
         this.scene.input.keyboard.removeKey(Phaser.Input.Keyboard.KeyCodes.D);
         this.scene.input.keyboard.removeKey(Phaser.Input.Keyboard.KeyCodes.LEFT);
@@ -106,6 +122,9 @@ export default class HelpModal {
     }
 
     changePage(delta) {
+        if (!this.content || this.content.length === 0) {
+            return; // Do nothing if content is not available
+        }
         const newPage = this.currentPage + delta;
         if (newPage >= 0 && newPage < this.content.length) {
             this.currentPage = newPage;
@@ -114,6 +133,12 @@ export default class HelpModal {
     }
 
     updateContent() {
+        if (!this.content || this.content.length === 0) {
+            this.contentText.setText('ヘルプコンテンツがありません。');
+            this.contentImage.setVisible(false);
+            this.paginationText.setText('0 / 0');
+            return;
+        }
         const pageData = this.content[this.currentPage];
         this.contentText.setText(pageData.text || '');
 
