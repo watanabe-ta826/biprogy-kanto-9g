@@ -1,5 +1,5 @@
 import Phaser from 'phaser';
-import { gameData } from '../data/game-data.js';
+import { gameData, helpModalContent } from '../data/game-data.js';
 import HelpModal from '../HelpModal.js';
 
 export default class Chapter2_Case4Scene extends Phaser.Scene {
@@ -49,6 +49,29 @@ export default class Chapter2_Case4Scene extends Phaser.Scene {
         this.uiElements = [];
 
         this.add.image(480, 300, this.sceneData.background).setScale(1.2);
+
+        // Back to selection button
+        const backButton = this.add.text(100, 575, 'CASE選択に戻る', {
+            fontFamily: 'Arial, sans-serif',
+            fontSize: '20px',
+            fill: '#fff',
+            backgroundColor: '#6c757d',
+            padding: { x: 15, y: 8 },
+            borderRadius: 5
+        }).setOrigin(0.5).setInteractive().setScrollFactor(0).setDepth(100);
+        this.uiElements.push(backButton);
+
+        backButton.on('pointerover', () => {
+            this.game.canvas.style.cursor = 'pointer';
+            backButton.setBackgroundColor('#5a6268');
+        });
+        backButton.on('pointerout', () => {
+            this.game.canvas.style.cursor = 'default';
+            backButton.setBackgroundColor('#6c757d');
+        });
+        backButton.on('pointerdown', () => {
+            this.scene.start('Chapter2SelectionScene');
+        });
 
         const formWidth = 800;
         const formHeight = 500;
@@ -100,7 +123,7 @@ export default class Chapter2_Case4Scene extends Phaser.Scene {
         helpIcon.on('pointerdown', () => {
             tooltip.setVisible(false);
             if (!this.helpModal) {
-                this.helpModal = new HelpModal(this, gameData.helpModalContent);
+                this.helpModal = new HelpModal(this, helpModalContent);
             }
             this.helpModal.show();
         });

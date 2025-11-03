@@ -39,6 +39,29 @@ export default class Chapter2_Case3Scene extends Phaser.Scene {
     displayExercise(exercise) {
         this.add.image(480, 300, this.sceneData.background).setScale(1.2);
 
+        // Back to selection button
+        const backButton = this.add.text(100, 575, 'CASE選択に戻る', {
+            fontFamily: 'Arial, sans-serif',
+            fontSize: '20px',
+            fill: '#fff',
+            backgroundColor: '#6c757d',
+            padding: { x: 15, y: 8 },
+            borderRadius: 5
+        }).setOrigin(0.5).setInteractive().setScrollFactor(0).setDepth(100);
+        this.uiElements.push(backButton);
+
+        backButton.on('pointerover', () => {
+            this.game.canvas.style.cursor = 'pointer';
+            backButton.setBackgroundColor('#5a6268');
+        });
+        backButton.on('pointerout', () => {
+            this.game.canvas.style.cursor = 'default';
+            backButton.setBackgroundColor('#6c757d');
+        });
+        backButton.on('pointerdown', () => {
+            this.scene.start('Chapter2SelectionScene');
+        });
+
         const formWidth = 800;
         const formHeight = 500;
         const formX = (this.sys.game.config.width - formWidth) / 2;
