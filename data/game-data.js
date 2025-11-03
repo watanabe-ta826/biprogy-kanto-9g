@@ -241,19 +241,23 @@ export const chapter2SelectionInfo = {
     cases: [
         {
             title: 'CASE.1 役人​（エリオ）​　【議事録作成】',
-            scene: 'Chapter2-Case1Scene'
+            scene: 'Chapter2-Case1Scene',
+            enabled: false
         },
         {
             title: 'CASE.2 商人​（フレッド）​【表作成、​データ分析】',
-            scene: 'Chapter2-Case2Scene'
+            scene: 'Chapter2-Case2Scene',
+            enabled: false
         },
         {
             title: 'CASE.3 農家​（タルゴ）​　【調べもの】​',
-            scene: 'Chapter2-Case3Scene'
+            scene: 'Chapter2-Case3Scene',
+            enabled: true
         },
         {
             title: 'CASE.4 先生 (マエル)　 【アイデアだし】',
-            scene: 'Chapter2-Case4Scene'
+            scene: 'Chapter2-Case4Scene',
+            enabled: true
         }
     ]
 };

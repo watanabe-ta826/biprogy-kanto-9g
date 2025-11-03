@@ -11,6 +11,7 @@ export default class Chapter2SelectionScene extends Phaser.Scene {
             default: '#007bff',
             hover: '#0056b3',
             selected: '#f1c40f', // Using the same yellow for selection
+            disabled: '#808080',
             backDefault: '#6c757d',
             backHover: '#5a6268',
             backSelected: '#f1c40f'
@@ -39,7 +40,7 @@ export default class Chapter2SelectionScene extends Phaser.Scene {
 
         // --- Initialize Buttons ---
         this.buttons = [];
-        this.selectedButtonIndex = 0;
+        this.selectedButtonIndex = chapter2SelectionInfo.cases.findIndex(c => c.enabled);
 
         const buttonYStart = 250;
         const buttonYStep = 60;
@@ -60,7 +61,8 @@ export default class Chapter2SelectionScene extends Phaser.Scene {
                 caseInfo.title, 
                 false, // isBackButton
                 action, 
-                index
+                index,
+                caseInfo.enabled
             );
             this.buttons.push(button);
         });
@@ -93,32 +95,44 @@ export default class Chapter2SelectionScene extends Phaser.Scene {
         this.addKeyListeners();
     }
 
-    createButton(x, y, text, isBackButton, action, index) {
+    createButton(x, y, text, isBackButton, action, index, enabled = true) {
         const defaultColor = isBackButton ? this.buttonColors.backDefault : this.buttonColors.default;
-        const button = this.add.text(x, y, text, {
+        let buttonText = text;
+        if (!enabled) {
+            buttonText += ' (作成中)';
+        }
+
+        const button = this.add.text(x, y, buttonText, {
             fontFamily: 'Arial, sans-serif',
             fontSize: isBackButton ? '20px' : '22px',
             fill: '#fff',
             backgroundColor: defaultColor,
             padding: { x: 20, y: 10 },
             borderRadius: 5
-        }).setOrigin(0.5).setInteractive();
+        }).setOrigin(0.5);
 
-        button.on('pointerover', () => {
-            this.game.canvas.style.cursor = 'pointer';
-            this.selectedButtonIndex = index;
-            this.updateButtonStyles();
-        });
+        if (enabled) {
+            button.setInteractive();
+            button.on('pointerover', () => {
+                this.game.canvas.style.cursor = 'pointer';
+                this.selectedButtonIndex = index;
+                this.updateButtonStyles();
+            });
 
-        button.on('pointerout', () => {
-            this.game.canvas.style.cursor = 'default';
-        });
+            button.on('pointerout', () => {
+                this.game.canvas.style.cursor = 'default';
+            });
 
-        button.on('pointerdown', () => {
-            this.cameras.main.fadeOut(500, 0, 0, 0);
-            this.cameras.main.once(Phaser.Cameras.Scene2D.Events.FADE_OUT_COMPLETE, action);
-        });
+            button.on('pointerdown', () => {
+                this.cameras.main.fadeOut(500, 0, 0, 0);
+                this.cameras.main.once(Phaser.Cameras.Scene2D.Events.FADE_OUT_COMPLETE, action);
+            });
+        } else {
+            button.setBackgroundColor(this.buttonColors.disabled);
+            button.setAlpha(0.7);
+        }
 
+        button.setData('enabled', enabled);
         return button;
     }
 
@@ -126,20 +140,31 @@ export default class Chapter2SelectionScene extends Phaser.Scene {
         this.input.keyboard.on('keyup', (event) => {
             if (this.helpModal && this.helpModal.modal.visible) return; // Ignore while modal is open
 
+            const findNextEnabled = (startIndex, direction) => {
+                let nextIndex = (startIndex + direction + this.buttons.length) % this.buttons.length;
+                while (nextIndex !== startIndex) {
+                    if (this.buttons[nextIndex].getData('enabled')) {
+                        return nextIndex;
+                    }
+                    nextIndex = (nextIndex + direction + this.buttons.length) % this.buttons.length;
+                }
+                return startIndex; // No other enabled button found
+            };
+
             switch (event.code) {
                 case 'ArrowUp':
                 case 'KeyW':
-                    this.selectedButtonIndex = (this.selectedButtonIndex - 1 + this.buttons.length) % this.buttons.length;
+                    this.selectedButtonIndex = findNextEnabled(this.selectedButtonIndex, -1);
                     this.updateButtonStyles();
                     break;
                 case 'ArrowDown':
                 case 'KeyS':
-                    this.selectedButtonIndex = (this.selectedButtonIndex + 1) % this.buttons.length;
+                    this.selectedButtonIndex = findNextEnabled(this.selectedButtonIndex, 1);
                     this.updateButtonStyles();
                     break;
                 case 'KeyE':
                 case 'Enter':
-                    if (this.buttons[this.selectedButtonIndex]) {
+                    if (this.buttons[this.selectedButtonIndex] && this.buttons[this.selectedButtonIndex].getData('enabled')) {
                         this.buttons[this.selectedButtonIndex].emit('pointerdown');
                     }
                     break;
@@ -149,6 +174,12 @@ export default class Chapter2SelectionScene extends Phaser.Scene {
 
     updateButtonStyles() {
         this.buttons.forEach((button, index) => {
+            if (!button.getData('enabled')) {
+                button.setBackgroundColor(this.buttonColors.disabled);
+                button.setAlpha(0.7);
+                return;
+            }
+
             const isBackButton = button.text.includes('戻る');
             const isSelected = index === this.selectedButtonIndex;
 
@@ -158,6 +189,7 @@ export default class Chapter2SelectionScene extends Phaser.Scene {
             }
 
             button.setBackgroundColor(color);
+            button.setAlpha(1);
         });
     }
 
