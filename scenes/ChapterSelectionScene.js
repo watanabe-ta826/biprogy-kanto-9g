@@ -16,18 +16,12 @@ export default class ChapterSelectionScene extends Phaser.Scene {
         };
     }
 
-    preload() {
-        if (!this.textures.exists('hub_background')) {
-            this.load.image('hub_background', 'img/hub_background.jpg');
-        }
-    }
-
     create() {
         this.cameras.main.fadeIn(500, 0, 0, 0);
         this.registry.set('completedQuizzes', []);
         this.registry.set('correctAnswers', 0);
 
-        this.add.image(480, 300, 'hub_background').setScale(1);
+        this.add.image(480, 300, 'chapter_select').setScale(0.7);
 
         this.add.text(480, 100, '章選択', {
             fontFamily: 'Arial, sans-serif',

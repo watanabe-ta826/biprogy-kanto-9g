@@ -29,6 +29,8 @@ export const imagePaths = [
   { name: "npc6", src: "img/npc6.png" },
   { name: "diagram_q3", src: "img/diagram_q3.png" },
   { name: "arrival", src: "img/arrival.png" },
+  { name: "chapter_select", src: "img/chapter_select.png" },
+  { name: "chapter2_case_select", src: "img/chapter2_case_select.png" },
 ];
 
 /**

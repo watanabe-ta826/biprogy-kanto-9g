@@ -20,7 +20,7 @@ export default class Chapter2SelectionScene extends Phaser.Scene {
 
     create() {
         this.cameras.main.fadeIn(500, 0, 0, 0);
-        this.add.image(480, 300, 'hub_background').setScale(1);
+        this.add.image(480, 300, 'chapter2_case_select').setScale(0.7);
 
         // --- Title and Description ---
         this.add.text(480, 100, '第2章: 村人の​お悩みを​AIで​解決　～AIの​使い方を​学ぶ～', { 
