@@ -48,7 +48,7 @@ export default class Chapter2_Case4Scene extends Phaser.Scene {
         });
         this.uiElements = [];
 
-        this.add.image(480, 300, this.sceneData.background).setScale(1.2);
+        this.add.image(480, 300, 'chapter2_case4_work').setScale(0.8);
 
         // Back to selection button
         const backButton = this.add.text(100, 575, 'CASE選択に戻る', {

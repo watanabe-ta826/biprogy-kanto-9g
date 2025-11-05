@@ -34,7 +34,11 @@ export const imagePaths = [
   { name: "chapter2_case3_scene1", src: "img/chapter2_case3_scene1.png" },
   { name: "chapter2_case3_scene2", src: "img/chapter2_case3_scene2.png" },
   { name: "chapter2_case3_scene3", src: "img/chapter2_case3_scene3.png" },
-  { name: "chapter2_case3_work", src: "img/chapter2_case3_work.png.jpeg" },
+  { name: "chapter2_case3_work", src: "img/chapter2_case3_work.png" },
+  { name: "chapter2_case4_work", src: "img/chapter2_case4_work.jpeg" },
+  { name: "chapter2_case4_scene1", src: "img/chapter2_case4_scene1.png" },
+  { name: "chapter2_case4_scene2", src: "img/chapter2_case4_scene2.png" },
+  { name: "chapter2_case4_scene3", src: "img/chapter2_case4_scene3.png" },
   { name: "Chpter1_ending", src: "img/Chpter1_ending.png" },
 ];
 
@@ -555,7 +559,7 @@ E
                 {
                     type: 'scenario',
                     content: [
-                        { speaker: '先生', text: '今年の文化祭の出し物で頭を悩ませていてね…。\n毎年似たようなものばかりで村の人たちも少し飽きてしまっているんだ。\nクラスでも話し合いをしてるんだけど、飲食系もゲーム系もどちらも出店経験ありで、\nなかなか良いアイデアが浮かばなくて…。' },
+                        { speaker: '先生', text: '今年の文化祭の出し物で頭を悩ませていてね…。\n毎年似たようなものばかりで村の人たちも少し飽きてしまっているんだ。\nクラスでも話し合いをしてるんだけど、飲食系もゲーム系もどちらも出店経験ありで、\nなかなか良いアイデアが浮かばなくて…。', image: 'chapter2_case4_scene1' },
                         { speaker: '先生', text: '実は今年で九関学舎が創立100周年ということもあって、\n記憶に残る文化祭にしたいんだ！\nぜひ君の新しい発想力を借りたい！' }
                     ]
                 },
@@ -579,7 +583,7 @@ E
                 {
                     type: 'scenario',
                     content: [
-                        { speaker: '先生', text: 'おお、こんなにいろんな角度からアイデアが出てくるとは！ \n生成AIの力って本当にすごいな。' },
+                        { speaker: '先生', text: 'おお、こんなにいろんな角度からアイデアが出てくるとは！ \n生成AIの力って本当にすごいな。', image: 'chapter2_case4_scene2' },
                         { speaker: '賢者', text: 'でもね、大事なのは“どのアイデアを選んでどう形にするか”なんだ。\n文化祭は生徒たちみんなで作るものだからね。' },
                         { speaker: '先生', text: 'そうだね。あなたが出してくれたアイデアを、生徒たちと一緒に相談して、\n私たちらしい文化祭に仕上げていくよ。ありがとう！' },
                         { speaker: '先生', text: '実は、創立100周年だから文化祭をもっと盛り上げたいと思って、\n“村全体のお祭り”として、盛り上げていく企画を考えているんだけど、\n具体的な内容が決まらなくて…賢者さんの力を貸してくれないかな？' }
@@ -600,8 +604,7 @@ E
                 {
                     type: 'scenario',
                     content: [
-                        { speaker: '先生', text: 'あなたの​おかげで​準備は​大きく​前進したよ。​本当に​ありがとう！​' },
-                        { speaker: '先生', text: 'これで​村中が笑顔に​なる​文化祭に​なるはずだ！​' }
+                        { speaker: '先生', text: 'あなたの​おかげで​準備は​大きく​前進したよ。​本当に​ありがとう！​', image: 'chapter2_case4_scene3' }
                     ]
                 }
             ]
