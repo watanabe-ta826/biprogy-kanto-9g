@@ -37,7 +37,7 @@ export default class Chapter2_Case3Scene extends Phaser.Scene {
     }
 
     displayExercise(exercise) {
-        this.add.image(480, 300, this.sceneData.background).setScale(1.2);
+        this.add.image(480, 300, 'chapter2_case3_work').setScale(1.2);
 
         // Back to selection button
         const backButton = this.add.text(100, 575, 'CASE選択に戻る', {
