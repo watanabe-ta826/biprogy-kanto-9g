@@ -35,7 +35,7 @@ export const imagePaths = [
   { name: "chapter2_case3_scene2", src: "img/chapter2_case3_scene2.png" },
   { name: "chapter2_case3_scene3", src: "img/chapter2_case3_scene3.png" },
   { name: "chapter2_case3_work", src: "img/chapter2_case3_work.png" },
-  { name: "chapter2_case4_work", src: "img/chapter2_case4_work.jpeg" },
+  { name: "chapter2_case4_work", src: "img/chapter2_case4_work.png" },
   { name: "chapter2_case4_scene1", src: "img/chapter2_case4_scene1.png" },
   { name: "chapter2_case4_scene2", src: "img/chapter2_case4_scene2.png" },
   { name: "chapter2_case4_scene3", src: "img/chapter2_case4_scene3.png" },
