@@ -31,6 +31,10 @@ export const imagePaths = [
   { name: "arrival", src: "img/arrival.png" },
   { name: "chapter_select", src: "img/chapter_select.png" },
   { name: "chapter2_case_select", src: "img/chapter2_case_select.png" },
+  { name: "chapter2_case3_scene1", src: "img/chapter2_case3_scene1.png" },
+  { name: "chapter2_case3_scene2", src: "img/chapter2_case3_scene2.png" },
+  { name: "chapter2_case3_scene3", src: "img/chapter2_case3_scene3.png" },
+  { name: "Chpter1_ending", src: "img/Chpter1_ending.png" },
 ];
 
 /**
@@ -277,13 +281,13 @@ export const gameData = {
             clearScenario: {
                 high: [
                     { text: `村人たちとの対話を通して、私は村が抱える問題の根深さを改めて知った。
-AIへの無知と、それ故の恐怖心が、村の発展を妨げているのだ。`, image: 'intro_2' },
+AIへの無知と、それ故の恐怖心が、村の発展を妨げているのだ。`, image: 'Chpter1_ending' },
                     { text: `しかし、彼らの知恵と経験もまた、村の大きな財産だ。
 AIと人の知恵を融合させれば、きっと道は開けるはずだ。`, image: 'intro_1' }
                 ],
                 low: [
                     { text: `村人たちとの対話は、私の心を重くした。
-AIに対する誤解は根深く、一筋縄ではいかないだろう。`, image: 'intro_2' },
+AIに対する誤解は根深く、一筋縄ではいかないだろう。`, image: 'Chpter1_ending' },
                     { text: `だが、ここで諦めるわけにはいかない。
 粘り強く対話を続け、村の未来を切り開かなければ。`, image: 'intro_1' }
                 ]
@@ -490,7 +494,7 @@ E
                 {
                     type: 'scenario',
                     content: [
-                        { text: '最近村では、​異常気象に​より​村の​主力作物​「大麦」の​品質、​収穫低下に​悩まされていた。' },
+                        { text: '最近村では、​異常気象に​より​村の​主力作物​「大麦」の​品質、​収穫低下に​悩まされていた。', image: 'chapter2_case3_scene1' },
                         { text: '農民の​タルゴは​困り果て、​プレイヤー​（賢者）に​相談してきた。' },
                         { speaker: '農民', text: `「貴重な​資金源であった​大麦の​栽培が​最近​難しくなってきているんだ。。
 代わりに​新たな​作物を​栽培したいのだが、​何が​いいと​思う？」` },
@@ -521,7 +525,7 @@ E
                 {
                     type: 'scenario',
                     content: [
-                        { speaker: '農民', text: 'なる​ほど、​さつまいもか！​これなら​この​地域でも​栽培できそうだ！' },
+                        { speaker: '農民', text: 'なる​ほど、​さつまいもか！​これなら​この​地域でも​栽培できそうだ！', image: 'chapter2_case3_scene2' },
                         { speaker: '農民', text: '他にも​知りたいことが​あるんだ、​いく​つか​調べて​もらっても​いいかい？' },
                     ]
                 },
@@ -538,7 +542,7 @@ E
                 {
                     type: 'scenario',
                     content: [
-                        { speaker: '農民', text: 'ありがとう、​これから​何を​するべきか​整理できたよ！​君に​相談して​良かった！' }
+                        { speaker: '農民', text: 'ありがとう、​これから​何を​するべきか​整理できたよ！​君に​相談して​良かった！', image: 'chapter2_case3_scene3' }
                     ]
                 }
             ]
