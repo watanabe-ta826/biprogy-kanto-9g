@@ -185,7 +185,14 @@ export default class BaseScene extends Phaser.Scene {
           interactionMessage = "Eキーで会話";
           break;
         case "Portal":
-          interactionMessage = "Eキーで移動";
+          // ポータルの遷移先シーンがChapter1のシーンかどうかをチェック
+          const targetSceneKey = this.interactionTarget.targetScene;
+          const chapter1Scenes = gameData.chapters.chapter1.scenes;
+          if (chapter1Scenes.includes(targetSceneKey)) {
+            interactionMessage = "Eキーで次へ";
+          } else {
+            interactionMessage = "Eキーで移動";
+          }
           break;
       }
       this.interactionText.setText(interactionMessage);

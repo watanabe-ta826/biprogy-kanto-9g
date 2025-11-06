@@ -129,6 +129,14 @@ export default class BaseChapterScene extends BaseScene {
     }
 
     createQuestTracker() {
+        // 既存のUIがあれば破棄する
+        if (this.questUiBg) {
+            this.questUiBg.destroy();
+        }
+        if (this.questUiText) {
+            this.questUiText.destroy();
+        }
+
         const x = 20;
         const y = 20;
 
