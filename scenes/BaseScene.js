@@ -75,6 +75,14 @@ export default class BaseScene extends Phaser.Scene {
       .setSize(this.physics.world.bounds.width, 20)
       .setVisible(false);
 
+    // 床の当たり判定のみを描画
+    const debugGraphics = this.add.graphics();
+    debugGraphics.lineStyle(1, 0x00ff00, 0.5); // 太さ1、緑色で半透明の線
+    this.platforms.children.each(platform => {
+        const body = platform.body;
+        debugGraphics.strokeRect(body.x, body.y, body.width, body.height);
+    });
+
     const startX =
       this.entryData && this.entryData.entryX ? this.entryData.entryX : 100;
     this.player = new Player(this, startX, 450, "player");

@@ -39,7 +39,7 @@ const config = {
         default: 'arcade', // デフォルトの物理エンジンとしてアーケード物理を選択
         arcade: {
             gravity: { y: 800 }, // y軸方向の重力
-            debug: true // 物理ボディの境界線などをデバッグ表示
+            debug: false // 物理ボディの境界線などをデバッグ表示
         }
     },
     // アセットのベースURLを設定
