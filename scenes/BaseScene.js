@@ -333,13 +333,13 @@ export default class BaseScene extends Phaser.Scene {
   }
 
   handleNpcInteraction() {
-    console.log(
-      `[DEBUG] handleNpcInteraction called for ${this.currentNPC.name}`
-    );
+    // console.log(
+    //   `[DEBUG] handleNpcInteraction called for ${this.currentNPC.name}`
+    // );
     if (!this.currentNPC) return;
 
     if (this.currentNPC.quiz && this.currentNPC.isQuizCompleted()) {
-      console.log("[DEBUG] Quiz is completed. Calling showCompletedQuiz.");
+      // console.log("[DEBUG] Quiz is completed. Calling showCompletedQuiz.");
       const quizData = this.currentNPC.quiz;
       if (this.dialogBox.visible) {
         this.closeModal();
@@ -350,37 +350,37 @@ export default class BaseScene extends Phaser.Scene {
 
     const nextDialog = this.currentNPC.getNextDialog();
     if (nextDialog.text) {
-      console.log("[DEBUG] Showing next dialog text.");
+      // console.log("[DEBUG] Showing next dialog text.");
       this.openDialog(this.currentNPC.name, nextDialog.text);
     } else if (this.currentNPC.quiz && !this.currentNPC.isQuizCompleted()) {
-      console.log("[DEBUG] Dialogue finished. Calling handleQuiz.");
+      // console.log("[DEBUG] Dialogue finished. Calling handleQuiz.");
       this.handleQuiz();
     } else {
-      console.log("[DEBUG] No more dialogue or quiz. Closing modal.");
+      // console.log("[DEBUG] No more dialogue or quiz. Closing modal.");
       this.closeModal();
     }
   }
 
   async handleQuiz() {
-    console.log("[DEBUG] handleQuiz called.");
+    // console.log("[DEBUG] handleQuiz called.");
     const quizData = this.currentNPC.quiz;
     const quizId = this.currentNPC.quizId;
 
     const correct = await this.quizModal.startQuiz(quizData);
-    console.log(`[DEBUG] Quiz finished. Result: ${correct}`);
+    // console.log(`[DEBUG] Quiz finished. Result: ${correct}`);
 
     // クイズモーダルが閉じた後にNPCの対話状態を閉じる
     this.closeModal();
 
     if (correct) {
-      console.log("[DEBUG] Answer was correct. Updating score.");
+      // console.log("[DEBUG] Answer was correct. Updating score.");
       const currentCorrect = this.registry.get("correctAnswers");
       this.registry.set("correctAnswers", currentCorrect + 1);
     }
 
     const completedQuizzes = this.registry.get("completedQuizzes");
     if (!completedQuizzes.includes(quizId)) {
-      console.log(`[DEBUG] Adding ${quizId} to completedQuizzes.`);
+      // console.log(`[DEBUG] Adding ${quizId} to completedQuizzes.`);
       completedQuizzes.push(quizId);
       this.registry.set("completedQuizzes", completedQuizzes);
     }

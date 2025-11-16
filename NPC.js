@@ -63,10 +63,10 @@ export default class NPC extends Phaser.Physics.Arcade.Sprite {
   isQuizCompleted() {
     const completedQuizzes = this.scene.registry.get("completedQuizzes");
     const result = completedQuizzes.includes(this.quizId);
-    console.log(
-      `[DEBUG] NPC.isQuizCompleted for ${this.quizId}: ${result}. Registry:`,
-      completedQuizzes
-    );
+    // console.log(
+    //   `[DEBUG] NPC.isQuizCompleted for ${this.quizId}: ${result}. Registry:`,
+    //   completedQuizzes
+    // );
     return result;
   }
 

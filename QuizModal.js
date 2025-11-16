@@ -204,7 +204,7 @@ export default class QuizModal {
       selectedCharsSet.size === correctAnswers.size &&
       [...selectedCharsSet].every((char) => correctAnswers.has(char));
 
-    const feedback = correct ? "正解です！" : "残念！";
+    const feedback = correct ? "正解です！" : "残念！間違いです";
     this._displayExplanation(this.currentQuiz, feedback);
   }
 
@@ -212,8 +212,8 @@ export default class QuizModal {
     let feedbackColor = "#ecf0f1"; // Default color
     if (feedback === "正解です！") {
       feedbackColor = "#2ecc71"; // Green for correct
-    } else if (feedback === "残念！") {
-      feedbackColor = "#e74c3c"; // Red for incorrect
+    } else if (feedback === "残念！間違いです") {
+      feedbackColor = "#FFA500"; // Orange for incorrect
     }
     this.resultText.setStyle({ fill: feedbackColor });
 
