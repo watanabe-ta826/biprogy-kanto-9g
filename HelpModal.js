@@ -12,6 +12,7 @@ export default class HelpModal {
 
         this.modalWidth = 800;
         this.modalHeight = 500;
+        this.originalStyles = new Map(); // 元のスタイルを保存するMap
 
         this.createModal();
     }
@@ -87,11 +88,16 @@ export default class HelpModal {
         this.scene.children.bringToTop(this.modal);
         this.scene.isModalOpen = true; // To prevent other inputs
 
-        // Move DOM elements off-screen
+        this.originalStyles.clear(); // Mapをクリア
+
+        // Hide DOM elements
         this.scene.children.list.forEach(child => {
             if (child.type === 'DOMElement') {
-                child.node.style.position = 'relative'; // or 'absolute'
-                child.node.style.left = '-9999px';
+                // 元のvisibilityスタイルを保存
+                this.originalStyles.set(child, {
+                    visibility: child.node.style.visibility
+                });
+                child.node.style.visibility = 'hidden';
             }
         });
 
@@ -100,6 +106,8 @@ export default class HelpModal {
         this.keyLeft = this.scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.LEFT);
         this.keyRight = this.scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.RIGHT);
         this.keyEsc = this.scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ESC);
+
+        this.scene.events.on('update', this.update, this); // updateイベントのリッスンを開始
     }
 
     close() {
@@ -108,9 +116,9 @@ export default class HelpModal {
 
         // Restore DOM elements
         this.scene.children.list.forEach(child => {
-            if (child.type === 'DOMElement') {
-                child.node.style.position = '';
-                child.node.style.left = '';
+            if (child.type === 'DOMElement' && this.originalStyles.has(child)) {
+                const original = this.originalStyles.get(child);
+                child.node.style.visibility = original.visibility;
             }
         });
 
@@ -119,6 +127,9 @@ export default class HelpModal {
         this.scene.input.keyboard.removeKey(Phaser.Input.Keyboard.KeyCodes.LEFT);
         this.scene.input.keyboard.removeKey(Phaser.Input.Keyboard.KeyCodes.RIGHT);
         this.scene.input.keyboard.removeKey(Phaser.Input.Keyboard.KeyCodes.ESC);
+
+        this.scene.events.off('update', this.update, this); // updateイベントのリッスンを停止
+        this.destroy(); // 自分自身を破棄
     }
 
     changePage(delta) {
@@ -152,7 +163,7 @@ export default class HelpModal {
     }
 
     update() {
-        if (!this.modal.visible) return;
+        if (!this.modal || !this.modal.visible) return;
 
         if (Phaser.Input.Keyboard.JustDown(this.keyA) || Phaser.Input.Keyboard.JustDown(this.keyLeft)) {
             this.changePage(-1);
@@ -163,5 +174,18 @@ export default class HelpModal {
         if (Phaser.Input.Keyboard.JustDown(this.keyEsc)) {
             this.close();
         }
+    }
+
+    destroy() {
+        if (this.modal) {
+            this.modal.destroy();
+            this.modal = null;
+        }
+        // The text objects are children of the modal container,
+        // so destroying the container should destroy them as well.
+        // However, to be safe, we can null them.
+        this.contentText = null;
+        this.contentImage = null;
+        this.paginationText = null;
     }
 }

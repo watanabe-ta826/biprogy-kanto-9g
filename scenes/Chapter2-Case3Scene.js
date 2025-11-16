@@ -8,7 +8,6 @@ export default class Chapter2_Case3Scene extends Phaser.Scene {
         this.currentPartIndex = 0;
         this.sceneData = null;
         this.uiElements = [];
-        this.helpModal = null;
     }
 
     create(data) {
@@ -107,10 +106,8 @@ export default class Chapter2_Case3Scene extends Phaser.Scene {
         });
         helpIcon.on('pointerdown', () => {
             tooltip.setVisible(false);
-            if (!this.helpModal) {
-                this.helpModal = new HelpModal(this, helpModalContent);
-            }
-            this.helpModal.show();
+            const helpModal = new HelpModal(this, helpModalContent);
+            helpModal.show();
         });
 
         if (exercise.referenceText) {
@@ -145,11 +142,7 @@ export default class Chapter2_Case3Scene extends Phaser.Scene {
         });
     }
 
-    update() {
-        if (this.helpModal) {
-            this.helpModal.update();
-        }
-    }
+
 
     shutdown() {
         this.uiElements.forEach(el => {
