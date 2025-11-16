@@ -83,7 +83,7 @@ export default class Chapter2SelectionScene extends Phaser.Scene {
         this.helpModal = new HelpModal(this, helpModalContent);
 
         // --- Controls Text ---
-        this.add.text(940, 580, 'W/S or ↑/↓: 選択 | E: 決定', {
+        this.add.text(940, 580, 'W/S or ↑/↓: 選択 | E/Enter: 決定', {
             fontFamily: 'Meiryo, sans-serif',
             fontSize: '18px',
             fill: '#ffffff',

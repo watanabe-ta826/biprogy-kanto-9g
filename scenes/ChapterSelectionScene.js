@@ -74,7 +74,7 @@ export default class ChapterSelectionScene extends Phaser.Scene {
         this.addKeyListeners();
 
         // Add controls text
-        this.add.text(940, 580, 'W/S or ↑/↓: 選択 | E: 決定', {
+        this.add.text(940, 580, 'W/S or ↑/↓: 選択 | E/Enter: 決定', {
             fontFamily: 'Meiryo, sans-serif',
             fontSize: '18px',
             fill: '#ffffff',

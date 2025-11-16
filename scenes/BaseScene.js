@@ -125,7 +125,7 @@ export default class BaseScene extends Phaser.Scene {
     //     this.inventoryManager.toggleInventory();
     // });
 
-    this.input.keyboard.on("keyup-E", () => {
+    const handleInteraction = () => {
       if (this.quizModal && this.quizModal.isShowingCompleted) {
         this.quizModal.closeModal(null);
         return;
@@ -157,7 +157,10 @@ export default class BaseScene extends Phaser.Scene {
       } else if (this.interactionTarget) {
         this.interactWith(this.interactionTarget);
       }
-    });
+    };
+
+    this.input.keyboard.on("keyup-E", handleInteraction);
+    this.input.keyboard.on("keyup-ENTER", handleInteraction);
   }
 
   findInteractionTarget() {
@@ -179,19 +182,19 @@ export default class BaseScene extends Phaser.Scene {
     });
 
     if (this.interactionTarget) {
-      let interactionMessage = "Eキーで操作"; // Default text
+      let interactionMessage = "E/Enterキーで操作"; // Default text
       switch (this.interactionTarget.type) {
         case "NPC":
-          interactionMessage = "Eキーで会話";
+          interactionMessage = "E/Enterキーで会話";
           break;
         case "Portal":
           // ポータルの遷移先シーンがChapter1のシーンかどうかをチェック
           const targetSceneKey = this.interactionTarget.targetScene;
           const chapter1Scenes = gameData.chapters.chapter1.scenes;
           if (chapter1Scenes.includes(targetSceneKey)) {
-            interactionMessage = "Eキーで次へ";
+            interactionMessage = "E/Enterキーで次へ";
           } else {
-            interactionMessage = "Eキーで移動";
+            interactionMessage = "E/Enterキーで移動";
           }
           break;
       }

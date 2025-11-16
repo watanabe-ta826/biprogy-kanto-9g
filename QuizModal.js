@@ -73,7 +73,7 @@ export default class QuizModal {
       .text(
         this.modalWidth - 30,
         this.modalHeight - 30,
-        "W/S or ↑/↓: 選択 | E: 決定",
+        "W/S or ↑/↓: 選択 | E/Enter: 決定",
         {
           fontFamily: "Meiryo, sans-serif",
           fontSize: "16px",
@@ -234,7 +234,7 @@ export default class QuizModal {
       : `【問題の解説】\n`;
     const explanation = `${explanationHeader}${
       quiz.explanation || "ここに解説が入ります。"
-    }\n\n\nEキーでとじる`;
+    }\n\n\nE/Enterキーでとじる`;
     this.destroyOptions();
     this.questionText.setVisible(false);
     if (this.controlsText) this.controlsText.setVisible(false);
@@ -255,7 +255,7 @@ export default class QuizModal {
     }
 
     const closeListener = (event) => {
-      if (event.key === "e" || event.key === "E") {
+      if (event.key === "e" || event.key === "E" || event.key === "Enter") {
         this.scene.input.keyboard.off("keyup", closeListener);
         const result = feedback ? feedback === "正解です！" : null;
         this.closeModal(result);
@@ -288,7 +288,7 @@ export default class QuizModal {
 
     const completedText = `【問題】\n${quiz.question}\n\n【解説】\n${
       quiz.explanation || "ここに解説が入ります。"
-    }\n\n\nEキーでとじる`;
+    }\n\n\nE/Enterキーでとじる`;
     this.resultText.setText(completedText).setVisible(true);
     this.modal.bringToTop(this.resultText);
 
@@ -354,7 +354,7 @@ export default class QuizModal {
     };
     this.enterKeyListener = (event) => {
       if (
-        (event.key === "e" || event.key === "E") &&
+        (event.key === "e" || event.key === "E" || event.key === "Enter") &&
         this.selectedOptionIndex !== -1
       ) {
         const optionChar = String.fromCharCode(65 + this.selectedOptionIndex);

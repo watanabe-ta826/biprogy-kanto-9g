@@ -74,9 +74,10 @@ class StoryScene extends BaseScene {
         this.displayNextContent();
 
         this.input.keyboard.on('keyup-E', () => this.displayNextContent());
+        this.input.keyboard.on('keyup-ENTER', () => this.displayNextContent());
         this.input.on('pointerdown', () => this.displayNextContent());
 
-        this.nextIndicator = this.add.text(940, 580, 'Eキー or クリックで次へ▼', { 
+        this.nextIndicator = this.add.text(940, 580, 'E/Enterキー or クリックで次へ▼', { 
             fontSize: '18px', 
             fill: '#fff',
             stroke: '#000',
