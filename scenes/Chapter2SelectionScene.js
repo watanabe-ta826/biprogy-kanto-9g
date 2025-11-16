@@ -23,19 +23,19 @@ export default class Chapter2SelectionScene extends Phaser.Scene {
         this.add.image(480, 300, 'chapter2_case_select').setScale(0.7);
 
         // --- Title and Description ---
-        this.add.text(480, 100, '第2章: 村人の​お悩みを​AIで​解決　～AIの​使い方を​学ぶ～', { 
+        this.add.text(480, 100, '第2章: 村人の​お悩みを​AIで​解決　～AIの​使い方を​学ぶ～', {
             fontFamily: 'Arial, sans-serif',
-            fontSize: '32px', 
-            fill: '#fff', 
-            stroke: '#000', 
-            strokeThickness: 6 
+            fontSize: '32px',
+            fill: '#fff',
+            stroke: '#000',
+            strokeThickness: 6
         }).setOrigin(0.5);
-        this.add.text(480, 150, chapter2SelectionInfo.description, { 
+        this.add.text(480, 150, chapter2SelectionInfo.description, {
             fontFamily: 'Meiryo, sans-serif',
-            fontSize: '18px', 
-            fill: '#f0f0f0', 
-            align: 'center', 
-            wordWrap: { width: 800 } 
+            fontSize: '18px',
+            fill: '#f0f0f0',
+            align: 'center',
+            wordWrap: { width: 800 }
         }).setOrigin(0.5);
 
         // --- Initialize Buttons ---
@@ -56,11 +56,11 @@ export default class Chapter2SelectionScene extends Phaser.Scene {
             };
 
             const button = this.createButton(
-                480, 
-                buttonYStart + (index * buttonYStep), 
-                caseInfo.title, 
+                480,
+                buttonYStart + (index * buttonYStep),
+                caseInfo.title,
                 false, // isBackButton
-                action, 
+                action,
                 index,
                 caseInfo.enabled
             );
@@ -70,17 +70,16 @@ export default class Chapter2SelectionScene extends Phaser.Scene {
         // --- Create Back Button ---
         const backButton = this.createButton(
             480, // Centered for consistency
-            buttonYStart + (chapter2SelectionInfo.cases.length * buttonYStep) + 20, 
-            '章選択に戻る', 
+            buttonYStart + (chapter2SelectionInfo.cases.length * buttonYStep) + 20,
+            '章選択に戻る',
             true, // isBackButton
-            () => this.scene.start('ChapterSelectionScene'), 
+            () => this.scene.start('ChapterSelectionScene'),
             this.buttons.length // index
         );
         this.buttons.push(backButton);
 
         // --- Help Icon and Modal ---
         this.createHelpIcon();
-        this.helpModal = new HelpModal(this, helpModalContent);
 
         // --- Controls Text ---
         this.add.text(940, 580, 'W/S or ↑/↓: 選択 | E/Enter: 決定', {
@@ -94,7 +93,6 @@ export default class Chapter2SelectionScene extends Phaser.Scene {
         this.updateButtonStyles();
         this.addKeyListeners();
     }
-
     createButton(x, y, text, isBackButton, action, index, enabled = true) {
         const defaultColor = isBackButton ? this.buttonColors.backDefault : this.buttonColors.default;
         let buttonText = text;
@@ -225,13 +223,9 @@ export default class Chapter2SelectionScene extends Phaser.Scene {
         });
         helpIcon.on('pointerdown', () => {
             tooltip.setVisible(false);
-            this.helpModal.show();
+            new HelpModal(this, helpModalContent).show();
         });
     }
 
-    update() {
-        if (this.helpModal && this.helpModal.modal.visible) {
-            this.helpModal.update();
-        }
-    }
+
 }
