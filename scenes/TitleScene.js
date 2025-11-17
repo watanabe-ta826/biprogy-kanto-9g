@@ -27,6 +27,12 @@ export default class TitleScene extends Phaser.Scene {
      * タイトル画面のUI要素（背景、テキスト、ボタン）を作成する。
      */
     create() {
+        // ローディングスクリーンを非表示にする
+        const loadingScreen = document.getElementById('loading-screen');
+        if (loadingScreen) {
+            loadingScreen.style.display = 'none';
+        }
+
         // 背景画像を表示
         this.add.image(480, 300, 'title_background').setScale(0.7);
 
