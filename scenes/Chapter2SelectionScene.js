@@ -192,37 +192,27 @@ export default class Chapter2SelectionScene extends Phaser.Scene {
     }
 
     createHelpIcon() {
-        const helpIcon = this.add.text(920, 40, '？', {
+        const helpButton = this.add.text(480, 200, 'プロンプト作成のコツ', {
             fontFamily: 'Arial, sans-serif',
-            fontSize: '32px',
+            fontSize: '22px',
             fill: '#fff',
-            backgroundColor: '#17a2b8',
-            padding: { x: 12, y: 4 },
-            borderRadius: 100
+            backgroundColor: '#28a745', // 緑系の色に変更
+            padding: { x: 20, y: 10 },
+            borderRadius: 5,
+            shadow: { offsetX: 0, offsetY: 5, color: '#1e7e34', fill: true, blur: 5 }
         }).setOrigin(0.5).setInteractive();
 
-        const tooltip = this.add.text(0, 0, 'プロンプト作成のコツ', {
-            fontFamily: 'Meiryo, sans-serif',
-            fontSize: '14px',
-            fill: '#000',
-            backgroundColor: '#f8f9fa',
-            padding: { x: 8, y: 4 },
-            borderRadius: 3
-        }).setOrigin(1.1, 0.5).setVisible(false).setDepth(300);
-
-        helpIcon.on('pointerover', () => {
+        helpButton.on('pointerover', () => {
             this.game.canvas.style.cursor = 'pointer';
-            helpIcon.setBackgroundColor('#138496');
-            tooltip.setPosition(helpIcon.x, helpIcon.y);
-            tooltip.setVisible(true);
+            helpButton.setBackgroundColor('#218838');
+            this.tweens.add({ targets: helpButton, y: 198, duration: 100, ease: 'Power1' });
         });
-        helpIcon.on('pointerout', () => {
+        helpButton.on('pointerout', () => {
             this.game.canvas.style.cursor = 'default';
-            helpIcon.setBackgroundColor('#17a2b8');
-            tooltip.setVisible(false);
+            helpButton.setBackgroundColor('#28a745');
+            this.tweens.add({ targets: helpButton, y: 200, duration: 100, ease: 'Power1' });
         });
-        helpIcon.on('pointerdown', () => {
-            tooltip.setVisible(false);
+        helpButton.on('pointerdown', () => {
             new HelpModal(this, helpModalContent).show();
         });
     }
