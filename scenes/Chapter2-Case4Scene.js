@@ -61,12 +61,32 @@ export default class Chapter2_Case4Scene extends Phaser.Scene {
         const description = this.add.text(formX + formWidth / 2, formY + 30, exercise.description, { fontSize: '20px', fill: '#fff', align: 'center', wordWrap: { width: formWidth - 40 } }).setOrigin(0.5, 0);
         this.uiElements.push(description);
 
-        const helpIcon = this.add.text(920, 40, '？', {
-            fontFamily: 'Arial, sans-serif', fontSize: '32px', fill: '#fff', backgroundColor: '#17a2b8',
-            padding: { x: 12, y: 4 }, borderRadius: 100
+        const helpIcon = this.add.text(810, 20, 'プロンプト作成のコツ', {
+            fontFamily: 'Meiryo, sans-serif',
+            fontSize: '22px',
+            fill: '#fff',
+            backgroundColor: '#8e44ad', // 紫系の目立つ色
+            padding: { x: 20, y: 10 },
+            borderRadius: 8,
+            shadow: { offsetX: 0, offsetY: 5, color: '#732d91', fill: true, blur: 5 }
         }).setOrigin(0.5).setInteractive().setScrollFactor(0).setDepth(100);
         this.uiElements.push(helpIcon);
-        helpIcon.on('pointerdown', () => { new HelpModal(this, helpModalContent).show(); });
+        
+        helpIcon.on('pointerover', () => {
+            if (this.isModalOpen) return;
+            this.game.canvas.style.cursor = 'pointer';
+            helpIcon.setBackgroundColor('#732d91'); // ホバー時の色
+        });
+        helpIcon.on('pointerout', () => {
+            if (this.isModalOpen) return;
+            this.game.canvas.style.cursor = 'default';
+            helpIcon.setBackgroundColor('#8e44ad');
+        });
+        helpIcon.on('pointerdown', () => {
+            if (!this.isModalOpen) {
+                new HelpModal(this, helpModalContent).show();
+            }
+        });
 
         if (exercise.referenceText) {
             const refText = this.add.text(formX + 40, formY + 80, exercise.referenceText, { fontSize: '16px', fill: '#ddd', align: 'left', wordWrap: { width: formWidth - 80 }, lineSpacing: 6 }).setOrigin(0, 0);

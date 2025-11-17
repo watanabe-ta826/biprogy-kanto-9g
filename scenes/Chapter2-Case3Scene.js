@@ -8,10 +8,11 @@ export default class Chapter2_Case3Scene extends Phaser.Scene {
         this.currentPartIndex = 0;
         this.sceneData = null;
         this.uiElements = [];
+        this.isModalOpen = false; // モーダルの状態を追跡
     }
 
     create(data) {
-        // Reset state at the beginning of create, using data passed from scene.start()
+        this.isModalOpen = false; // シーン開始時にリセット
         this.currentPartIndex = (data && data.partIndex) ? data.partIndex : 0;
 
         this.sceneData = gameData.scenes[this.sys.settings.key];
@@ -50,14 +51,17 @@ export default class Chapter2_Case3Scene extends Phaser.Scene {
         this.uiElements.push(backButton);
 
         backButton.on('pointerover', () => {
+            if (this.isModalOpen) return;
             this.game.canvas.style.cursor = 'pointer';
             backButton.setBackgroundColor('#5a6268');
         });
         backButton.on('pointerout', () => {
+            if (this.isModalOpen) return;
             this.game.canvas.style.cursor = 'default';
             backButton.setBackgroundColor('#6c757d');
         });
         backButton.on('pointerdown', () => {
+            if (this.isModalOpen) return;
             this.scene.start('Chapter2SelectionScene');
         });
 
@@ -72,40 +76,30 @@ export default class Chapter2_Case3Scene extends Phaser.Scene {
         const description = this.add.text(formX + formWidth / 2, formY + 30, exercise.description, { fontSize: '20px', fill: '#fff', align: 'center', wordWrap: { width: formWidth - 40 } }).setOrigin(0.5, 0);
         this.uiElements.push(description);
 
-        // Help button (matching Chapter2SelectionScene.js design)
-        const helpIcon = this.add.text(920, 40, '？', {
-            fontFamily: 'Arial, sans-serif',
-            fontSize: '32px',
+        // Help button
+        const helpIcon = this.add.text(810, 20, 'プロンプト作成のコツ', {
+            fontFamily: 'Meiryo, sans-serif',
+            fontSize: '22px',
             fill: '#fff',
-            backgroundColor: '#17a2b8',
-            padding: { x: 12, y: 4 },
-            borderRadius: 100
+            backgroundColor: '#8e44ad', // 紫系の目立つ色
+            padding: { x: 20, y: 10 },
+            borderRadius: 8,
+            shadow: { offsetX: 0, offsetY: 5, color: '#732d91', fill: true, blur: 5 }
         }).setOrigin(0.5).setInteractive().setScrollFactor(0).setDepth(100);
         this.uiElements.push(helpIcon);
 
-        const tooltip = this.add.text(0, 0, 'プロンプト作成のコツ', {
-            fontFamily: 'Meiryo, sans-serif',
-            fontSize: '14px',
-            fill: '#000',
-            backgroundColor: '#f8f9fa',
-            padding: { x: 8, y: 4 },
-            borderRadius: 3
-        }).setOrigin(1.1, 0.5).setVisible(false).setDepth(300);
-        this.uiElements.push(tooltip);
-
         helpIcon.on('pointerover', () => {
+            if (this.isModalOpen) return;
             this.game.canvas.style.cursor = 'pointer';
-            helpIcon.setBackgroundColor('#138496');
-            tooltip.setPosition(helpIcon.x, helpIcon.y);
-            tooltip.setVisible(true);
+            helpIcon.setBackgroundColor('#732d91'); // ホバー時の色
         });
         helpIcon.on('pointerout', () => {
+            if (this.isModalOpen) return;
             this.game.canvas.style.cursor = 'default';
-            helpIcon.setBackgroundColor('#17a2b8');
-            tooltip.setVisible(false);
+            helpIcon.setBackgroundColor('#8e44ad');
         });
         helpIcon.on('pointerdown', () => {
-            tooltip.setVisible(false);
+            if (this.isModalOpen) return;
             const helpModal = new HelpModal(this, helpModalContent);
             helpModal.show();
         });
@@ -129,6 +123,7 @@ export default class Chapter2_Case3Scene extends Phaser.Scene {
         this.uiElements.push(submitButton);
 
         submitButton.on('pointerdown', () => {
+            if (this.isModalOpen) return;
             if (exercise.id === 'exercise1') {
                 const answer = document.getElementById('q1').value;
                 if (answer.trim() === exercise.correctAnswer.q1) {

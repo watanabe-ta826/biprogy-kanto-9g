@@ -86,14 +86,13 @@ export default class HelpModal {
         this.updateContent();
         this.modal.setVisible(true);
         this.scene.children.bringToTop(this.modal);
-        this.scene.isModalOpen = true; // To prevent other inputs
+        this.scene.isModalOpen = true;
 
-        this.originalStyles.clear(); // Mapをクリア
+        this.originalStyles.clear();
 
         // Hide DOM elements
         this.scene.children.list.forEach(child => {
             if (child.type === 'DOMElement') {
-                // 元のvisibilityスタイルを保存
                 this.originalStyles.set(child, {
                     visibility: child.node.style.visibility
                 });
@@ -107,7 +106,7 @@ export default class HelpModal {
         this.keyRight = this.scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.RIGHT);
         this.keyEsc = this.scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ESC);
 
-        this.scene.events.on('update', this.update, this); // updateイベントのリッスンを開始
+        this.scene.events.on('update', this.update, this);
     }
 
     close() {
@@ -128,13 +127,13 @@ export default class HelpModal {
         this.scene.input.keyboard.removeKey(Phaser.Input.Keyboard.KeyCodes.RIGHT);
         this.scene.input.keyboard.removeKey(Phaser.Input.Keyboard.KeyCodes.ESC);
 
-        this.scene.events.off('update', this.update, this); // updateイベントのリッスンを停止
-        this.destroy(); // 自分自身を破棄
+        this.scene.events.off('update', this.update, this);
+        this.destroy();
     }
 
     changePage(delta) {
         if (!this.content || this.content.length === 0) {
-            return; // Do nothing if content is not available
+            return;
         }
         const newPage = this.currentPage + delta;
         if (newPage >= 0 && newPage < this.content.length) {
@@ -181,9 +180,6 @@ export default class HelpModal {
             this.modal.destroy();
             this.modal = null;
         }
-        // The text objects are children of the modal container,
-        // so destroying the container should destroy them as well.
-        // However, to be safe, we can null them.
         this.contentText = null;
         this.contentImage = null;
         this.paginationText = null;
