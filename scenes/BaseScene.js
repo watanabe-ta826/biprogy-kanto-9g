@@ -12,7 +12,6 @@ export default class BaseScene extends Phaser.Scene {
     this.interactionText = null;
     this.interactionTarget = null;
     this.isModalOpen = false;
-    this.portalModal = null;
     this.isAwaitingClose = false;
     // this.inventoryManager = null;
     this.currentNPC = null;
@@ -28,10 +27,12 @@ export default class BaseScene extends Phaser.Scene {
     this.questUiText = null;
     this.entryData = null;
     this.quizModal = null;
+    this.isTransitioning = false; // シーン遷移中のフラグ
   }
 
   init(data) {
     this.entryData = data;
+    this.isTransitioning = false;
   }
 
   create(sceneData) {
@@ -101,7 +102,6 @@ export default class BaseScene extends Phaser.Scene {
       .setDepth(20);
 
     this.entities = this.add.group();
-    this.createPortalModal();
     this.createDialogBox();
     this.quizModal = new QuizModal(this);
     this.createQuestTracker();
@@ -110,8 +110,8 @@ export default class BaseScene extends Phaser.Scene {
   }
 
   update() {
-    if (this.isModalOpen) {
-      this.player.setVelocity(0);
+    if (this.isModalOpen || this.isTransitioning) {
+      if (this.player) this.player.setVelocity(0);
       return;
     }
 
@@ -149,9 +149,7 @@ export default class BaseScene extends Phaser.Scene {
       if (this.dialogNextIndicatorTween) this.dialogNextIndicatorTween.pause();
 
       if (this.isModalOpen) {
-        if (this.portalModal.visible) {
-          this.hidePortalModal(true);
-        } else if (this.currentNPC) {
+        if (this.currentNPC) {
           this.handleNpcInteraction();
         }
       } else if (this.interactionTarget) {
@@ -164,6 +162,11 @@ export default class BaseScene extends Phaser.Scene {
   }
 
   findInteractionTarget() {
+    if (this.isTransitioning) {
+        this.interactionText.setVisible(false);
+        this.interactionTarget = null;
+        return;
+    }
     this.interactionTarget = null;
     let closestDistance = 100;
     this.entities.getChildren().forEach((entity) => {
@@ -207,126 +210,18 @@ export default class BaseScene extends Phaser.Scene {
     }
   }
 
-  createPortalModal() {
-    const modalWidth = 450;
-    const modalHeight = 220;
-    const modalX = (this.sys.game.config.width - modalWidth) / 2;
-    const modalY = (this.sys.game.config.height - modalHeight) / 2;
-
-    this.portalModal = this.add
-      .container(modalX, modalY)
-      .setScrollFactor(0)
-      .setDepth(200)
-      .setVisible(false);
-
-    const background = this.add.graphics();
-    background.fillStyle(0x2c3e50, 0.95);
-    background.lineStyle(3, 0xf1c40f, 1);
-    background.fillRoundedRect(0, 0, modalWidth, modalHeight, 15);
-    background.strokeRoundedRect(0, 0, modalWidth, modalHeight, 15);
-
-    const text = this.add
-      .text(modalWidth / 2, 60, "", {
-        fontFamily: "Meiryo, sans-serif",
-        fontSize: "24px",
-        fill: "#ecf0f1",
-        align: "center",
-        wordWrap: { width: modalWidth - 40 },
-      })
-      .setOrigin(0.5);
-
-    // --- ボタンのスタイル定義 ---
-    const buttonStyle = {
-      fontFamily: "Arial, sans-serif",
-      fontSize: "22px",
-      fill: "#ffffff",
-      padding: { x: 25, y: 12 },
-      borderRadius: 8,
-    };
-
-    // --- 「はい」ボタン ---
-    const yesButton = this.add
-      .text(modalWidth / 2 - 80, 155, "はい", {
-        ...buttonStyle,
-        backgroundColor: "#2ecc71",
-        shadow: {
-          offsetX: 0,
-          offsetY: 4,
-          color: "#25a25a",
-          fill: true,
-          blur: 4,
-        },
-      })
-      .setOrigin(0.5)
-      .setInteractive();
-
-    // --- 「いいえ」ボタン ---
-    const noButton = this.add
-      .text(modalWidth / 2 + 80, 155, "いいえ", {
-        ...buttonStyle,
-        backgroundColor: "#e74c3c",
-        shadow: {
-          offsetX: 0,
-          offsetY: 4,
-          color: "#c0392b",
-          fill: true,
-          blur: 4,
-        },
-      })
-      .setOrigin(0.5)
-      .setInteractive();
-
-    this.portalModal.add([background, text, yesButton, noButton]);
-
-    // --- ボタンのインタラクション ---
-    yesButton.on("pointerdown", () => this.hidePortalModal(true));
-    noButton.on("pointerdown", () => this.hidePortalModal(false));
-
-    [yesButton, noButton].forEach((button) => {
-      const originalColor = button.style.backgroundColor;
-      const hoverColor =
-        Phaser.Display.Color.HexStringToColor(originalColor).lighten(10).rgba;
-
-      button.on("pointerover", () => {
-        this.game.canvas.style.cursor = "pointer";
-        button.setBackgroundColor(hoverColor);
-      });
-      button.on("pointerout", () => {
-        this.game.canvas.style.cursor = "default";
-        button.setBackgroundColor(originalColor);
-      });
-    });
-  }
-
-  showPortalModal(displayName, targetSceneKey) {
-    this.isModalOpen = true;
-    const text = this.portalModal.getAt(1);
-    text.setText(`${displayName} へ移動しますか？`);
-    this.portalModal.setVisible(true);
-    this.portalTarget = targetSceneKey;
-  }
-
-  hidePortalModal(confirmed) {
-    this.isModalOpen = false;
-    this.portalModal.setVisible(false);
-    if (confirmed) {
-      this.scene.start(this.portalTarget, {
-        entryX: this.interactionTarget.entryX,
-      });
-    }
-  }
-
   interactWith(entity) {
-    if (!entity) return;
+    if (!entity || this.isTransitioning) return;
 
     switch (entity.type) {
       case "Portal":
-        const targetSceneData = gameData.scenes[entity.targetScene];
-        const displayName =
-          targetSceneData && targetSceneData.displayName
-            ? targetSceneData.displayName
-            : entity.targetScene;
-        this.showPortalModal(displayName, entity.targetScene);
+        this.isTransitioning = true; // シーン遷移中のフラグ
+        this.cameras.main.fadeOut(500, 0, 0, 0);
+        this.cameras.main.once(Phaser.Cameras.Scene2D.Events.FADE_OUT_COMPLETE, () => {
+          this.scene.start(entity.targetScene, {
+            entryX: entity.entryX,
+          });
+        });
         break;
       case "NPC":
         this.currentNPC = entity;

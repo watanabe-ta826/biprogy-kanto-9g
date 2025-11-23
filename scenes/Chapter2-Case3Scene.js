@@ -1,6 +1,7 @@
 import Phaser from 'phaser';
 import { gameData, helpModalContent } from '../data/game-data.js';
 import HelpModal from '../HelpModal.js';
+import { createCopyButton } from '../CopyButton.js';
 
 export default class Chapter2_Case3Scene extends Phaser.Scene {
     constructor() {
@@ -103,6 +104,12 @@ export default class Chapter2_Case3Scene extends Phaser.Scene {
             const helpModal = new HelpModal(this, helpModalContent);
             helpModal.show();
         });
+
+        if (exercise.copyButton) {
+            const { textToCopy, buttonText, x, y } = exercise.copyButton;
+            const copyButton = createCopyButton(this, formX + x, formY + y, textToCopy, buttonText);
+            this.uiElements.push(copyButton);
+        }
 
         if (exercise.referenceText) {
             const refText = this.add.text(formX + 40, formY + 80, exercise.referenceText, { fontSize: '16px', fill: '#ddd', align: 'left', wordWrap: { width: formWidth - 80 }, lineSpacing: 6 }).setOrigin(0, 0);
