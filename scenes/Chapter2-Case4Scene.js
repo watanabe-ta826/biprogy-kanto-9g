@@ -1,6 +1,7 @@
 import Phaser from 'phaser';
 import { gameData, helpModalContent } from '../data/game-data.js';
 import HelpModal from '../HelpModal.js';
+import { createCopyButton } from '../CopyButton.js';
 
 export default class Chapter2_Case4Scene extends Phaser.Scene {
     constructor() {
@@ -88,6 +89,27 @@ export default class Chapter2_Case4Scene extends Phaser.Scene {
             }
         });
 
+        if (exercise.copyButton) {
+            let actualTextToCopy = exercise.copyButton.textToCopy;
+            if (actualTextToCopy === '') {
+                // referenceTextと質問リストを結合してtextToCopyを作成
+                let combinedText = '';
+                if (exercise.referenceText) {
+                    combinedText += exercise.referenceText;
+                }
+                if (exercise.questions && exercise.questions.length > 0) {
+                    if (combinedText !== '') {
+                        combinedText += '\n\n'; // referenceTextと質問の間に空行を入れる
+                    }
+                    combinedText += exercise.questions.map(q => q.text).join('\n');
+                }
+                actualTextToCopy = combinedText;
+            }
+            const { buttonText, x, y } = exercise.copyButton;
+            const copyButton = createCopyButton(this, formX + x, formY + y, actualTextToCopy, buttonText);
+            this.uiElements.push(copyButton);
+        }
+
         if (exercise.referenceText) {
             const refText = this.add.text(formX + 40, formY + 80, exercise.referenceText, { fontSize: '16px', fill: '#ddd', align: 'left', wordWrap: { width: formWidth - 80 }, lineSpacing: 6 }).setOrigin(0, 0);
             this.uiElements.push(refText);
@@ -170,7 +192,7 @@ export default class Chapter2_Case4Scene extends Phaser.Scene {
     endScene() {
         this.cameras.main.fadeOut(500, 0, 0, 0);
         this.cameras.main.once(Phaser.Cameras.Scene2D.Events.FADE_OUT_COMPLETE, () => {
-            this.scene.start('Chapter2SelectionScene');
+            this.scene.start('ChapterSelectionScene');
         });
     }
 }
