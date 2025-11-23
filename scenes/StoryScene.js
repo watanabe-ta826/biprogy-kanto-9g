@@ -13,6 +13,7 @@ class StoryScene extends BaseScene {
         this.resultData = null;
         this.defaultTextStyle = null;
         this.speakerNameText = null;
+        this.canAdvance = false; // 入力制御フラグ
     }
 
     init(data) {
@@ -21,11 +22,13 @@ class StoryScene extends BaseScene {
         this.nextSceneData = data.nextSceneData || {};
         this.currentIndex = 0;
         this.isTransitioning = false;
+        this.canAdvance = false;
         this.resultData = {
             chapterKey: data.chapterKey,
             accuracy: data.accuracy,
             totalQuizzes: data.totalQuizzes,
-            correctAnswers: data.correctAnswers
+            correctAnswers: data.correctAnswers,
+            endingText: data.endingText
         };
     }
 
@@ -71,28 +74,32 @@ class StoryScene extends BaseScene {
             borderRadius: 5
         }).setOrigin(0.5, 0.5).setVisible(false);
 
+        // 最初のコンテンツ表示
         this.displayNextContent();
 
-        this.input.keyboard.on('keyup-E', () => this.displayNextContent());
-        this.input.keyboard.on('keyup-ENTER', () => this.displayNextContent());
-        this.input.on('pointerdown', () => this.displayNextContent());
+        // 入力イベントリスナー
+        this.input.keyboard.on('keyup-E', this.handleInput, this);
+        this.input.keyboard.on('keyup-ENTER', this.handleInput, this);
+        this.input.on('pointerdown', this.handleInput, this);
 
-        this.nextIndicator = this.add.text(940, 580, 'E/Enterキー or クリックで次へ▼', { 
-            fontSize: '18px', 
+        // 次へインジケーター
+        this.nextIndicator = this.add.text(940, 580, 'E/Enterキー or クリックで次へ▼', {
+            fontSize: '18px',
             fill: '#fff',
             stroke: '#000',
             strokeThickness: 3
         }).setOrigin(1, 1).setScrollFactor(0).setDepth(102);
 
-        this.tweens.add({ 
-            targets: this.nextIndicator, 
-            alpha: 0.2, 
-            ease: 'Power1', 
-            duration: 700, 
-            yoyo: true, 
-            repeat: -1 
+        this.tweens.add({
+            targets: this.nextIndicator,
+            alpha: 0.2,
+            ease: 'Power1',
+            duration: 700,
+            yoyo: true,
+            repeat: -1
         });
 
+        // スキップボタン
         const skipButton = this.add.text(940, 20, 'スキップ >>', {
             fontFamily: 'Arial, sans-serif',
             fontSize: '18px',
@@ -104,33 +111,25 @@ class StoryScene extends BaseScene {
 
         skipButton.on('pointerover', () => { this.game.canvas.style.cursor = 'pointer'; skipButton.setBackgroundColor('#aab7b8'); });
         skipButton.on('pointerout', () => { this.game.canvas.style.cursor = 'default'; skipButton.setBackgroundColor('#95a5a6'); });
-        skipButton.on('pointerdown', (pointer, localX, localY, event) => { 
-            event.stopPropagation(); 
-            this.skipScene(); 
+        skipButton.on('pointerdown', (pointer, localX, localY, event) => {
+            event.stopPropagation();
+            this.skipScene();
+        });
+
+        // 少し遅れて入力を有効にする
+        this.time.delayedCall(300, () => {
+            this.canAdvance = true;
         });
     }
 
-    update() {
-        // This scene does not need the BaseScene update logic (player, entities, etc.)
-    }
+    handleInput() {
+        if (this.isTransitioning || !this.canAdvance) return;
 
-    skipScene() {
-        if (this.isTransitioning) return;
-        this.isTransitioning = true;
-        this.input.keyboard.off('keyup-E');
-        this.input.off('pointerdown');
-        if (this.nextIndicator) {
-            this.nextIndicator.destroy();
-        }
-        this.cameras.main.fadeOut(500, 0, 0, 0);
-        this.cameras.main.once(Phaser.Cameras.Scene2D.Events.FADE_OUT_COMPLETE, () => {
-            this.handleScenarioEnd();
-        });
+        this.currentIndex++;
+        this.displayNextContent();
     }
 
     displayNextContent() {
-        if (this.isTransitioning) return;
-
         if (this.currentIndex >= this.storyContent.length) {
             this.skipScene();
             return;
@@ -147,7 +146,7 @@ class StoryScene extends BaseScene {
         if (content.image) {
             this.background.setTexture(content.image);
         }
-        
+
         const style = content.style ? { ...this.defaultTextStyle, ...content.style } : this.defaultTextStyle;
         this.storyText.setStyle(style);
         this.storyText.setText(content.text);
@@ -159,8 +158,21 @@ class StoryScene extends BaseScene {
             this.speakerNameText.setVisible(false);
             this.storyText.setAlign('center');
         }
-
-        this.currentIndex++;
+    }
+    
+    skipScene() {
+        if (this.isTransitioning) return;
+        this.isTransitioning = true;
+        this.input.keyboard.off('keyup-E', this.handleInput, this);
+        this.input.keyboard.off('keyup-ENTER', this.handleInput, this);
+        this.input.off('pointerdown', this.handleInput, this);
+        if (this.nextIndicator) {
+            this.nextIndicator.destroy();
+        }
+        this.cameras.main.fadeOut(500, 0, 0, 0);
+        this.cameras.main.once(Phaser.Cameras.Scene2D.Events.FADE_OUT_COMPLETE, () => {
+            this.handleScenarioEnd();
+        });
     }
 
     handleScenarioEnd() {
@@ -169,6 +181,10 @@ class StoryScene extends BaseScene {
         } else {
             this.scene.start(this.nextScene, this.nextSceneData);
         }
+    }
+    
+    update() {
+        // BaseSceneのupdateは不要
     }
 }
 

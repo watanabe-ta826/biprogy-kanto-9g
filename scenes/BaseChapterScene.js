@@ -90,6 +90,17 @@ export default class BaseChapterScene extends BaseScene {
 
         this.createQuestTracker();
         this.events.on('quizCompleted', this.updateQuestTracker, this);
+
+        // --- 開発者用デバッグ機能 ---
+        this.input.keyboard.on('keydown-F8', () => {
+            console.log('--- DEBUG: Forcing Normal End ---');
+            this.forceClearChapter(false);
+        });
+        this.input.keyboard.on('keydown-F9', () => {
+            console.log('--- DEBUG: Forcing Happy End ---');
+            this.forceClearChapter(true);
+        });
+        // --------------------------
     }
 
     update() {
@@ -193,18 +204,49 @@ export default class BaseChapterScene extends BaseScene {
         const totalQuizzes = this.chapterData.totalQuizzes;
         const accuracy = totalQuizzes > 0 ? (correctAnswers / totalQuizzes) : 0;
 
-        const scenarioType = accuracy >= 0.7 ? 'high' : 'low';
+        const threshold = this.chapterData.clearThreshold !== undefined ? this.chapterData.clearThreshold : this.chapterData.totalQuizzes;
+        const scenarioType = (correctAnswers >= threshold) ? 'high' : 'low';
         const scenario = this.chapterData.clearScenario[scenarioType];
 
         this.cameras.main.fadeOut(1000, 0, 0, 0);
         this.cameras.main.once(Phaser.Cameras.Scene2D.Events.FADE_OUT_COMPLETE, () => {
+            const endingText = scenario[scenario.length - 1]?.endingText || null;
+
             this.scene.start('StoryScene', {
                 scenario: scenario,
                 nextScene: 'ChapterSelectionScene', // ここを後で結果表示モーダルに変える
                 chapterKey: this.chapterKey,
                 accuracy: accuracy,
                 totalQuizzes: totalQuizzes,
-                correctAnswers: correctAnswers
+                correctAnswers: correctAnswers,
+                endingText: endingText // エンディングテキストを渡す
+            });
+        });
+    }
+
+    forceClearChapter(isHappyEnd) {
+        if (this.isCleared) return;
+        this.isCleared = true;
+
+        const totalQuizzes = this.chapterData.totalQuizzes;
+        const correctAnswers = isHappyEnd ? totalQuizzes : 0;
+        const accuracy = isHappyEnd ? 1 : 0;
+
+        const scenarioType = isHappyEnd ? 'high' : 'low';
+        const scenario = this.chapterData.clearScenario[scenarioType];
+
+        this.cameras.main.fadeOut(1000, 0, 0, 0);
+        this.cameras.main.once(Phaser.Cameras.Scene2D.Events.FADE_OUT_COMPLETE, () => {
+            const endingText = scenario[scenario.length - 1]?.endingText || null;
+
+            this.scene.start('StoryScene', {
+                scenario: scenario,
+                nextScene: 'ChapterSelectionScene',
+                chapterKey: this.chapterKey,
+                accuracy: accuracy,
+                totalQuizzes: totalQuizzes,
+                correctAnswers: correctAnswers,
+                endingText: endingText
             });
         });
     }
