@@ -278,7 +278,7 @@ export const chapter2SelectionInfo = {
     {
       title: "CASE.2 商人​（フレッド）​【表作成、​データ分析】",
       scene: "Chapter2-Case2Scene",
-      enabled: false,
+      enabled: true,
     },
     {
       title: "CASE.3 農家​（タルゴ）​　【調べもの】​",
@@ -675,8 +675,64 @@ E
     },
     "Chapter2-Case2Scene": {
       displayName: "商店",
-      background: "castleTown_lower",
-      entities: [],
+      parts: [
+        {
+          type: "scenario",
+          content: [
+            {
+              speaker: "商人",
+              text: "最近​近所の​村からの​注文が​増えてるんだ。\n嬉しいけど​管理が​大変に​なってきちゃって。\nこれまでは​注文数が​少なかったから、"
+            },
+            {
+              speaker: "商人",
+              text: "自分の​頭で​注文を​管理していたけど\n管理しきれなくなってきたんだ。\n注文の​メモ​書きは​あるんだけど、​うまい​具合に​まとめたいなあ。​"
+            }
+          ]
+        },
+        {
+          type: "exercise",
+          id: "exercise_case2_1",
+          description: "商人の​3つの​メモから、​生成AIを​使って​取引情報を​表の​形式で​整理しよう。\n〈ヒント〉\n・どんな​項目が​整理に​必要か​考えて​生成AIに​指示を​出そう\n・商品名、​日付、​取引先、​数量が​必要そう",
+          downloadFiles: [
+            { url: "downloads/メモ①.txt", buttonText: "メモ①をダウンロード" },
+            { url: "downloads/メモ②.txt", buttonText: "メモ②をダウンロード" },
+            { url: "downloads/メモ③.txt", buttonText: "メモ③をダウンロード" }
+          ],
+          submitButtonText: "表作成完了"
+        },
+        {
+          type: "scenario",
+          content: [
+            {
+              speaker: "商人",
+              text: "うまくまと​まっているじゃないか！\nこの​表を​使って​取引を​管理する​ことにしよう。\nこの​表を​みていると、​もっと​高度な​ことができる​気が​してきたなあ。"
+            },
+            {
+              speaker: "商人",
+              text: "次の​プロン村との​取引量を​予測する​ことは​できるかい？\nそれが​分かれば、​仕入れを​もっと​うまく​できると​思うんだ。"
+            }
+          ]
+        },
+        {
+          type: "exercise",
+          id: "exercise_case2_2",
+          description: "生成AIを​使って、9月の​取引から​来月10月の​取引で​発生しそうな​取引商品を​予測しよう\n〈ヒント〉\n・​状況や​要求を​正確に​伝えるようにしましょう\n・​この​取引から​来月10月に​発生しそうな​取引の​商品を​予測してみて​",
+          submitButtonText: "分析完了"
+        },
+        {
+          type: "scenario",
+          content: [
+            {
+              speaker: "商人",
+              text: "これは​すごい！うまく​いくと俺は​この​国いちばんの​商人だ！​"
+            },
+            {
+              speaker: "賢者",
+              text: "​生成AIを​信用しすぎて​失敗するなよ。\n生成AIは​あくまで​補助なんだから。​"
+            }
+          ]
+        }
+      ]
     },
     "Chapter2-Case3Scene": {
       displayName: "農地",
