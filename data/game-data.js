@@ -273,7 +273,7 @@ export const chapter2SelectionInfo = {
     {
       title: "CASE.1 役人​（エリオ）​　【議事録作成】",
       scene: "Chapter2-Case1Scene",
-      enabled: false,
+      enabled: true,
     },
     {
       title: "CASE.2 商人​（フレッド）​【表作成、​データ分析】",
@@ -623,8 +623,55 @@ E
     },
     "Chapter2-Case1Scene": {
       displayName: "役場",
-      background: "castleTown_upper",
-      entities: [],
+      parts: [
+        {
+          type: "scenario",
+          content: [
+            {
+              speaker: "役人",
+              text: "毎月毎月、村会議の議事録をまとめるの\n大変なんだよね。話し合いっていうより、\nみんなの雑談を聞いてるみたいで、",
+            },
+            {
+              speaker: "役人",
+              text: "どこが議題なのか探すだけで一苦労。\n話が長いし、ぼやきながら昔話を始めるし。\n誰が何を言ったか、どこで決まったのか",
+            },
+            {
+              speaker: "役人",
+              text: "わからないことばっかり。議事録って、\nただ書き起こすだけじゃダメなんだろうけど、\n話があちこち飛ぶから、整理するのに時間がかかるし、",
+            },
+            {
+              speaker: "役人",
+              text: "間違えたら怒られるし。\nほんと、たまには誰か代わりにやってくれないかな。\n効率よく作れる方法知ってる？",
+            }
+          ]
+        },
+        {
+          type: "exercise",
+          id: "exercise_case1",
+          description: "会議の​録音データを​文字起こしした​内容から、​生成AIを​使って​議事録を​作りましょう！​\n＜ポイント＞\n村の​記録と​して​ふさわしい​議事録を​作成する​ため、​プロンプトを​工夫しましょう。​\n（例）​・話し​言葉は​省き、​要点を​簡潔に​まとめる。​\n　　　・​見出しを​つけて​整理する。​",
+          downloadFile: {
+            url: "downloads/01.村会議_文字起こし（ファンタジー）.docx",
+            buttonText: "村会議の文字起こしデータをダウンロード"
+          }
+        },
+        {
+          type: "scenario",
+          content: [
+            {
+              speaker: "役人",
+              text: "議事録をここまで整理してくれるなんて、\n本当にありがとう！！ちゃんとまとまってて、\nこれなら村長にも提出できそう！",
+            },
+            {
+              speaker: "役人",
+              text: "この議事録を元に清書してみるよ。\n自分ひとりだったら、この量をこの短時間で\nまとめるなんて無理だったよ。",
+            },
+            {
+              speaker: "役人",
+              text: "賢者さん、これからも頼りにしてるよ！",
+            }
+          ]
+        }
+      ]
     },
     "Chapter2-Case2Scene": {
       displayName: "商店",
