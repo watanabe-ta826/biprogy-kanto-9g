@@ -79,9 +79,9 @@ export default class BaseScene extends Phaser.Scene {
     // 床の当たり判定のみを描画
     const debugGraphics = this.add.graphics();
     debugGraphics.lineStyle(1, 0x00ff00, 0.5); // 太さ1、緑色で半透明の線
-    this.platforms.children.each(platform => {
-        const body = platform.body;
-        debugGraphics.strokeRect(body.x, body.y, body.width, body.height);
+    this.platforms.children.each((platform) => {
+      const body = platform.body;
+      debugGraphics.strokeRect(body.x, body.y, body.width, body.height);
     });
 
     const startX =
@@ -125,13 +125,12 @@ export default class BaseScene extends Phaser.Scene {
     //     this.inventoryManager.toggleInventory();
     // });
 
-    const handleInteraction = () => {
-      if (this.quizModal && this.quizModal.isShowingCompleted) {
-        this.quizModal.closeModal(null);
-        return;
-      }
-
-      if (this.quizModal && this.quizModal.isOpen) {
+    const handleInteraction = (event) => {
+      // クイズモーダルが表示されている、または完了メッセージ表示中の場合は、BaseSceneでのインタラクションをブロックする
+      if (
+        this.quizModal &&
+        (this.quizModal.isOpen || this.quizModal.isShowingCompleted)
+      ) {
         return;
       }
 
@@ -155,6 +154,11 @@ export default class BaseScene extends Phaser.Scene {
       } else if (this.interactionTarget) {
         this.interactWith(this.interactionTarget);
       }
+
+      // クイズモーダルを開くためのキーイベントが、モーダル内のキーリスナーに影響を与えないようにする
+      if (event) {
+        event.stopImmediatePropagation();
+      }
     };
 
     this.input.keyboard.on("keyup-E", handleInteraction);
@@ -163,9 +167,9 @@ export default class BaseScene extends Phaser.Scene {
 
   findInteractionTarget() {
     if (this.isTransitioning) {
-        this.interactionText.setVisible(false);
-        this.interactionTarget = null;
-        return;
+      this.interactionText.setVisible(false);
+      this.interactionTarget = null;
+      return;
     }
     this.interactionTarget = null;
     let closestDistance = 100;
@@ -217,11 +221,14 @@ export default class BaseScene extends Phaser.Scene {
       case "Portal":
         this.isTransitioning = true; // シーン遷移中のフラグ
         this.cameras.main.fadeOut(500, 0, 0, 0);
-        this.cameras.main.once(Phaser.Cameras.Scene2D.Events.FADE_OUT_COMPLETE, () => {
-          this.scene.start(entity.targetScene, {
-            entryX: entity.entryX,
-          });
-        });
+        this.cameras.main.once(
+          Phaser.Cameras.Scene2D.Events.FADE_OUT_COMPLETE,
+          () => {
+            this.scene.start(entity.targetScene, {
+              entryX: entity.entryX,
+            });
+          }
+        );
         break;
       case "NPC":
         this.currentNPC = entity;
@@ -242,7 +249,9 @@ export default class BaseScene extends Phaser.Scene {
       if (this.dialogBox.visible) {
         this.closeModal();
       }
-      this.quizModal.showCompletedQuiz(quizData);
+      // quizIdを保存時と同じロジックで生成して渡す
+      const quizId = `${this.scene.key}_${this.currentNPC.name}`;
+      this.quizModal.showCompletedQuiz(quizData, quizId);
       return;
     }
 
