@@ -7,16 +7,18 @@ export default class Chapter2_Case4Scene extends Phaser.Scene {
     constructor() {
         super('Chapter2-Case4Scene');
         this.currentPartIndex = 0;
+        this.sceneData = null;
         this.uiElements = [];
+        this.isModalOpen = false;
         this.currentPage = 0;
-        this.questionsPerPage = 3; // 1ページあたりの質問数
-        this.questionElements = []; // 質問ごとのUI要素を保持
+        this.questionsPerPage = 3;
+        this.questionElements = [];
     }
 
     create(data) {
-        // Reset state at the beginning of create, using data passed from scene.start()
+        this.isModalOpen = false;
         this.currentPartIndex = (data && data.partIndex) ? data.partIndex : 0;
-        this.currentPage = 0; // ページをリセット
+        this.currentPage = 0;
 
         this.sceneData = gameData.scenes[this.sys.settings.key];
         this.cameras.main.fadeIn(500, 0, 0, 0);
@@ -36,6 +38,8 @@ export default class Chapter2_Case4Scene extends Phaser.Scene {
             });
         } else if (part.type === 'exercise') {
             this.displayExercise(part);
+        } else if (part.type === 'review') {
+            this.displayReview(part);
         }
     }
 
@@ -179,9 +183,96 @@ export default class Chapter2_Case4Scene extends Phaser.Scene {
         });
     }
 
+    displayReview(review) {
+        this.cameras.main.setBackgroundColor('#000000');
+        
+        // 背景画像を追加 (もしあれば)
+        if (review.image) {
+            this.add.image(480, 300, review.image).setScale(1.0).setDepth(-1); // 中央に配置、背景として
+        }
+
+        this.reviewPromptPages = [];
+        this.currentReviewPageIndex = 0;
+
+        const formWidth = 800;
+        const formHeight = 540; // 元の高さに戻す
+        const formX = (this.sys.game.config.width - formWidth) / 2;
+        const formY = (this.sys.game.config.height - formHeight) / 2;
+
+        const formBg = this.add.graphics().fillStyle(0x000000, 0.8).fillRoundedRect(formX, formY, formWidth, formHeight, 10);
+        this.uiElements.push(formBg);
+
+        const title = this.add.text(formX + formWidth / 2, formY + 20, review.title, { fontSize: '24px', fill: '#fff' }).setOrigin(0.5, 0);
+        const description = this.add.text(formX + 40, formY + 60, review.description, { fontSize: '18px', fill: '#fff', align: 'left', wordWrap: { width: formWidth - 80 }, lineSpacing: 10 }).setOrigin(0, 0);
+        this.uiElements.push(title, description);
+
+        const contentY = formY + 120; // 調整
+        review.prompts.forEach((promptData, index) => {
+            const pageContainer = this.add.container();
+
+            const promptTitle = this.add.text(formX + 40, contentY, promptData.title, { fontSize: '20px', fill: '#f1c40f' });
+            const promptAreaHeight = 280; // 縦幅は維持
+            const promptArea = this.add.dom(formX + 40, contentY + 40).createFromHTML(
+                `<textarea readonly style="width: ${formWidth - 80}px; height: ${promptAreaHeight}px; font-size: 14px; padding: 10px; border-radius: 5px; background-color: #333; color: #fff; border: 1px solid #555; resize: none;">${promptData.displayText}</textarea>`
+            ).setOrigin(0, 0);
+            
+            const copyButton = createCopyButton(this, formX + formWidth - 40, contentY + 40 + promptAreaHeight + 25, promptData.copyText, 'プロンプト例をコピー'); // Y座標調整
+            copyButton.setOrigin(1, 0);
+
+            pageContainer.add([promptTitle, promptArea, copyButton]);
+            this.reviewPromptPages.push(pageContainer);
+            this.uiElements.push(pageContainer);
+
+            if (index > 0) {
+                pageContainer.setVisible(false);
+            }
+        });
+
+        // Paging UI
+        const pageText = this.add.text(formX + formWidth / 2, formY + formHeight - 40, '', { fontSize: '18px', fill: '#fff' }).setOrigin(0.5); // Y座標調整
+        const prevButton = this.add.text(formX + formWidth / 2 - 80, formY + formHeight - 40, '< 前へ', { fontSize: '18px', fill: '#fff' }).setOrigin(1, 0.5).setInteractive(); // Y座標調整
+        const nextButton = this.add.text(formX + formWidth / 2 + 80, formY + formHeight - 40, '次へ >', { fontSize: '18px', fill: '#fff' }).setOrigin(0, 0.5).setInteractive(); // Y座標調整
+        this.uiElements.push(pageText, prevButton, nextButton);
+        
+        const updatePaging = () => {
+            pageText.setText(`${this.currentReviewPageIndex + 1} / ${this.reviewPromptPages.length}`);
+            prevButton.setAlpha(this.currentReviewPageIndex > 0 ? 1 : 0.3);
+            nextButton.setAlpha(this.currentReviewPageIndex < this.reviewPromptPages.length - 1 ? 1 : 0.3);
+        };
+
+        prevButton.on('pointerdown', () => {
+            if (this.currentReviewPageIndex > 0) {
+                this.reviewPromptPages[this.currentReviewPageIndex].setVisible(false);
+                this.currentReviewPageIndex--;
+                this.reviewPromptPages[this.currentReviewPageIndex].setVisible(true);
+                updatePaging();
+            }
+        });
+
+        nextButton.on('pointerdown', () => {
+            if (this.currentReviewPageIndex < this.reviewPromptPages.length - 1) {
+                this.reviewPromptPages[this.currentReviewPageIndex].setVisible(false);
+                this.currentReviewPageIndex++;
+                this.reviewPromptPages[this.currentReviewPageIndex].setVisible(true);
+                updatePaging();
+            }
+        });
+
+        const endButton = this.add.text(formX + formWidth / 2, formY + formHeight - 15, '演習を終わる', { fontSize: '22px', fill: '#fff', backgroundColor: '#6c757d', padding: {x:20, y:10}, borderRadius: 5 }).setOrigin(0.5).setInteractive(); // Y座標調整
+        this.uiElements.push(endButton);
+    
+        endButton.on('pointerdown', () => {
+            if (this.isModalOpen) return;
+            this.endScene();
+        });
+
+        updatePaging();
+    }
+
+
     shutdown() {
         this.uiElements.forEach(el => {
-            if (el.scene) {
+            if (el && el.scene) {
                 el.destroy();
             }
         });

@@ -1,6 +1,7 @@
 import Phaser from 'phaser';
 import { gameData, helpModalContent } from '../data/game-data.js';
 import HelpModal from '../HelpModal.js';
+import { createCopyButton } from '../CopyButton.js';
 
 export default class Chapter2_Case1Scene extends Phaser.Scene {
     constructor() {
@@ -33,12 +34,28 @@ export default class Chapter2_Case1Scene extends Phaser.Scene {
             });
         } else if (part.type === 'exercise') {
             this.displayExercise(part);
+        } else if (part.type === 'review') {
+            this.displayReview(part);
         }
     }
 
     displayExercise(exercise) {
         // 背景を真っ黒にする
         this.cameras.main.setBackgroundColor('#000000');
+
+        const formWidth = 800;
+        const formHeight = 500;
+        const formX = (this.sys.game.config.width - formWidth) / 2;
+        const formY = (this.sys.game.config.height - formHeight) / 2;
+
+        // 背景画像を追加 (もしあれば)
+        if (exercise.image) {
+            this.add.image(480, 300, exercise.image).setScale(1.0).setDepth(-1);
+        }
+        
+        // 常にフォームの背景を描画
+        const formBg = this.add.graphics().fillStyle(0x000000, 0.8).fillRoundedRect(formX, formY, formWidth, formHeight, 10);
+        this.uiElements.push(formBg);
 
         // Back to selection button
         const backButton = this.add.text(100, 575, 'CASE選択に戻る', {
@@ -51,28 +68,10 @@ export default class Chapter2_Case1Scene extends Phaser.Scene {
         }).setOrigin(0.5).setInteractive().setScrollFactor(0).setDepth(100);
         this.uiElements.push(backButton);
 
-        backButton.on('pointerover', () => {
-            if (this.isModalOpen) return;
-            this.game.canvas.style.cursor = 'pointer';
-            backButton.setBackgroundColor('#5a6268');
-        });
-        backButton.on('pointerout', () => {
-            if (this.isModalOpen) return;
-            this.game.canvas.style.cursor = 'default';
-            backButton.setBackgroundColor('#6c757d');
-        });
         backButton.on('pointerdown', () => {
             if (this.isModalOpen) return;
             this.scene.start('Chapter2SelectionScene');
         });
-
-        const formWidth = 800;
-        const formHeight = 500;
-        const formX = (this.sys.game.config.width - formWidth) / 2;
-        const formY = (this.sys.game.config.height - formHeight) / 2;
-
-        const formBg = this.add.graphics().fillStyle(0x000000, 0.8).fillRoundedRect(formX, formY, formWidth, formHeight, 10);
-        this.uiElements.push(formBg);
 
         const description = this.add.text(formX + 40, formY + 50, exercise.description, { fontSize: '20px', fill: '#fff', align: 'left', wordWrap: { width: formWidth - 80 }, lineSpacing: 10 }).setOrigin(0, 0);
         this.uiElements.push(description);
@@ -89,27 +88,15 @@ export default class Chapter2_Case1Scene extends Phaser.Scene {
         }).setOrigin(0.5).setInteractive().setScrollFactor(0).setDepth(100);
         this.uiElements.push(helpIcon);
 
-        helpIcon.on('pointerover', () => {
-            if (this.isModalOpen) return;
-            this.game.canvas.style.cursor = 'pointer';
-            helpIcon.setBackgroundColor('#732d91');
-        });
-        helpIcon.on('pointerout', () => {
-            if (this.isModalOpen) return;
-            this.game.canvas.style.cursor = 'default';
-            helpIcon.setBackgroundColor('#8e44ad');
-        });
         helpIcon.on('pointerdown', () => {
             if (this.isModalOpen) return;
-            const helpModal = new HelpModal(this, helpModalContent);
-            helpModal.show();
+            new HelpModal(this, helpModalContent).show();
         });
 
         // Download button
         if (exercise.downloadFile) {
             // Viteのbase URLを考慮して、絶対パスを動的に構築
             const baseUrl = import.meta.env.BASE_URL;
-            // BASE_URLがルート('/')の場合や、末尾にスラッシュがある場合を考慮
             const safeBaseUrl = (baseUrl === '/' || baseUrl === './') ? '' : baseUrl.endsWith('/') ? baseUrl.slice(0, -1) : baseUrl;
             const fileUrl = `${safeBaseUrl}/${exercise.downloadFile.url}`;
 
@@ -131,7 +118,6 @@ export default class Chapter2_Case1Scene extends Phaser.Scene {
                    ${exercise.downloadFile.buttonText}
                 </a>
             `;
-            // formX + formWidth / 2 で中央のX座標を指定
             const downloadButton = this.add.dom(formX + formWidth / 2, formY + 250).createFromHTML(buttonHtml);
             this.uiElements.push(downloadButton);
         }
@@ -149,9 +135,48 @@ export default class Chapter2_Case1Scene extends Phaser.Scene {
         });
     }
 
+    displayReview(review) {
+        this.cameras.main.setBackgroundColor('#000000');
+
+        // 背景画像を追加 (もしあれば)
+        if (review.image) {
+            this.add.image(480, 300, review.image).setScale(1.0).setDepth(-1); // 中央に配置、背景として
+        }
+
+        const formWidth = 800;
+        const formHeight = 500;
+        const formX = (this.sys.game.config.width - formWidth) / 2;
+        const formY = (this.sys.game.config.height - formHeight) / 2;
+
+        const formBg = this.add.graphics().fillStyle(0x000000, 0.8).fillRoundedRect(formX, formY, formWidth, formHeight, 10);
+        this.uiElements.push(formBg);
+        
+        const title = this.add.text(formX + formWidth / 2, formY + 30, review.title, { fontSize: '24px', fill: '#fff' }).setOrigin(0.5, 0);
+        const description = this.add.text(formX + 40, formY + 80, review.description, { fontSize: '18px', fill: '#fff', align: 'left', wordWrap: { width: formWidth - 80 }, lineSpacing: 10 }).setOrigin(0, 0);
+        this.uiElements.push(title, description);
+
+        const promptText = review.prompt;
+        const promptAreaHeight = 250;
+        const promptArea = this.add.dom(formX + 40, formY + 150).createFromHTML(
+            `<textarea readonly style="width: ${formWidth - 80}px; height: ${promptAreaHeight}px; font-size: 16px; padding: 10px; border-radius: 5px; background-color: #333; color: #fff; border: 1px solid #555; resize: none;">${promptText}</textarea>`
+        ).setOrigin(0, 0);
+        this.uiElements.push(promptArea);
+        
+        const copyButton = createCopyButton(this, formX + formWidth - 120, formY + 150 + promptAreaHeight + 50, promptText, 'プロンプト例をコピー');
+        this.uiElements.push(copyButton);
+
+        const endButton = this.add.text(formX + formWidth / 2, formY + formHeight - 40, '演習を終わる', { fontSize: '24px', fill: '#fff', backgroundColor: '#6c757d', padding: {x:20, y:10}, borderRadius: 5 }).setOrigin(0.5).setInteractive();
+        this.uiElements.push(endButton);
+
+        endButton.on('pointerdown', () => {
+            if (this.isModalOpen) return;
+            this.endScene();
+        });
+    }
+
     shutdown() {
         this.uiElements.forEach(el => {
-            if (el.scene) {
+            if (el && el.scene) {
                 el.destroy();
             }
         });
