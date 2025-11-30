@@ -77,4 +77,5 @@ game.events.on("ready", () => {
   game.registry.set("userAnswers", {}); // ユーザーの回答を保存するオブジェクトを追加
   game.registry.set("correctAnswers", 0);
   game.registry.set("totalQuizzes", gameData.totalQuizzesInGame);
+  game.registry.set("isModalOpen", false);
 });

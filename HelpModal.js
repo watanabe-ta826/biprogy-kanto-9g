@@ -86,7 +86,6 @@ export default class HelpModal {
         this.updateContent();
         this.modal.setVisible(true);
         this.scene.children.bringToTop(this.modal);
-        this.scene.isModalOpen = true;
 
         this.originalStyles.clear();
 
@@ -111,7 +110,7 @@ export default class HelpModal {
 
     close() {
         this.modal.setVisible(false);
-        this.scene.isModalOpen = false;
+        this.scene.events.emit('modalClosed'); 
 
         // Restore DOM elements
         this.scene.children.list.forEach(child => {

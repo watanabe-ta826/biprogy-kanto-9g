@@ -1,4 +1,4 @@
-import Phaser from 'phaser';
+import { createButton } from './ui.js';
 
 /**
  * コピーボタンを作成し、シーンに追加する関数
@@ -10,35 +10,13 @@ import Phaser from 'phaser';
  * @returns {Phaser.GameObjects.Text} 作成されたボタンオブジェクト
  */
 export function createCopyButton(scene, x, y, textToCopy, buttonText = 'コピー') {
-    const copyButton = scene.add.text(x, y, buttonText, {
-        fontSize: '18px',
-        fill: '#fff',
-        backgroundColor: '#3498db',
-        padding: { x: 10, y: 5 },
-        borderRadius: 5
-    }).setOrigin(0.5).setInteractive();
-
-    copyButton.on('pointerover', () => {
-        if (scene.isModalOpen) return;
-        scene.game.canvas.style.cursor = 'pointer';
-        copyButton.setBackgroundColor('#2980b9');
-    });
-
-    copyButton.on('pointerout', () => {
-        if (scene.isModalOpen) return;
-        scene.game.canvas.style.cursor = 'default';
-        copyButton.setBackgroundColor('#3498db');
-    });
-
-    copyButton.on('pointerdown', () => {
+    const copyLogic = () => {
         if (scene.isModalOpen) return;
 
-        // クリップボードAPIが利用可能かチェック
         if (!navigator.clipboard) {
             console.error('Clipboard API is not available in this browser.');
             const message = scene.add.text(copyButton.x, copyButton.y + 30, 'このブラウザは対応していません', {
-                fontSize: '14px',
-                fill: '#e74c3c'
+                fontSize: '14px', fill: '#e74c3c'
             }).setOrigin(0.5);
             scene.time.delayedCall(2000, () => message.destroy());
             return;
@@ -64,6 +42,14 @@ export function createCopyButton(scene, x, y, textToCopy, buttonText = 'コピ�
                 }).setOrigin(0.5);
                 scene.time.delayedCall(1500, () => message.destroy());
             });
+    };
+
+    const copyButton = createButton(scene, x, y, buttonText, copyLogic, {
+        style: {
+            fontSize: '18px',
+            padding: { x: 10, y: 5 },
+        },
+        color: '#3498db'
     });
 
     return copyButton;

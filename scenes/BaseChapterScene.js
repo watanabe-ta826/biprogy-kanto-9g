@@ -1,5 +1,8 @@
 import BaseScene from './BaseScene.js';
 import { gameData } from '../data/game-data.js';
+import NPC from '../NPC.js';
+import Collectible from '../Collectible.js';
+import Portal from '../Portal.js';
 
 export default class BaseChapterScene extends BaseScene {
     constructor(sceneKey) {
@@ -90,6 +93,51 @@ export default class BaseChapterScene extends BaseScene {
 
         this.createQuestTracker();
         this.events.on('quizCompleted', this.updateQuestTracker, this);
+
+        // --- Entity Creation ---
+        if (sceneData.entities) {
+            sceneData.entities.forEach((entityData) => {
+                let entity;
+                switch (entityData.type) {
+                    case "NPC":
+                        entity = new NPC(
+                            this,
+                            entityData.x,
+                            entityData.y,
+                            entityData.name,
+                            entityData.dialog,
+                            entityData.isStatic,
+                            entityData.quiz,
+                            null,
+                            entityData.imageName
+                        );
+                        this.physics.add.collider(entity, this.platforms);
+                        break;
+                    case "Collectible":
+                        entity = new Collectible(
+                            this,
+                            entityData.x,
+                            entityData.y,
+                            entityData.itemName
+                        );
+                        break;
+                    case "Portal":
+                        entity = new Portal(
+                            this,
+                            entityData.x,
+                            entityData.y,
+                            50,
+                            100,
+                            entityData.targetScene,
+                            entityData.entryX
+                        );
+                        break;
+                }
+                if (entity) {
+                    this.entities.add(entity);
+                }
+            });
+        }
 
         // --- 開発者用デバッグ機能 ---
         this.input.keyboard.on('keydown-F8', () => {

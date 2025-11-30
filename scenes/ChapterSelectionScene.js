@@ -1,5 +1,6 @@
 import Phaser from 'phaser';
 import { introScenario, chapter1IntroScenario, chapter3IntroScenario } from '../data/game-data.js';
+import { createButton } from '../ui.js';
 
 export default class ChapterSelectionScene extends Phaser.Scene {
     constructor() {
@@ -8,10 +9,8 @@ export default class ChapterSelectionScene extends Phaser.Scene {
         this.selectedButtonIndex = 0;
         this.buttonColors = {
             default: '#3498db',
-            hover: '#2980b9',
             selected: '#f1c40f',
             introDefault: '#95a5a6',
-            introHover: '#aab7b8',
             introSelected: '#f1c40f'
         };
     }
@@ -37,7 +36,6 @@ export default class ChapterSelectionScene extends Phaser.Scene {
         const buttonYStart = 200;
         const buttonYStep = 80;
 
-        // Button configurations
         const buttonConfigs = [
             {
                 text: '第1章: AIって怖いもの？ ～AIとは​何かを​学ぶ～',
@@ -66,14 +64,29 @@ export default class ChapterSelectionScene extends Phaser.Scene {
         ];
 
         buttonConfigs.forEach((config, index) => {
-            const button = this.createButton(480, config.y, config.text, config.isIntro, config.action, index);
+            const button = createButton(this, 480, config.y, config.text, null, {
+                handleInteraction: false, // シーン側でインタラクションを管理
+                style: { fontSize: '24px' }
+            });
+
+            button.setInteractive();
+
+            button.on('pointerover', () => {
+                this.selectedButtonIndex = index;
+                this.updateButtonStyles();
+            });
+    
+            button.on('pointerdown', () => {
+                this.cameras.main.fadeOut(500, 0, 0, 0);
+                this.cameras.main.once(Phaser.Cameras.Scene2D.Events.FADE_OUT_COMPLETE, config.action);
+            });
+
             this.buttons.push(button);
         });
 
         this.updateButtonStyles();
         this.addKeyListeners();
 
-        // Add controls text
         this.add.text(940, 580, 'W/S or ↑/↓: 選択 | E/Enter: 決定', {
             fontFamily: 'Meiryo, sans-serif',
             fontSize: '18px',
@@ -81,39 +94,6 @@ export default class ChapterSelectionScene extends Phaser.Scene {
             stroke: '#000000',
             strokeThickness: 4
         }).setOrigin(1, 1);
-    }
-
-    createButton(x, y, text, isIntro, action, index) {
-        const defaultColor = isIntro ? this.buttonColors.introDefault : this.buttonColors.default;
-        
-        const button = this.add.text(x, y, text, {
-            fontFamily: 'Arial, sans-serif',
-            fontSize: '24px',
-            fill: '#fff',
-            backgroundColor: defaultColor,
-            padding: { x: 20, y: 10 },
-            borderRadius: 5
-        }).setOrigin(0.5);
-
-        button.setInteractive();
-
-        button.on('pointerover', () => {
-            this.game.canvas.style.cursor = 'pointer';
-            this.selectedButtonIndex = index;
-            this.updateButtonStyles();
-        });
-
-        button.on('pointerout', () => {
-            this.game.canvas.style.cursor = 'default';
-            // We don't reset index on pointerout to keep selection with keyboard
-        });
-
-        button.on('pointerdown', () => {
-            this.cameras.main.fadeOut(500, 0, 0, 0);
-            this.cameras.main.once(Phaser.Cameras.Scene2D.Events.FADE_OUT_COMPLETE, action);
-        });
-
-        return button;
     }
 
     addKeyListeners() {

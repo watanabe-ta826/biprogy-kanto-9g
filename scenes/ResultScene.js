@@ -54,6 +54,10 @@ export default class ResultScene extends BaseScene {
                 }
             }).setOrigin(0.5);
             currentY += 65; // エンディングテキストの高さ分を考慮してY座標をずらす
+
+            if (this.resultData.endingText === 'ハッピーエンド') {
+                this.createConfettiEffect();
+            }
         }
 
         // 結果表示
@@ -104,6 +108,44 @@ export default class ResultScene extends BaseScene {
             button.on('pointerout', () => {
                 this.game.canvas.style.cursor = 'default';
                 button.setBackgroundColor(originalColor);
+            });
+        });
+    }
+
+    createConfettiEffect() {
+        const colors = [0xffd700, 0xff69b4, 0x00bfff, 0x32cd32, 0xff4500, 0x9400d3];
+        const textureKey = 'confetti_particle';
+
+        // 8x16の白い長方形のテクスチャを動的に生成
+        if (!this.textures.exists(textureKey)) {
+            const graphics = this.make.graphics();
+            graphics.fillStyle(0xffffff);
+            graphics.fillRect(0, 0, 8, 16);
+            graphics.generateTexture(textureKey, 8, 16);
+            graphics.destroy();
+        }
+
+        const emitter = this.add.particles(0, 0, textureKey, {
+            lifespan: 4000,
+            speedY: { min: 100, max: 300 },
+            speedX: { min: -150, max: 150 },
+            gravityY: 200,
+            quantity: 2,
+            scale: { start: 1, end: 0.5 },
+            rotate: { start: 0, end: 360 },
+            tint: colors,
+            frequency: 50,
+            emitZone: { type: 'random', source: new Phaser.Geom.Rectangle(0, -20, this.sys.game.config.width, 20) }
+        });
+
+        // 5秒後にエミッターの放出を停止
+        this.time.delayedCall(5000, () => {
+            // stop()を呼ぶと新しいパーティクルは生成されなくなる
+            emitter.stop();
+            // 既存のパーティクルがすべて消えるであろう時間(lifespan)が経過した後に
+            // エミッター自体をシーンから破棄する
+            this.time.delayedCall(4000, () => {
+                emitter.destroy();
             });
         });
     }
