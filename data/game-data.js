@@ -52,6 +52,7 @@ export const imagePaths = [
   { name: "chapter2_case4_review", src: "img/chapter2_case4_review.png" },
   { name: "chapter2_case2_scene1", src: "img/chapter2_case2_scene1.png" },
   { name: "chapter2_case2_scene2", src: "img/chapter2_case2_scene2.png" },
+  { name: "chapter2_case2_scene3", src: "img/chapter2_case2_scene3.png" },
   { name: "chapter2_case1_scene1", src: "img/chapter2_case1_scene1.png" },
   { name: "chapter2_case1_work", src: "img/chapter2_case1_work.png" },
   { name: "chapter2_case1_scene2", src: "img/chapter2_case1_scene2.png" },
@@ -776,7 +777,7 @@ E
             {
               speaker: "商人",
               text: "これは​すごい！うまく​いくと俺は​この​国いちばんの​商人だ！​",
-              image: "chapter2_case2_scene2",
+              image: "chapter2_case2_scene3",
             },
             {
               speaker: "賢者",
