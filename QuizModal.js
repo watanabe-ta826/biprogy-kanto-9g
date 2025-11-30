@@ -231,6 +231,8 @@ export default class QuizModal {
     this._displayExplanation(this.currentQuiz, feedback);
   }
 
+  
+
   _displayExplanation(quiz, feedback) {
     let feedbackColor = "#ecf0f1"; // Default color
     if (feedback === "正解です！") {
