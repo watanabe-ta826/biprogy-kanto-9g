@@ -2,10 +2,11 @@ import BaseCaseScene from './BaseCaseScene.js';
 import { helpModalContent } from '../data/game-data.js';
 import HelpModal from '../HelpModal.js';
 import { createCopyButton } from '../CopyButton.js';
+import { SCENE_KEYS } from '../constants.js';
 
 export default class Chapter2_Case3Scene extends BaseCaseScene {
     constructor() {
-        super('Chapter2-Case3Scene');
+        super(SCENE_KEYS.Chapter2_Case3Scene);
     }
 
     displayExercise(exercise) {
@@ -26,11 +27,11 @@ export default class Chapter2_Case3Scene extends BaseCaseScene {
         }
 
         if (exercise.referenceText) {
-            const refText = this.add.text(formX + 40, formY + 80, exercise.referenceText, { fontSize: '16px', fill: '#ddd', align: 'left', wordWrap: { width: formWidth - 80 }, lineSpacing: 6 }).setOrigin(0, 0);
+            const refText = this.add.text(formX + 40, formY + 120, exercise.referenceText, { fontSize: '16px', fill: '#ddd', align: 'left', wordWrap: { width: formWidth - 80 }, lineSpacing: 6 }).setOrigin(0, 0);
             this.uiElements.push(refText);
         }
 
-        let y = formY + (exercise.referenceText ? 220 : 120);
+        let y = formY + (exercise.referenceText ? 260 : 120);
 
         exercise.questions.forEach(q => {
             const qText = this.add.text(formX + 40, y, q.text, { fontSize: '18px', fill: '#fff' });
