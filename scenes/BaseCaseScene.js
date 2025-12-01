@@ -229,7 +229,7 @@ export default class BaseCaseScene extends Phaser.Scene {
         }
         
         if (config.description) {
-            descriptionText = this.add.text(formX + 40, formY + (config.title ? 80 : 50), config.description, { fontSize: '20px', fill: '#fff', align: 'left', wordWrap: { width: formWidth - 80 }, lineSpacing: 10 }).setOrigin(0, 0);
+            descriptionText = this.add.text(formX + 40, formY + (config.title ? 80 : 50), config.description, { fontSize: '18px', fill: '#fff', align: 'left', wordWrap: { width: formWidth - 80 }, lineSpacing: 10 }).setOrigin(0, 0);
             this.uiElements.push(descriptionText);
         }
 
